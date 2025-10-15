@@ -26,8 +26,12 @@
 	- [7.1 Firewall \& IDS/IPS](#71-firewall--idsips)
 - [8. Network Overview and Performance](#8-network-overview-and-performance)
 	- [8.1 Characteristics of a Network](#81-characteristics-of-a-network)
-- [8.2 KPIs](#82-kpis)
-- [8.3 Applications](#83-applications)
+	- [8.2 KPIs](#82-kpis)
+	- [8.3 Applications](#83-applications)
+- [9. Troubleshooting](#9-troubleshooting)
+	- [9.1 Recommended](#91-recommended)
+		- [Steps](#steps)
+		- [Actual Steps](#actual-steps)
 
 ## 1. Components
 - **Endpoints** (devices)
@@ -257,12 +261,12 @@
 - **Quality of Service**: tools/mechanisms to use network resources
 - **Cost**: expense + maintenance
 - **Virtualization**: emulated (storage, compute, network, security)
-## 8.2 KPIs
+### 8.2 KPIs
 - Bandwidth
 - Latency
 - Jitter
 - Packet Loss
-## 8.3 Applications
+### 8.3 Applications
 - **Data**: [smooth, benign, drop & delay insensitive]
 - **Voice**: [smooth, benign, drop & delay sensitive]
 	- Latency <= 150ms, Loss <= 1%, Bandwidth (30-128Kbps)
@@ -272,3 +276,31 @@
 	- Generally HTTP response <= 400ms
 - **Classifications**: [batch, interactive, real-time]
 
+## 9. Troubleshooting
+- Hardware
+- Software
+- Config
+### 9.1 Recommended
+#### Steps
+- Identify problem
+- Gather information
+- Analyze information
+- Eliminate potential causes
+- Propose hypothesis
+- Test hypothesis
+- Document solutions/workaround
+#### Actual Steps
+- Verify the host IPv4 address and subnet mask
+- Ping the loopback address
+- Ping the IPv4 address of the local machine
+- Ping the default gateway
+- Ping the remote server
+  
+``` 
+// check duplex/speed for RJ45
+show interfaces
+```
+- **Input queue drop**: CPU cannot process packet in time
+- **Output queue drop**: Congestion on the interface
+- **Input errors**: Cabling problems, interface hardware problems
+- **Output errors**: Collisions during the transmission of a frame
