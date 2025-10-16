@@ -1,6 +1,7 @@
 - [1. Components](#1-components)
 - [2. LAN, WAN, WLAN Overview](#2-lan-wan-wlan-overview)
 	- [2.1 LAN](#21-lan)
+		- [2.1.1 VLAN (L2)](#211-vlan-l2)
 	- [2.2 WAN](#22-wan)
 	- [2.3 WLAN](#23-wlan)
 	- [2.4 Other](#24-other)
@@ -10,20 +11,32 @@
 	- [3.3 Host-to-Host Packet Transfer Process (same LAN)](#33-host-to-host-packet-transfer-process-same-lan)
 - [4. Addressing](#4-addressing)
 	- [4.1 MAC Address (L2)](#41-mac-address-l2)
-	- [4.2 IP Addressing (L3)](#42-ip-addressing-l3)
+	- [4.2 IPv4 Addressing - 32 bits (L3)](#42-ipv4-addressing---32-bits-l3)
 		- [4.2.1 Subnet Classes](#421-subnet-classes)
 		- [4.2.2 Binary Calculation](#422-binary-calculation)
 		- [Example](#example)
 		- [4.2.3 Sub-sub Netting (Variable Length Subnet Masking - VLSM)](#423-sub-sub-netting-variable-length-subnet-masking---vlsm)
+	- [4.3 IPv6 Addressing - 128 bits (L3)](#43-ipv6-addressing---128-bits-l3)
+		- [4.3.1 Link-Local Unicast Addresses](#431-link-local-unicast-addresses)
+		- [4.3.2 Unique Local Address](#432-unique-local-address)
+		- [4.3.3 Multicast](#433-multicast)
+		- [4.3.4 Anycast](#434-anycast)
+		- [4.3.5 Other](#435-other)
+		- [4.3.6 Headers (40 bytes)](#436-headers-40-bytes)
+		- [4.3.7 Address Allocation](#437-address-allocation)
 - [5. Layered Models](#5-layered-models)
 	- [5.1 OSI Model](#51-osi-model)
 	- [5.2 Encapsulation](#52-encapsulation)
 - [6. Protocols \& Services](#6-protocols--services)
 	- [6.1 Transport Layer (L4)](#61-transport-layer-l4)
 	- [6.2 Routing (L3)](#62-routing-l3)
+		- [6.2.1 VLAN Routing](#621-vlan-routing)
+		- [6.2.2 Dynamic Routing Protocols](#622-dynamic-routing-protocols)
 	- [6.3 Network Services (L2)](#63-network-services-l2)
+		- [6.3.1 Spanning Tree Protocol (STP)](#631-spanning-tree-protocol-stp)
 - [7. Network Security](#7-network-security)
 	- [7.1 Firewall \& IDS/IPS](#71-firewall--idsips)
+	- [7.2 Access Control Lists (ACL) (L3)](#72-access-control-lists-acl-l3)
 - [8. Network Overview and Performance](#8-network-overview-and-performance)
 	- [8.1 Characteristics of a Network](#81-characteristics-of-a-network)
 	- [8.2 KPIs](#82-kpis)
@@ -45,6 +58,18 @@
 - Connects devices within an area
 - Uses switches to forward data frames based on MAC
 - Typically wired with ethernet
+#### 2.1.1 VLAN (L2)
+- VLAN maps to a unique subnet (L3)
+- Logical segmentation into separate broadcast domains
+- Needs router to communicate across other VLANs
+- Security, performance, management
+- IEEE 802.1Q (VLAN tagging protocol)
+  - [ Dest MAC ] [ Source MAC ]**[ VLAN Tag ]**[ Type/Length ] [Payload ][ FCS ] 
+  - 4 byte VLAN Tag in Ethernet frame (L2)
+    - **Type**: 16 bits, `0x8100`
+    - **Priority**: 3 bits, QoS priority
+    - **CFI**: 1 bit
+    - **VLAN ID**: 12 bits, VLAN number (0-4095)
 ### 2.2 WAN
 - Spans large geographic area
 - Connects multiple LANs
@@ -74,19 +99,19 @@
 	- Usually a subnet the hosts public services
 ## 3. Communication over LAN
 ### 3.1 Physical Media Types
-- **Optical Fiber**
-	- [core, cladding, buffer]
-	- [9, 125, 250] µm
-	- Types
-		- Single-mode: [laser, high BW, longer distance, $$$]
-		- Multi-mode: [LED, slow BW, shorter distance, $]
 - **Twisted Pair (ethernet)**
-	- UTP (Unshielded Twisted Pair)
+	- UTP (Unshielded Twisted Pair): 100m
 	- STP (Shielded Twisted Pair)
 		- Reduce inteference
 	- S/STP: Screened STP
 		- More shields
 	- Categories [CAT5, 5e, 6, 6a, 7, 8]
+- **Optical Fiber**
+	- [core, cladding, buffer]
+	- [9, 125, 250] µm
+	- Types
+    	- Multi-mode: [LED, slow BW, 2km, $]
+		- Single-mode: [laser, high BW, 40+km, $$$]
 - **Coaxial Cable**
 	- Copper core, Legacy use
 ### 3.2 Communication Types
@@ -137,10 +162,10 @@
 ### 4.1 MAC Address (L2)
 - 24 bits vendor ID, 24 bits device
 - Hexadecimal (0-9, A-F)
-### 4.2 IP Addressing (L3)
-- IPv4
-	- 32 bits/4 octets, 8 bits per octet
-	- 8 bits = max value 255
+### 4.2 IPv4 Addressing - 32 bits (L3)
+- 32 bits/4 octets, 8 bits per octet
+- 8 bits = max value 255
+- Need configure IPsec
 #### 4.2.1 Subnet Classes
 - A B C, easy as 1 2 3
 - Some are reserved (127.0.0.1)
@@ -173,19 +198,62 @@
 #### 4.2.3 Sub-sub Netting (Variable Length Subnet Masking - VLSM)   
 - Network: 192.168.10.0/26
 - Subnet Mask: 255.255.255.192
-- Block size (by CIDR): 3rd bit = 64
-	- /26 = 64 IP, 4 blocks
-	- /27 = 32 IP, 8 blocks
-	- /28 = 16 IP, 16 blocks
+- Block size (by CIDR): 1st bit = 128, 2nd bit = 64
+	- /26 = 256-192 = 64 remaining IP, 256/64 = 4 blocks
+	- /27 = 256-224 = 32 remaining IP, 256/32 = 8 blocks
+	- /28 = 256-240 = 16 remaining IP, 256/16 = 16 blocks
+	- /29 = 256-248 = 8 remaining IP, 256/8 = 32 blocks
 - Sub-subnet based on requirements
-	- e.g., "support >= 6 IPs", use /29
-
+	- e.g. 1, "support >= 6 IPs per block", use /29, since 8 IPs per block
+	- e.g. 2,
+  
 	| Subnet (/26)       | Network   | Usable   | Broadcast |
 	| ------------------ | --------- | ----- | ------ |
 	| 1 | 192.168.10.0   | .1-62    | .63  |
 	| 2 | 192.168.10.64  | .65-126  | .127 |
 	| 3 | 192.168.10.128 | .129-190 | .191 |
 	| 4 | 192.168.10.192 | .193-254 | .255 |
+### 4.3 IPv6 Addressing - 128 bits (L3)
+- Larger address space
+- Simpler header
+- Security (built-in encryption) and mobility
+- Transition
+- No broadcast addresses
+- 64 bits network, 64 bits interface
+#### 4.3.1 Link-Local Unicast Addresses
+- Prefix: `FE80::/10`
+- Local link only/same switch
+- Used for Neighbor Discovery Protocol (NDP - similar to ARP), Router Comms/Ads, Auto-config (SLAAC)
+#### 4.3.2 Unique Local Address
+- Prefix: `FC00::/7`
+- Private internal networks
+- Used for within organization, not public
+#### 4.3.3 Multicast
+- Prefix: `FF00::/8`
+#### 4.3.4 Anycast
+- Lowest cost (CDN)
+#### 4.3.5 Other
+- Loopback: `::1` for testing purposes
+- Unspecified `::` "no address" placeholder
+#### 4.3.6 Headers (40 bytes)
+- Version (4b)
+- Traffic Class (8b)
+- Flow Label (20b)
+- Payload Length (16b)
+- Next Header (8b)
+- Hop Limit (8b)
+- Source Address (128b)
+- Destination Address (128b)
+#### 4.3.7 Address Allocation
+- Static: manual interface ID
+- Static: EUI-64 interface ID
+  - Insert `FF:FE` (16 bits) in the middle of MAC
+  - Flip the `7th bit`, convert back to hexadec
+- Stateless Address Autoconfig (SLAAC)
+  - `FF02::2`
+  - `Router1(config)#ipv6 address autoconfig`
+- Stateful DHCP (DHCPv6)
+- Stateless DHCPv6
 ## 5. Layered Models
 ### 5.1 OSI Model
 | Layer        | Explanation                                        | Analogy                                       |
@@ -211,8 +279,7 @@
 	- Guaranteed delivery (reliability, data integrity)
 	- Resend if error, interrupting streaming/music
 - **UDP**
-	- [ send all ] 
-	- Not guaranteed
+	- No guaranteed delivery
 	- Fast but no error-checking
 ### 6.2 Routing (L3)
 - Packets treated independently
@@ -229,6 +296,55 @@
 - **Router**
 	- Path determination
 	- Packet forwarding
+#### 6.2.1 VLAN Routing
+- Separate L2 broadcast domain
+- Security, traffic control, performance
+- Options
+	1. Router on a stick
+		- Single physical interfaces, Sub-interface config for each VLAN
+        	- IP address that acts as default gateway
+        	- `Fa0/1.10` for VLAN 10
+        	- `Fa0/1.20` for VLAN 20
+      	- $, Simple
+	2. Layer 3 Switch (Switch with routing capabilities)
+      	- SVI (Switched Virtual Interfaces) configs
+      	- Each SVI has a IP address that acts as default gateway
+      	- $$, Faster than RoaS, Scalable
+	3. Separate Dedicated Router
+		- Separate physical interfaces for each VLAN
+		- Best for complex/high-traffic networks
+		- \$$$, requires more physical interfaces
+#### 6.2.2 Dynamic Routing Protocols
+- Up-to-date, best available path (Dijkstra)
+- Each router builds a topology map (LSDB - Link-State DB)
+- **IGP** (Interior Gateway Protocol, used *within* a network)
+  - **Link-State** (routers share topology for full map)
+    - LSA (Link-State Advertisement) → Build full map, then Dijkstra
+    - Faster convergence
+    - [OSPF, IS-IS (intermediate to intermediate system)]
+      - **OSPF:**
+        - Backbone, Areas
+        - **Neighbor Adjacencies**
+          - HDLC (High-Level Data Link Control)
+            - Physical p2p connection, no DR/BDR needed
+          - Point-to-Point Subinterface
+            - Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
+		- **Neighbor States**
+          - Down [no hello packets, neighbor MIA]
+          - Init [hello received, but not recognized]
+          - 2-Way [mutual acknowledgement, friendship established]
+          - ExStart [electing who is master/slave]
+          - Exchange [swapping DBDs (Database Description Packets)]
+          - Loading [asking for missing LSAs (via LSR, LSU)]
+          - Full [database twins, neighbors fully synced]
+  - **Distance-Vector**
+    - Share full routes with neighbors
+    - Partial view (only next hops)
+    - Slower convergence
+    - [RIP (routing info protocol), EIGRP (enhanced interior gateway routing protocol)]
+- **EGP** (Exterior Gateway Protocol, used *between* networks/ISPs)
+  - Path-Vector
+  - [BGP (border gateway protocol)]
 ### 6.3 Network Services (L2)
 - **DNS**: resolves domain name → IP
 - **DHCP**: assigns IPs →  clients
@@ -240,14 +356,61 @@
 	- Use **Flooding** when destination MAC unknown
 	- Use **Spanning Tree Protocol** to avoid loops
 	- Implements **ARP** to resolve IP to MAC
-    	- 
 	- **Duplex**
 		- Half (sync, one at a time, walkie-talkie)
 		- Full (async, simultaneous, no collisions)
+#### 6.3.1 Spanning Tree Protocol (STP)
+- **Standards**
+  - IEEE 802.1D (CST, legacy, only 1 tree for entire network)
+  - PVST+ (Cisco fork that provides 1 STP per VLAN)
+  - 802.1s MSTP (Maps multiple VLANs into same STP)
+  - 802.1w RSTP (improves convergence by revamping port roles and BPDU exchanges)
+    - Speeds recalculation when topology changes (convergence)
+    - Roles and States simplified
+  - Rapid PVST+ (Cisco fork of RSTP using PVST+)
+- **STP steps**
+  1. Root Bridge (lowest ID = CEO)
+  2. Root Port for each non-root switch
+     - Port with cheapest cost, fastest route to CEO
+  3. Designated Port for each segment
+     - Port on the Switch with fastest path to Root Bridge
+     - All traffic leaves that segment via the DP
+     - Repeat for each segment
+     - *"DP = segment's VIP lane to CEO"*
+  4. Root ports/Designated ports → Forwarding state, all else → Blocking state
+- **Enhancements**
+  - PortFast (immediate transition to forwarding state)
+  - BPDU Guard (protects from loop, errdisables a port when BPDU received, used with PortFast)
+  - BPDU Filter (BPDU guard but no disable, just ignore)
+  - STP Loop Guard (stops port forwarding if BPDUs vanish)
+  - STP Root Guard (prevent rouge switch from hijacking Root Bridge)
+  - EtherChannel (combines multiple physical links into 1 logical link → redundancy + BW)
 ## 7. Network Security
 ### 7.1 Firewall & IDS/IPS
 - Operate on L3 and L4
 - DPI (Deep Packet Inspection): content-based filtering
+### 7.2 Access Control Lists (ACL) (L3)
+- Permit/Deny
+- Wildcard Masking
+  - Inverse subnet mask
+  - ACL permits `192.168.1.0`, wildcard `0.0.0.255`
+    - First 3 octets must match, last octet can be anything
+  - ACL permits `172.16.16.1`, wildcard `0.0.15.255`
+  
+	| Item |     Range |
+	| --- | --- |
+	| IP |     1010 1100.0001 0000.0001 0000.0000 0001 |
+	| Mask |   0000 0000.0000 0000.0000 1111.1111 1111 |
+	| Result | 1010 1100.0001 0000.0001 XXXX.XXXX XXXX |
+
+  - Allows `172.16.16.X - 172.16.31.X`
+  - Permit `host`/`any`
+- Types
+- Config Standard IPv4
+- Config Extended
+- Verify Modify
+- Applying IPv4 ACLs to Filter Network Traffic
+- 
 ## 8. Network Overview and Performance
 ### 8.1 Characteristics of a Network
 - **Topology**: physical connectivity of devices and logical paths of data flows
@@ -295,12 +458,10 @@
 - Ping the IPv4 address of the local machine
 - Ping the default gateway
 - Ping the remote server
-  
-``` 
-// check duplex/speed for RJ45
-show interfaces
-```
-- **Input queue drop**: CPU cannot process packet in time
-- **Output queue drop**: Congestion on the interface
-- **Input errors**: Cabling problems, interface hardware problems
-- **Output errors**: Collisions during the transmission of a frame
+- Errors and Definitions
+  - **Input queue drop**: CPU cannot process packet in time
+  - **Output queue drop**: Congestion on the interface
+  - **Input errors**: Cabling problems, interface hardware problems
+  - **Output errors**: Collisions during the transmission of a frame
+  - **Excessive noise**: Cable exceeds max length
+  - **Excessive collision**: Duplex mismatch

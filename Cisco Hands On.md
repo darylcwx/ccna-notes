@@ -1,13 +1,12 @@
-# Operating Cisco IOS Software
-Implementing and Administering Cisco Solutions (CCNA) v2.2
-
-
-
-## Session
-- SIP/H323
-- Packet-Switch, Circuit-Switch
-# Cisco
-## Products
+- [1. Products](#1-products)
+- [2. Cisco CLI](#2-cisco-cli)
+	- [2.1 Router Config](#21-router-config)
+	- [2.2 Switch Config](#22-switch-config)
+	- [2.3 Test configs](#23-test-configs)
+	- [2.4 VLAN](#24-vlan)
+	- [2.5 EtherChannel](#25-etherchannel)
+- [3. Routing Table](#3-routing-table)
+## 1. Products
 - NX-OS
 	- Nexus Validation Training (NVT)
 		- Comprehensive end-to-end systems test
@@ -16,117 +15,188 @@ Implementing and Administering Cisco Solutions (CCNA) v2.2
 - Switches
 	- Nexus 4000 - 9000
 	- ACI (Application Centric Infrastructure)
-## Cisco CLI
-### CLI
-```
-// ping
-ping 10.10.50.2 source ethernet 0/0
-
-// test transport layer
-telnet 10.10.50.2 80
-
-// arp
-show arp
-
-// trace route
-
-```
-
-### 1. Router Config
+## 2. Cisco CLI
 - user exec mode (>)
 - privileged exec mode (#)
+### 2.1 Router Config
 ```
-Router> 
+// start
 Router>enable 
-Router#
 Router#configure terminal
+Router(config)#hostname <new router host name>
 Router(config)#
-Router(config)#hostname NYEDGE1
-NYEDGE1(config)#
-NYEDGE1(config)#exit
-NYEDGE1#
+Router(config)#exit
+Router#
 
-// show router's interfaces
-NYEDGE1#show ip interface brief
+// show
+Router#show version
+Router#show protocols
+Router#show arp
+Router#show cdp neighbors <detail> (cisco products)
+Router#show lldp neighbors 		   (general)
+Router#show running-config
+Router#show startup-config
+Router#show interfaces [interface-id]
+Router#show ip protocols
+Router#show ip interface brief
+Router#show ip route
+Router#show ipv6 interface brief
+Router#show ipv6 route
+Router#show ipv6 neighbors
 
-// show cable type of respective serial and port
-NYEDGE1#show controllers serial 0/0/0
+// config interface
+// in config-if mode, add "do" to execute "show" commands 
+// e.g. Router(config-if)#do sh ipv6 interface brief
 
-// show routing protocols
-NYEDGE1#show ip protocols
-=> NSF aware (Non Stop Forwarding enabled)
+// hide from lldp neighbor discovery
+Router(config-if)# [no] lldp run
+Router(config-if)# [no] lldp transmit (hide from others in LLDP table)
+Router(config-if)# [no] lldp receive  (don't see others in LLDP table)
 
-// show version
-NYEDGE1#show version
+Router(config)#interface gigabitEthernet 0/0
 
-// enter interface config mode
-NYEDGE1#configure terminal
-NYEDGE1(config)#
-NYEDGE1(config)#interface gigabitEthernet 0/0
-NYEDGE(config-if)#
+- Router(config-if)#ip address <ipv4> <subnet-mask>
+OR
+- Router(config-if)#ipv6 address <ipv6>/<prefix>
+OR
+- Router(config-if)#ipv6 address autoconfig
 
-// set params
-NYEDGE1(config-if)#ip address 192.168.16.1 255.255.255.0
-NYEDGE1(config-if)#no shutdown
-NYEDGE1(config-if)#exit
-NYEDGE1(config)#ip domain-name practice-labs.com
-NYEDGE1(config)#
-
+Router(config-if)#no shutdown
+```
+```
 // generate RSA key
 crypto key generate rsa
 2048
 
 // enable SSH
-NYEDGE1(config)#ip ssh version 2
-NYEDGE1(config)#exit
-NYEDGE1#show ip ssh
+Router(config)#ip ssh version 2
+Router(config)#exit
+Router#show ip ssh
 
 // set vty lines for SSH transport
-NYEDGE1#configure terminal
-NYEDGE1(config)#line vty 0 4
-NYEDGE1(config-line)#transport input ssh
-NYEDGE1(config-line)#login local
-NYEDGE1(config-line)#exit
+Router#configure terminal
+Router(config)#line vty 0 4
+Router(config-line)#transport input ssh
+Router(config-line)#login local
+Router(config-line)#exit
 
 // configure local account
-NYEDGE1(config)#username Joe privilege 15 secret CISCO
-NYEDGE1(config)#
+Router(config)#username Joe privilege 15 secret CISCO
+Router(config)#
 ```
-### 2. Switch Config
+### 2.2 Switch Config
 ```
+// start
+Switch#conf t
+Switch(config)#hostname <new switch host name>
+
+// setting password (1): plaintext, (2) secure by default (MD5 hashed)
+- Switch(config)#enable password <password>
+- Switch(config)#service password-encryption
+- Switch# show running-config | include enable password
+OR
+- Switch(config)#enable secret <password>
+
+// example login
+Switch#disable
 Switch>enable
-Switch#configure terminal
-Switch(config)#hostname NYACCESS1
-NYACCESS1(config)#enable password cisco1
-NYACCESS1(config)#exit
-NYACCESS1#disable
-NYACCESS1>enable
-Password: cisco1
-NYACCESS1#show running-config
-NYACCESS1#configure terminal
-NYACCESS1(config)#enable secret cisco
-NYACCESS1>enable
-Password: cisco
+Password: <password>
 
-// encrypt passwords
-NYACCESS1#conf t
-NYACCESS1(config)#service password-encryption
-NYACESS1# show running-config | include enable password
+// show
+Switch#show mac address-table
+Switch#show spanning-tree
+Switch#show interface status
+Switch#show controllers
+Switch#show running-config
+Switch#show startup-config
 
-// reuse config
-NYACCESS1#show startup-config
-NYACCESS1#copy running-config startup-config
-NYACCESS1#erase startup-config
+// make configs persistent
+Switch#copy running-config startup-config
 
+// wipe configs
+Switch#erase startup-config
 ```
+### 2.3 Test configs
+```
+ping <ipv4/ipv6> [source <interface>]
+telnet <ipv4/ipv6> [port]
+tracert <ipv4>
+traceroute <ipv4>
+traceroute ipv6 <ipv6>
+ssh user@<ipv4/ipv6>
+arp -a
+netstat
+```
+### 2.4 VLAN
+```
+// show
+Switch#show vlan brief
+Switch#show interfaces trunk
+Router#show vlans (trunking's subinterfaces)
+Router#show running-config interface gig0/1.10 (subinterface config)
+Router#show ip route
 
-## 2. Routing Table
+// config
+Switch#conf t
+Switch(config)#vlan <number> (number: standard 1-1005, extended 1006-4094)
+Switch(config-vlan)#name <name>
+Switch(config)#interface <interface>
+```
+```
+// access 
+// belongs to 1 VLAN, used for end devices
+Switch(config-if)#switchport mode access
+- Switch(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
+OR 
+- Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
+```
+```
+// trunk
+// carries traffic for multiple VLANs
+// connects (Sw to Sw) or (Sw to Routers)
+// tags frames with VLAN ID using IEEE 802.1Q
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk encapsulation dot1q (specifies 802.1Q)
+Switch(config-if)#switchport trunk native vlan 99 (untagged VLANs)
+Switch(config-if)#switchport trunk allowed vlan 10,20,30,99
+Switch(config-if)#
+```
+```
+// verify
+// "dynamic desirable" = auto mode, "switchport" = static access
+Switch#show interfaces <interface> switchport
+Switch#show interfaces trunk
+```
+### 2.5 EtherChannel
+- Bundle multiple interfaces into 1 logical trunk (port-channel), configure VLAN/trunk on channel, bring links up, check summary
+```
+// show
+Switch#show etherchannel summary
+
+// config
+// shutdown for safer config
+Switch#interface range GigabitEthernet 0/1-4
+Switch(config-if-range)#shutdown
+
+// add port 0/1-4 to channel 1
+// mode active = use LACP
+Switch(config-if-range)#channel-group 1 mode active
+Switch(config-if-range)# exit
+
+// config port-channel
+Switch(config)# interface port-channel 1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 1,2,20
+
+// up ports
+Switch(config-if)#interface range GigabitEthernet0/1-4
+Switch(config-if-range)#no shutdown
+```
+## 3. Routing Table
 - **Example**
-
-  - [Code, Destination Network, [Admin Distance (the lower the more trustworthy)/Metric (cost value)], Next Hop IP, Time Elapsed, Outgoing interface]
+  - **Legend**: [Code, Destination Network, [Admin Distance (the lower the more trustworthy)/Metric (cost value)], Next Hop IP, Time Elapsed, Outgoing interface]
   - C 192.168.1.0/24 is directly connected, GigabitEthernet0/1
   - D 10.10.10.0/24 [90/30720] via 192.168.1.2, 00:00:12, GigabitEthernet0/1
-
 - **Codes**
   	- C: Direct connection
   	- L: Local Interface
@@ -134,21 +204,3 @@ NYACCESS1#erase startup-config
 	- O: OSPF (Open Shortest Path First) 
 	- D: EIGRP (Enhanced Interior Gateway Routing Protocol)
 	- S: Static (manually configured)
-
-
-- Longest Prefix Match
-- LLDP
-```
-// enable 
-Router#config terminal
-Router(config)# [no] lldp run 			// global
-Router(config-if)# [no] lldp transmit	// on interface
-Router(config-if)# [no] lldp receive	// on interface
-
-// show neighbors
-// lldp - general, cdp - cisco products
-Router#show lldp neighbors
-Switch#show cdp neighbors
-Switch#show cdp neighbors detail
-
-```
