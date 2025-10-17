@@ -32,11 +32,26 @@
 	- [6.2 Routing (L3)](#62-routing-l3)
 		- [6.2.1 VLAN Routing](#621-vlan-routing)
 		- [6.2.2 Dynamic Routing Protocols](#622-dynamic-routing-protocols)
+		- [6.2.3 Network Address Translation (NAT)](#623-network-address-translation-nat)
 	- [6.3 Network Services (L2)](#63-network-services-l2)
-		- [6.3.1 Spanning Tree Protocol (STP)](#631-spanning-tree-protocol-stp)
+		- [6.3.1 Switches](#631-switches)
+		- [6.3.2 Spanning Tree Protocol (STP)](#632-spanning-tree-protocol-stp)
+		- [6.3.3 DHCP: assigns IPs →  clients](#633-dhcp-assigns-ips---clients)
+		- [6.3.4 DNS: resolves domain name → IP](#634-dns-resolves-domain-name--ip)
+		- [6.3.4 Syslog](#634-syslog)
+		- [6.3.5 SNMP (Simple Network Management Protocol)](#635-snmp-simple-network-management-protocol)
+		- [6.3.6 Network Time Protocol (NTP)](#636-network-time-protocol-ntp)
+		- [6.3.7 Infrastructure ACL (iACL)](#637-infrastructure-acl-iacl)
 - [7. Network Security](#7-network-security)
 	- [7.1 Firewall \& IDS/IPS](#71-firewall--idsips)
 	- [7.2 Access Control Lists (ACL) (L3)](#72-access-control-lists-acl-l3)
+	- [7.3 Network Device Security](#73-network-device-security)
+		- [7.3.1 Overview](#731-overview)
+		- [7.3.2 Passwords](#732-passwords)
+		- [7.3.3 Authentication \& Access Control](#733-authentication--access-control)
+		- [7.3.4 Port Security](#734-port-security)
+		- [7.3.5 VLAN Hopping](#735-vlan-hopping)
+		- [7.3.6 ARP Spoofing Attack](#736-arp-spoofing-attack)
 - [8. Network Overview and Performance](#8-network-overview-and-performance)
 	- [8.1 Characteristics of a Network](#81-characteristics-of-a-network)
 	- [8.2 KPIs](#82-kpis)
@@ -236,14 +251,14 @@
 - Loopback: `::1` for testing purposes
 - Unspecified `::` "no address" placeholder
 #### 4.3.6 Headers (40 bytes)
-- Version (4b)
-- Traffic Class (8b)
-- Flow Label (20b)
-- Payload Length (16b)
-- Next Header (8b)
-- Hop Limit (8b)
-- Source Address (128b)
-- Destination Address (128b)
+- **Version (4b)**: 6
+- **Traffic Class (8b)**: QoS priority
+- **Flow Label (20b)**: Packet flow
+- **Payload Length (16b)**: Size of data
+- **Next Header (8b)**: Type of next header
+- **Hop Limit (8b)**: Max hops (TTL)
+- **Source Address (128b)**: Sender
+- **Destination Address (128b)**: Receiver
 #### 4.3.7 Address Allocation
 - Static: manual interface ID
 - Static: EUI-64 interface ID
@@ -286,6 +301,7 @@
 - No data-recovery 
 - Media-independent
 - IPv4 (32 bits), IPv6 (128 bits), OSI
+- [Routing table](./Cisco%20Hands%20On.md#3-routing-table)
 - **Headers**
 	- Version, IHL, **Service Type**, Total Length
 	- ID, Flag, Fragment Offset
@@ -296,7 +312,7 @@
 - **Router**
 	- Path determination
 	- Packet forwarding
-#### 6.2.1 VLAN Routing
+#### 6.2.1 [VLAN Routing](./Cisco%20Hands%20On.md#24-vlan)
 - Separate L2 broadcast domain
 - Security, traffic control, performance
 - Options
@@ -314,6 +330,7 @@
 		- Separate physical interfaces for each VLAN
 		- Best for complex/high-traffic networks
 		- \$$$, requires more physical interfaces
+
 #### 6.2.2 Dynamic Routing Protocols
 - Up-to-date, best available path (Dijkstra)
 - Each router builds a topology map (LSDB - Link-State DB)
@@ -345,11 +362,24 @@
 - **EGP** (Exterior Gateway Protocol, used *between* networks/ISPs)
   - Path-Vector
   - [BGP (border gateway protocol)]
+#### 6.2.3 [Network Address Translation (NAT)](./Cisco%20Hands%20On.md#4-nat-network-address-translation)
+- translate private → public IPs
+- Terminology/Translation Mechanism
+
+	| Source IPv4 | Source IPv4 | Desti IPv4 | Desti IPv4 |
+	| --- | --- | --- | --- |
+	| inside local | inside global | outside global | outside local |
+	| 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1 |
+
+  - **Static NAT**: one-to-one
+    - **Port Forwarding**: external port → specific internal port
+  - **Dynamic NAT**: many-to-many (pool of public IPs)
+  - **PAT**: many-to-one (distinguished by TCP/UDP ports)
+  - **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
+  - **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
+
 ### 6.3 Network Services (L2)
-- **DNS**: resolves domain name → IP
-- **DHCP**: assigns IPs →  clients
-- **NAT**: translate private → public IPs
-- **Switches**
+#### 6.3.1 Switches
 	- Uses MAC to forward frames
 	- Maintains MAC table (dynamic/static)
       	- Determined from source MAC (incoming ARP request, ARP reply)
@@ -359,7 +389,7 @@
 	- **Duplex**
 		- Half (sync, one at a time, walkie-talkie)
 		- Full (async, simultaneous, no collisions)
-#### 6.3.1 Spanning Tree Protocol (STP)
+#### 6.3.2 Spanning Tree Protocol (STP)
 - **Standards**
   - IEEE 802.1D (CST, legacy, only 1 tree for entire network)
   - PVST+ (Cisco fork that provides 1 STP per VLAN)
@@ -369,48 +399,141 @@
     - Roles and States simplified
   - Rapid PVST+ (Cisco fork of RSTP using PVST+)
 - **STP steps**
-  1. Root Bridge (lowest ID = CEO)
+  1. Root Bridge (lowest ID = 'CEO')
   2. Root Port for each non-root switch
-     - Port with cheapest cost, fastest route to CEO
+     - Port with cheapest cost, fastest route to 'CEO'
   3. Designated Port for each segment
      - Port on the Switch with fastest path to Root Bridge
      - All traffic leaves that segment via the DP
      - Repeat for each segment
-     - *"DP = segment's VIP lane to CEO"*
+     - *DP = segment's VIP lane to 'CEO'*
   4. Root ports/Designated ports → Forwarding state, all else → Blocking state
 - **Enhancements**
   - PortFast (immediate transition to forwarding state)
   - BPDU Guard (protects from loop, errdisables a port when BPDU received, used with PortFast)
   - BPDU Filter (BPDU guard but no disable, just ignore)
-  - STP Loop Guard (stops port forwarding if BPDUs vanish)
-  - STP Root Guard (prevent rouge switch from hijacking Root Bridge)
-  - EtherChannel (combines multiple physical links into 1 logical link → redundancy + BW)
+  - **STP Loop Guard** (stops port forwarding if BPDUs vanish)
+  - **STP Root Guard** (prevent rouge switch from hijacking Root Bridge)
+  - [EtherChannel](./Cisco%20Hands%20On.md#25-etherchannel) (combines multiple physical links into 1 logical link → redundancy + BW)
+
+#### 6.3.3 DHCP: assigns IPs →  clients
+
+#### 6.3.4 DNS: resolves domain name → IP
+
+#### 6.3.4 [Syslog](./Cisco%20Hands%20On.md#26-syslog)
+- Configure devices to send syslog messages on privilege mode, forward to:
+  - Logging buffer
+  - Console line
+  - Terminal lines
+  - Syslog server
+- Format
+  - Priority (8b)
+    - Facility (5b)
+    - Severity (3b)
+      - Seen from `%CDP-4-NATIVE_VLAN_MISMATCH: ...`
+      - 0: Emergency
+      - 1: Alert
+      - 2: Critical
+      - 3: Error
+      - 4: Warning
+      - 5: Notification
+      - 6: Informational
+      - 7: Debugging
+  - Header
+    - Timestamp
+    - Hostname
+  - Message
+    - Text
+#### 6.3.5 SNMP (Simple Network Management Protocol)
+- **SNMP Manager**: Polls agents on network
+- **SNMP Agent**: Stores info and responds to manager requests, generates traps
+- **MIB**: DB of objects
+- **Overview**:
+  - M → get-request → A
+  - M → get-next-request → A
+  - M → get-bulk-request → A
+  - M → set-request → A
+  - A → get-response → M
+  - A → trap → M
+  - A → inform → M
+#### 6.3.6 [Network Time Protocol (NTP)](./Cisco%20Hands%20On.md#27-software-clock-ntp)
+- Network Time Protocol (NTP)
+  - Correct time within networks for tracking of events
+  - Clock sync is critical for correct chronoloical table of events, digital certs, auth protocols
+  - Port UDP 123
+  - Stratum (1-15)
+#### 6.3.7 Infrastructure ACL (iACL)
+- **Permits only authorized traffic to infra equipments, as well as permit transit traffic**
+- Protects traffic destined to the network infra equipment to mitigate directed attacks
+- Design depends on protocols used on the network infra equipment
+- Deployed at network ingress points as a first line of defense
+- Deployed elsewhere accordingly
+- Disable unneeded services: [preserve resources, eliminates potential exploits]
+```
+Router#show control-plane host open-ports
+```
 ## 7. Network Security
 ### 7.1 Firewall & IDS/IPS
 - Operate on L3 and L4
 - DPI (Deep Packet Inspection): content-based filtering
-### 7.2 Access Control Lists (ACL) (L3)
+
+### 7.2 [Access Control Lists (ACL) (L3)](./Cisco%20Hands%20On.md#5-acl-access-control-lists)
 - Permit/Deny
-- Wildcard Masking
-  - Inverse subnet mask
+- **Wildcard Masking**
+  - Inverse subnet mask (`0` match, `1` any)
   - ACL permits `192.168.1.0`, wildcard `0.0.0.255`
     - First 3 octets must match, last octet can be anything
   - ACL permits `172.16.16.1`, wildcard `0.0.15.255`
-  
-	| Item |     Range |
-	| --- | --- |
-	| IP |     1010 1100.0001 0000.0001 0000.0000 0001 |
-	| Mask |   0000 0000.0000 0000.0000 1111.1111 1111 |
-	| Result | 1010 1100.0001 0000.0001 XXXX.XXXX XXXX |
-
+	| Item | Range | IP |
+	| --- | --- | --- |
+	| IP |     1010 1100.0001 0000.0001 0000.0000 0001 | `172.16.16.1` |
+	| Mask |   0000 0000.0000 0000.0000 1111.1111 1111 | `0.0.15.255` |
+	| Result | 1010 1100.0001 0000.0001 XXXX.XXXX XXXX | `172.16.16.0` - `172.16.31.255`
   - Allows `172.16.16.X - 172.16.31.X`
   - Permit `host`/`any`
-- Types
+- **Types**: [number, name]
 - Config Standard IPv4
-- Config Extended
-- Verify Modify
-- Applying IPv4 ACLs to Filter Network Traffic
-- 
+  - Earlier rules take precedence, implicit deny all at end
+  - **Format**: `access-list <acl-number> <permit/deny> <source [wildcard]> | host <address>/<name> | any`
+  - **Example**: `access-list 1 permit 172.16.0.0 0.0.255.255`
+- Config Extended IPv4
+  - **Format**: `<sequence-number> <permit/deny> <tcp/icmp/...> <source IPv4 + port> <desti IPv4 + port>`
+- Applying IPv4 ACLs 
+  - **Standard**: near destination (affects only source IP, place later = ok)
+  - **Extended**: near source (more fields, save BW early)
+
+
+### 7.3 Network Device Security
+- [Setting Switch Password](./Cisco%20Hands%20On.md#22-switch-config)
+- [Other Security Related](./Cisco%20Hands%20On.md#29-security-related)
+#### 7.3.1 Overview
+- **Threats**: [remote, local access, physical, environmental, electrical, maintenance]
+- **Causes**: [unauthorized, damage, theft, temperatures, humidity, voltage, improper handling, poor cabling]
+#### 7.3.2 Passwords
+- **Forced entry**: [brute force, guessing, dictionary attacks]
+- **Policy**: [length, symbols; storage, protection, frequent change of password]
+- **Alternatives**: [MFA, digital certs, biometrics]
+#### 7.3.3 Authentication & Access Control
+- **802.1X**: port-based access control
+- **RADIUS**: central auth server for 802.1X
+- **Flow**: device → switch → RADIUS → allow/deny port
+- **Use case**: prevent rogue devices, secure wired/Wi-Fi ports
+#### 7.3.4 [Port Security](./Cisco%20Hands%20On.md#210-port-security)
+- Limit MAC per port
+- Sticky MAC option to learn allowed devices
+- Actions: [shutdown, restrict, protect]
+#### 7.3.5 VLAN Hopping
+- **Attacks**: access traffic across VLANs without routing
+- **Methods**: switch spoofing, double-tagging
+- **Prevention**: [disable DTP](./Cisco%20Hands%20On.md#24-vlan), set access ports, native VLAN unused, prune trunks, port security
+#### 7.3.6 ARP Spoofing Attack
+- Attacker forges an ARP reply to map victim IP to his MAC
+- Becomes MITM and intercepts traffic
+- **Prevention**
+  - DHCP snooping
+  - [Dynamic ARP Inspection (DAI)](./Cisco%20Hands%20On.md#211-dynamic-arp-inspection-dai)
+  - Port-security
+
 ## 8. Network Overview and Performance
 ### 8.1 Characteristics of a Network
 - **Topology**: physical connectivity of devices and logical paths of data flows
@@ -438,7 +561,6 @@
 - **RFC**: Request For Comments (universal SLAs)
 	- Generally HTTP response <= 400ms
 - **Classifications**: [batch, interactive, real-time]
-
 ## 9. Troubleshooting
 - Hardware
 - Software
@@ -454,7 +576,7 @@
 - Document solutions/workaround
 #### Actual Steps
 - Verify the host IPv4 address and subnet mask
-- Ping the loopback address
+- Ping the loopback address 					(IPv4 stack)
 - Ping the IPv4 address of the local machine
 - Ping the default gateway
 - Ping the remote server
