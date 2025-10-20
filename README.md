@@ -1,6 +1,6 @@
 ## Directory
-### [1 - Fundamentals of Networking](./Fundamentals%20of%20Networking.md)
-### [2 - Cisco Hands On](./Cisco%20Hands%20On.md)
+### [1 - Fundamentals of Networking](Fundamentals%20of%20Networking.md)
+### [2 - Cisco Hands On](Cisco%20Hands%20On.md)
 
 ## Disclaimer
 - Notes are not comprehensive nor exhaustive (exhausting perhaps..)

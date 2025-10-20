@@ -6,7 +6,6 @@
 2) Monitor
 3) Troubleshoot
 4) Combination/More MCQ
-
 ### Example Lab Questions
 - Full question
   1. hostname
@@ -20,7 +19,6 @@
 - inter-VLAN routing
 - Troubleshooting
   - E.g., ping something, ping fail, find source of error
-
 ## 2. Online Test
 - Proctors are very strict
 - Physical exam suggested
@@ -28,7 +26,6 @@
     - Camera on
     - Eyes must be downwards
     - Day 1 Cisco trainer's test was terminated because he stretched and yawned lol
-
 ## 3. Self Study
 - Exploring Layer 3 Redundancy
 - Introducing WAN technologies
