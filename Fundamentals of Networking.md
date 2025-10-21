@@ -177,6 +177,12 @@
 ### 4.1 MAC Address (L2)
 - 24 bits vendor ID, 24 bits device
 - Hexadecimal (0-9, A-F)
+#### 4.1.1 Ethernet Frame 
+- Headers
+
+  | Premable | SFD |
+  | —- | —- |
+  | 7 bytes | 1 byte |
 ### 4.2 IPv4 Addressing - 32 bits (L3)
 - 32 bits/4 octets, 8 bits per octet
 - 8 bits = max value 255
