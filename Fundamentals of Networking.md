@@ -15,7 +15,6 @@
 	- [4.2 IPv4 Addressing - 32 bits (L3)](#4.2%20IPv4%20Addressing%20-%2032%20bits%20(L3))
 		- [4.2.1 Subnet Classes](#4.2.1%20Subnet%20Classes)
 		- [4.2.2 Binary Calculation](#4.2.2%20Binary%20Calculation)
-		- [Example](#Example)
 		- [4.2.3 Sub-sub Netting (Variable Length Subnet Masking - VLSM)](#4.2.3%20Sub-sub%20Netting%20(Variable%20Length%20Subnet%20Masking%20-%20VLSM))
 	- [4.3 IPv6 Addressing - 128 bits (L3)](#4.3%20IPv6%20Addressing%20-%20128%20bits%20(L3))
 		- [4.3.1 Link-Local Unicast Addresses](#4.3.1%20Link-Local%20Unicast%20Addresses)
@@ -37,8 +36,8 @@
 	- [6.3 Network Services (L2)](#6.3%20Network%20Services%20(L2))
 		- [6.3.1 Switches](#6.3.1%20Switches)
 		- [6.3.2 Spanning Tree Protocol (STP)](#6.3.2%20Spanning%20Tree%20Protocol%20(STP))
-		- [6.3.3 DHCP: assigns IPs →  clients](#6.3.3%20DHCP:%20assigns%20IPs%20%E2%86%92%20%20clients)
-		- [6.3.4 DNS: resolves domain name → IP](#6.3.4%20DNS:%20resolves%20domain%20name%20%E2%86%92%20IP)
+		- [6.3.3 Dynamic Host Configuration Protocol (DHCP)](#6.3.3%20Dynamic%20Host%20Configuration%20Protocol%20(DHCP))
+		- [6.3.4 Domain Name Service (DNS)](#6.3.4%20Domain%20Name%20Service%20(DNS))
 		- [6.3.4 Syslog](#6.3.4%20Syslog)
 		- [6.3.5 SNMP (Simple Network Management Protocol)](#6.3.5%20SNMP%20(Simple%20Network%20Management%20Protocol))
 		- [6.3.6 Software Clock, NTP](#6.3.6%20Software%20Clock,%20NTP)
@@ -59,8 +58,8 @@
 	- [8.3 Applications](#8.3%20Applications)
 - [9. Troubleshooting](#9.%20Troubleshooting)
 	- [9.1 Recommended](#9.1%20Recommended)
-		- [Steps](#Steps)
-		- [Actual Steps](#Actual%20Steps)
+		- [9.1.1 Steps](#9.1.1%20Steps)
+		- [9.1.2 Actual Steps](#9.1.2%20Actual%20Steps)
 
 ## 1. Components
 - **Endpoints** (devices)
@@ -80,7 +79,7 @@
 - Needs router to communicate across other VLANs
 - Security, performance, management
 - IEEE 802.1Q (VLAN tagging protocol)
-  - [ Dest MAC, Source MAC, **VLAN Tag**, Type/Length , Payload, FCS] 
+  - [ Desti MAC, Source MAC, **VLAN Tag**, Type/Length , Payload, FCS] 
   - 4 byte VLAN Tag in Ethernet frame (L2)
     - **Type**: 16 bits, `0x8100`
     - **Priority**: 3 bits, QoS priority
@@ -179,16 +178,18 @@
 - 6 bytes: 3 bytes Organisationally Unique Identifier (OUI), 3 bytes device
 - Globally unique Hexadecimal (0-9, A-F)
 #### 4.1.1 Ethernet Frame
-- Header (22 bytes)
-  | Premable | Start Frame Delimiter (SFD) | desti | source | length/type |
-  | --- | --- | --- | --- | --- |
-  | 7 bytes | 1 byte | 6 bytes | 6 bytes | 2 bytes
-  | sync receiver clocks | end of preamble | | LENGTH <= 1500 <=  <= 1536 <= TYPE (IPv4/IPv6)
-- Payload (46 bytes)
-  - Padding bytes if needed
-- Trailer (4 bytes)
-  - Frame Check Sequence (FCS)
-    - Detects corrupted data by running Cyclic Redundancy Check (CRC) algorithm
+- **Header (22 bytes)**
+
+| Preamble             | Start Frame Delimiter (SFD) | Desti | Source | Length/Type                                     |
+| -------------------- | --------------------------- | ----- | ------ | ----------------------------------------------- |
+| 7                    | 1                           | 6     | 6      | 2                                               |
+| sync receiver clocks | end of preamble             |       |        | LENGTH <= 1500 <= x <= 1536 <= TYPE (IPv4/IPv6) |
+
+- **Payload (46 bytes)**
+	- Padding bytes if needed
+- **Trailer (4 bytes)**
+	  - Frame Check Sequence (FCS)
+	    - Detects corrupted data by running Cyclic Redundancy Check (CRC) algorithm
 
 ### 4.2 IPv4 Addressing - 32 bits (L3)
 - 32 bits/4 octets, 8 bits per octet
@@ -214,7 +215,8 @@
 | Cum     | 128 | 192 | 224 | 240 | 248 | 252 | 254 | 255 |
 | Binary  | 1   | 0   | 1   | 1   | 1   | 0   | 0   | 1   |
 | Decimal | 128 | 0   | 32  | 16  | 8   | 0   | 0   | 1   |
-#### Example
+Example
+
 | Example           | IP 1             | IP 2           | How                    |
 | ----------------- | ---------------- | -------------- | ---------------------- |
 | IP address        | 192.168.24.19/24 | 10.0.1.15/8    | N.A.                   |
@@ -381,12 +383,11 @@
 - translate private → public IPs
 - Terminology/Translation Mechanism
 
-	| Source IPv4 | Source IPv4 | Desti IPv4 | Desti IPv4 |
-	| --- | --- | --- | --- |
-	| inside local | inside global | outside global | outside local |
-	| 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1 |
-
-  - **Static NAT**: one-to-one
+| Source IPv4   | Source IPv4   | Desti IPv4    | Desti IPv4     |
+| ------------- | ------------- |:------------- | -------------- |
+| inside local  | inside global | outside local | outside global |
+| 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1  |
+- **Static NAT**: one-to-one
     - **Port Forwarding**: external port → specific internal port
   - **Dynamic NAT**: many-to-many (pool of public IPs)
   - **PAT**: many-to-one (distinguished by TCP/UDP ports)
@@ -431,9 +432,11 @@
   - **STP Root Guard** (prevent rouge switch from hijacking Root Bridge)
   - [EtherChannel](Cisco%20Hands%20On.md#2.5%20EtherChannel) (combines multiple physical links into 1 logical link → redundancy + BW)
 
-#### 6.3.3 DHCP: assigns IPs →  clients
+#### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
+- assigns IPs clients
 
-#### 6.3.4 DNS: resolves domain name → IP
+#### 6.3.4 Domain Name Service (DNS)
+- resolves domain name IP
 
 #### 6.3.4 Syslog
 - [CLI](Cisco%20Hands%20On.md#2.6%20Syslog)
@@ -585,7 +588,7 @@ Router#show control-plane host open-ports
 - Software
 - Config
 ### 9.1 Recommended
-#### Steps
+#### 9.1.1 Steps
 - Identify problem
 - Gather information
 - Analyze information
@@ -593,7 +596,7 @@ Router#show control-plane host open-ports
 - Propose hypothesis
 - Test hypothesis
 - Document solutions/workaround
-#### Actual Steps
+#### 9.1.2 Actual Steps
 - Verify the host IPv4 address and subnet mask
 - Ping the loopback address 					(IPv4 stack)
 - Ping the IPv4 address of the local machine
