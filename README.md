@@ -1,3 +1,14 @@
+```table-of-contents
+title: 
+style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
+minLevel: 0 
+maxLevel: 0 
+include: 
+exclude: 
+includeLinks: true
+hideWhenEmpty: false 
+debugInConsole: false 
+```
 ## Directory
 ### [1 - Fundamentals of Networking](Fundamentals%20of%20Networking.md)
 ### [2 - Cisco Hands On](Cisco%20Hands%20On.md)
