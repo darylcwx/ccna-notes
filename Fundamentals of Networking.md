@@ -175,14 +175,20 @@
 - For UDP, best-effort delivery continues without guaranteed retransmission.
 ## 4. Addressing
 ### 4.1 MAC Address (L2)
-- 24 bits vendor ID, 24 bits device
-- Hexadecimal (0-9, A-F)
-#### 4.1.1 Ethernet Frame 
-- Headers
+- 6 bytes: 3 bytes Organisationally Unique Identifier (OUI), 3 bytes device
+- Globally unique Hexadecimal (0-9, A-F)
+#### 4.1.1 Ethernet Frame
+- Header (22 bytes)
+  | Premable | Start Frame Delimiter (SFD) | desti | source | length/type |
+  | --- | --- | --- | --- | --- |
+  | 7 bytes | 1 byte | 6 bytes | 6 bytes | 2 bytes
+  | sync receiver clocks | end of preamble | | LENGTH <= 1500 <=  <= 1536 <= TYPE (IPv4/IPv6)
+- Payload (46 bytes)
+  - Padding bytes if needed
+- Trailer (4 bytes)
+  - Frame Check Sequence (FCS)
+    - Detects corrupted data by running Cyclic Redundancy Check (CRC) algorithm
 
-  | Premable | SFD |
-  | —- | —- |
-  | 7 bytes | 1 byte |
 ### 4.2 IPv4 Addressing - 32 bits (L3)
 - 32 bits/4 octets, 8 bits per octet
 - 8 bits = max value 255
@@ -192,13 +198,13 @@
 - Some are reserved (127.0.0.1)
 - ==Subnet prefix must match class==
 
-| Class | Fixed Bit | Range                         | Subnet        |    
-| ----- | --------- | ----------------------------- | ------------- | 
-| A     | 1         | 10.0.0.0 - 10.255.255.255     | 255.0.0.0     |    
-| B     | 2         | 172.16.0.0 - 172.16.255.255   | 255.255.0.0   |     
-| C     | 3         | 192.168.0.0 - 192.168.255.255 | 255.255.255.0 |     
-| D     | 4         | 224.0.0.0 - 239.255.255.255   | Multicast     |     
-| E     | 5         | 240.0.0.0 - 255.255.255.255   | Reserved      |  
+| Class | Fixed Bit | Range                         | Subnet        |     |
+| ----- | --------- | ----------------------------- | ------------- | --- |
+| A     | 1         | 10.0.0.0 - 10.255.255.255     | 255.0.0.0     |     |
+| B     | 2         | 172.16.0.0 - 172.16.255.255   | 255.255.0.0   |     |
+| C     | 3         | 192.168.0.0 - 192.168.255.255 | 255.255.255.0 |     |
+| D     | 4         | 224.0.0.0 - 239.255.255.255   | Multicast     |     |
+| E     | 5         | 240.0.0.0 - 255.255.255.255   | Reserved      |     |
 #### 4.2.2 Binary Calculation
 
 | Base    | 2^8 | 2^7 | 2^6 | 2^5 | 2^4 | 2^3 | 2^2 | 2^1 |
@@ -389,7 +395,7 @@
 	- Uses MAC to forward frames
 	- Maintains MAC table (dynamic/static)
       	- Determined from source MAC (incoming ARP request, ARP reply)
-	- Use **Flooding** when destination MAC unknown
+	- Use **Flooding** when destination MAC unknown, destination found ? record : ignore
 	- Use **Spanning Tree Protocol** to avoid loops
 	- Implements **ARP** to resolve IP to MAC
 	- **Duplex**
