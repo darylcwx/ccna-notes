@@ -11,6 +11,7 @@
 	- [3.3 Host-to-Host Packet Transfer Process (same LAN)](#3.3%20Host-to-Host%20Packet%20Transfer%20Process%20(same%20LAN))
 - [4. Addressing](#4.%20Addressing)
 	- [4.1 MAC Address (L2)](#4.1%20MAC%20Address%20(L2))
+		- [4.1.1 Ethernet Frame](#4.1.1%20Ethernet%20Frame)
 	- [4.2 IPv4 Addressing - 32 bits (L3)](#4.2%20IPv4%20Addressing%20-%2032%20bits%20(L3))
 		- [4.2.1 Subnet Classes](#4.2.1%20Subnet%20Classes)
 		- [4.2.2 Binary Calculation](#4.2.2%20Binary%20Calculation)
@@ -30,26 +31,26 @@
 - [6. Protocols & Services](#6.%20Protocols%20&%20Services)
 	- [6.1 Transport Layer (L4)](#6.1%20Transport%20Layer%20(L4))
 	- [6.2 Routing (L3)](#6.2%20Routing%20(L3))
-		- [6.2.1 [VLAN Routing](./Cisco%20Hands%20On.md#24-vlan)](#6.2.1%20%5BVLAN%20Routing%5D(./Cisco%2520Hands%2520On.md#24-vlan))
+		- [6.2.1 VLAN](#6.2.1%20VLAN)
 		- [6.2.2 Dynamic Routing Protocols](#6.2.2%20Dynamic%20Routing%20Protocols)
-		- [6.2.3 [Network Address Translation (NAT)](./Cisco%20Hands%20On.md#4-nat-network-address-translation)](#6.2.3%20%5BNetwork%20Address%20Translation%20(NAT)%5D(./Cisco%2520Hands%2520On.md#4-nat-network-address-translation))
+		- [6.2.3 Network Address Translation](#6.2.3%20Network%20Address%20Translation)
 	- [6.3 Network Services (L2)](#6.3%20Network%20Services%20(L2))
 		- [6.3.1 Switches](#6.3.1%20Switches)
 		- [6.3.2 Spanning Tree Protocol (STP)](#6.3.2%20Spanning%20Tree%20Protocol%20(STP))
 		- [6.3.3 DHCP: assigns IPs →  clients](#6.3.3%20DHCP:%20assigns%20IPs%20%E2%86%92%20%20clients)
 		- [6.3.4 DNS: resolves domain name → IP](#6.3.4%20DNS:%20resolves%20domain%20name%20%E2%86%92%20IP)
-		- [6.3.4 [Syslog](./Cisco%20Hands%20On.md#26-syslog)](#6.3.4%20%5BSyslog%5D(./Cisco%2520Hands%2520On.md#26-syslog))
+		- [6.3.4 Syslog](#6.3.4%20Syslog)
 		- [6.3.5 SNMP (Simple Network Management Protocol)](#6.3.5%20SNMP%20(Simple%20Network%20Management%20Protocol))
-		- [6.3.6 [Network Time Protocol (NTP)](./Cisco%20Hands%20On.md#27-software-clock-ntp)](#6.3.6%20%5BNetwork%20Time%20Protocol%20(NTP)%5D(./Cisco%2520Hands%2520On.md#27-software-clock-ntp))
+		- [6.3.6 Software Clock, NTP](#6.3.6%20Software%20Clock,%20NTP)
 		- [6.3.7 Infrastructure ACL (iACL)](#6.3.7%20Infrastructure%20ACL%20(iACL))
 - [7. Network Security](#7.%20Network%20Security)
 	- [7.1 Firewall & IDS/IPS](#7.1%20Firewall%20&%20IDS/IPS)
-	- [7.2 [Access Control Lists (ACL) (L3)](./Cisco%20Hands%20On.md#5-acl-access-control-lists)](#7.2%20%5BAccess%20Control%20Lists%20(ACL)%20(L3)%5D(./Cisco%2520Hands%2520On.md#5-acl-access-control-lists))
+	- [7.2 Access Control Lists (ACL) (L3)](#7.2%20Access%20Control%20Lists%20(ACL)%20(L3))
 	- [7.3 Network Device Security](#7.3%20Network%20Device%20Security)
 		- [7.3.1 Overview](#7.3.1%20Overview)
 		- [7.3.2 Passwords](#7.3.2%20Passwords)
 		- [7.3.3 Authentication & Access Control](#7.3.3%20Authentication%20&%20Access%20Control)
-		- [7.3.4 [Port Security](./Cisco%20Hands%20On.md#210-port-security)](#7.3.4%20%5BPort%20Security%5D(./Cisco%2520Hands%2520On.md#210-port-security))
+		- [7.3.4 Port Security](#7.3.4%20Port%20Security)
 		- [7.3.5 VLAN Hopping](#7.3.5%20VLAN%20Hopping)
 		- [7.3.6 ARP Spoofing Attack](#7.3.6%20ARP%20Spoofing%20Attack)
 - [8. Network Overview and Performance](#8.%20Network%20Overview%20and%20Performance)
@@ -79,7 +80,7 @@
 - Needs router to communicate across other VLANs
 - Security, performance, management
 - IEEE 802.1Q (VLAN tagging protocol)
-  - [ Dest MAC ] [ Source MAC ]**[ VLAN Tag ]**[ Type/Length ] [Payload ][ FCS ] 
+  - [ Dest MAC, Source MAC, **VLAN Tag**, Type/Length , Payload, FCS] 
   - 4 byte VLAN Tag in Ethernet frame (L2)
     - **Type**: 16 bits, `0x8100`
     - **Priority**: 3 bits, QoS priority
@@ -117,7 +118,7 @@
 - **Twisted Pair (ethernet)**
 	- UTP (Unshielded Twisted Pair): 100m
 	- STP (Shielded Twisted Pair)
-		- Reduce inteference
+		- Reduce interference
 	- S/STP: Screened STP
 		- More shields
 	- Categories [CAT5, 5e, 6, 6a, 7, 8]
@@ -313,7 +314,7 @@
 - No data-recovery 
 - Media-independent
 - IPv4 (32 bits), IPv6 (128 bits), OSI
-- [Routing table](./Cisco%20Hands%20On.md#3-routing-table)
+- [Routing table](./Cisco%20Hands%20On.md#3%20routing%20table)
 - **Headers**
 	- Version, IHL, **Service Type**, Total Length
 	- ID, Flag, Fragment Offset
@@ -324,7 +325,8 @@
 - **Router**
 	- Path determination
 	- Packet forwarding
-#### 6.2.1 [VLAN Routing](./Cisco%20Hands%20On.md#24-vlan)
+#### 6.2.1 VLAN
+- [CLI](Cisco%20Hands%20On.md#2.4%20VLAN)
 - Separate L2 broadcast domain
 - Security, traffic control, performance
 - Options
@@ -337,11 +339,11 @@
 	2. Layer 3 Switch (Switch with routing capabilities)
       	- SVI (Switched Virtual Interfaces) configs
       	- Each SVI has a IP address that acts as default gateway
-      	- $$, Faster than RoaS, Scalable
-	3. Separate Dedicated Router
+      	- \$\$, Faster than RoaS, Scalable
+	1. Separate Dedicated Router
 		- Separate physical interfaces for each VLAN
 		- Best for complex/high-traffic networks
-		- \$$$, requires more physical interfaces
+		- \$\$\$, requires more physical interfaces
 
 #### 6.2.2 Dynamic Routing Protocols
 - Up-to-date, best available path (Dijkstra)
@@ -356,7 +358,7 @@
         - **Neighbor Adjacencies**
           - HDLC (High-Level Data Link Control)
             - Physical p2p connection, no DR/BDR needed
-          - Point-to-Point Subinterface
+          - Point-to-Point Sub-interface
             - Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
 		- **Neighbor States**
           - Down [no hello packets, neighbor MIA]
@@ -374,7 +376,8 @@
 - **EGP** (Exterior Gateway Protocol, used *between* networks/ISPs)
   - Path-Vector
   - [BGP (border gateway protocol)]
-#### 6.2.3 [Network Address Translation (NAT)](./Cisco%20Hands%20On.md#4-nat-network-address-translation)
+#### 6.2.3 Network Address Translation
+- [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
 - translate private → public IPs
 - Terminology/Translation Mechanism
 
@@ -426,13 +429,14 @@
   - BPDU Filter (BPDU guard but no disable, just ignore)
   - **STP Loop Guard** (stops port forwarding if BPDUs vanish)
   - **STP Root Guard** (prevent rouge switch from hijacking Root Bridge)
-  - [EtherChannel](./Cisco%20Hands%20On.md#25-etherchannel) (combines multiple physical links into 1 logical link → redundancy + BW)
+  - [EtherChannel](Cisco%20Hands%20On.md#2.5%20EtherChannel) (combines multiple physical links into 1 logical link → redundancy + BW)
 
 #### 6.3.3 DHCP: assigns IPs →  clients
 
 #### 6.3.4 DNS: resolves domain name → IP
 
-#### 6.3.4 [Syslog](./Cisco%20Hands%20On.md#26-syslog)
+#### 6.3.4 Syslog
+- [CLI](Cisco%20Hands%20On.md#2.6%20Syslog)
 - Configure devices to send syslog messages on privilege mode, forward to:
   - Logging buffer
   - Console line
@@ -468,10 +472,11 @@
   - A → get-response → M
   - A → trap → M
   - A → inform → M
-#### 6.3.6 [Network Time Protocol (NTP)](./Cisco%20Hands%20On.md#27-software-clock-ntp)
+#### 6.3.6 Software Clock, NTP
+- [CLI](Cisco%20Hands%20On.md#2.7%20Software%20Clock,%20NTP)
 - Network Time Protocol (NTP)
   - Correct time within networks for tracking of events
-  - Clock sync is critical for correct chronoloical table of events, digital certs, auth protocols
+  - Clock sync is critical for correct chronological table of events, digital certs, auth protocols
   - Port UDP 123
   - Stratum (1-15)
 #### 6.3.7 Infrastructure ACL (iACL)
@@ -489,7 +494,8 @@ Router#show control-plane host open-ports
 - Operate on L3 and L4
 - DPI (Deep Packet Inspection): content-based filtering
 
-### 7.2 [Access Control Lists (ACL) (L3)](./Cisco%20Hands%20On.md#5-acl-access-control-lists)
+### 7.2 Access Control Lists (ACL) (L3)
+- [CLI](Cisco%20Hands%20On.md#5.%20ACL%20(Access%20Control%20Lists))
 - Permit/Deny
 - **Wildcard Masking**
   - Inverse subnet mask (`0` match, `1` any)
@@ -516,8 +522,8 @@ Router#show control-plane host open-ports
 
 
 ### 7.3 Network Device Security
-- [Setting Switch Password](./Cisco%20Hands%20On.md#22-switch-config)
-- [Other Security Related](./Cisco%20Hands%20On.md#29-security-related)
+- [Setting Switch Password](Cisco%20Hands%20On.md#2.2%20Switch%20Config)
+- [Security Related](Cisco%20Hands%20On.md#2.9%20Security%20Related)
 #### 7.3.1 Overview
 - **Threats**: [remote, local access, physical, environmental, electrical, maintenance]
 - **Causes**: [unauthorized, damage, theft, temperatures, humidity, voltage, improper handling, poor cabling]
@@ -530,21 +536,22 @@ Router#show control-plane host open-ports
 - **RADIUS**: central auth server for 802.1X
 - **Flow**: device → switch → RADIUS → allow/deny port
 - **Use case**: prevent rogue devices, secure wired/Wi-Fi ports
-#### 7.3.4 [Port Security](./Cisco%20Hands%20On.md#210-port-security)
+#### 7.3.4 Port Security
+- [CLI](Cisco%20Hands%20On.md#2.10%20Port%20Security)
 - Limit MAC per port
 - Sticky MAC option to learn allowed devices
 - Actions: [shutdown, restrict, protect]
 #### 7.3.5 VLAN Hopping
 - **Attacks**: access traffic across VLANs without routing
 - **Methods**: switch spoofing, double-tagging
-- **Prevention**: [disable DTP](./Cisco%20Hands%20On.md#24-vlan), set access ports, native VLAN unused, prune trunks, port security
+- **Prevention**: [disable DTP](Cisco%20Hands%20On.md#2.4%20VLAN), set access ports, native VLAN unused, prune trunks, port security
 #### 7.3.6 ARP Spoofing Attack
 - Attacker forges an ARP reply to map victim IP to his MAC
 - Becomes MITM and intercepts traffic
 - **Prevention**
   - DHCP snooping
-  - [Dynamic ARP Inspection (DAI)](./Cisco%20Hands%20On.md#211-dynamic-arp-inspection-dai)
-  - Port-security
+  - [Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#2.11%20Dynamic%20ARP%20Inspection%20(DAI))
+  - [Port Security](Fundamentals%20of%20Networking.md#7.3.4%20Port%20Security)
 
 ## 8. Network Overview and Performance
 ### 8.1 Characteristics of a Network
