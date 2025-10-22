@@ -1,20 +1,14 @@
-- [1. Products](#1.%20Products)
-- [2. Cisco CLI](#2.%20Cisco%20CLI)
-	- [2.1 Router Config](#2.1%20Router%20Config)
-	- [2.2 Switch Config](#2.2%20Switch%20Config)
-	- [2.3 Test configs](#2.3%20Test%20configs)
-	- [2.4 VLAN](#2.4%20VLAN)
-	- [2.5 EtherChannel](#2.5%20EtherChannel)
-	- [2.6 Syslog](#2.6%20Syslog)
-	- [2.7 Software Clock, NTP](#2.7%20Software%20Clock,%20NTP)
-	- [2.8 Router Power-On Sequence](#2.8%20Router%20Power-On%20Sequence)
-	- [2.9 Security Related](#2.9%20Security%20Related)
-	- [2.10 Port Security](#2.10%20Port%20Security)
-	- [2.11 Dynamic ARP Inspection (DAI)](#2.11%20Dynamic%20ARP%20Inspection%20(DAI))
-- [3. Routing Table](#3.%20Routing%20Table)
-- [4. NAT (Network Address Translation)](#4.%20NAT%20(Network%20Address%20Translation))
-- [5. ACL (Access Control Lists)](#5.%20ACL%20(Access%20Control%20Lists))
-
+```table-of-contents
+title: 
+style: nestedList
+minLevel: 0 
+maxLevel: 0 
+include: 
+exclude: 
+includeLinks: true
+hideWhenEmpty: false 
+debugInConsole: false 
+```
 ## 1. Products
 - NX-OS
 	- Nexus Validation Training (NVT)

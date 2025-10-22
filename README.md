@@ -1,6 +1,6 @@
 ```table-of-contents
 title: 
-style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
+style: nestedList
 minLevel: 0 
 maxLevel: 0 
 include: 
