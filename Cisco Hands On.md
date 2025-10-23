@@ -40,6 +40,7 @@ Router#show lldp neighbors 		   			  (general)
 Router#show running-config
 Router#show startup-config
 Router#show interfaces [interface-id]
+Router#show interfaces description
 Router#show ip protocols
 Router#show ip interface brief
 Router#show ip route
