@@ -68,6 +68,13 @@ debugInConsole: false
 	- S/STP: Screened STP
 		- More shields
 	- Categories [CAT5, 5e, 6, 6a, 7, 8]
+	- **Pins**:
+		- FastEthernet: Tx - pins 1, 2, Rx - 3, 6
+		- GigabitEthernet: all 4 pairs used (1-8)
+	- **Cable types:**
+		- Straight-through: host ↔ switch
+	
+		- Crossover: switch ↔ switch / host ↔ host
 - **Optical Fiber**
 	- [core, cladding, buffer]
 	- [9, 125, 250] µm
@@ -76,6 +83,18 @@ debugInConsole: false
 		- Single-mode: [laser, high BW, 40+km, $$$]
 - **Coaxial Cable**
 	- Copper core, Legacy use
+#### 3.1.1 Ethernet Media Table
+| Media Type    | Max Speed   | Cabling / Fiber       | Max Distance | Pairs Used | Notes                 |
+| ------------- | ----------- | --------------------- | ------------ | ---------- | --------------------- |
+| 10BASE-T      | 10 Mbps     | UTP Cat3/Cat5         | 100 m        | 2          | Twisted pair, RJ45    |
+| 100BASE-TX    | 100 Mbps    | UTP Cat5              | 100 m        | 2          | 2 pairs used          |
+| 1000BASE-T    | 1 Gbps      | UTP Cat5e/6           | 100 m        | 4          | 4 pairs used          |
+| 10GBASE-T     | 10 Gbps     | UTP Cat6a/7           | 100 m        | 4          | 4 pairs, RJ45         |
+| 1000BASE-SX   | 1 Gbps      | Multimode fiber       | 550 m        | N/A        | Short wavelength, MMF |
+| 1000BASE-LX   | 1 Gbps      | Single-mode fiber     | 10 km        | N/A        | Long wavelength, SMF  |
+| 10GBASE-SR    | 10 Gbps     | Multimode fiber       | 300 m        | N/A        | Short wavelength      |
+| 10GBASE-LR    | 10 Gbps     | Single-mode fiber     | 10 km        | N/A        | Long wavelength       |
+| 40G/100G QSFP | 40/100 Gbps | Multimode/Single-mode | Varies       | N/A        | Data center/backbone  |
 ### 3.2 Communication Types
 - **Unicast**: one-to-one (flooding)
 - **Broadcast**: one-to-all (ARP)
@@ -120,40 +139,58 @@ debugInConsole: false
 11. Higher layer protocols handle communication:
 - For TCP, acknowledgments and retransmissions handle reliability.
 - For UDP, best-effort delivery continues without guaranteed retransmission.
-## 4. Addressing
+### 3.4 Address Resolution Protocol (ARP)
+![](attachments/Fundamentals%20of%20Networking/IMG-20251022165531530.png)
+1. A → B (knows IP only)
+2. **Check ARP cache:** known ? send : send L2 broadcast frame (ff:ff:ff:ff:ff:ff)
+3. **SW1:** receives broadcast,  cache A's MAC →  floods broadcast
+4. **SW2:** receives broadcast, cache A's MAC → floods broadcast
+5. **B:** receives ARP request → IP match? yes → send unicast ARP reply
+6. **SW2:** receives ARP reply → cache B's MAC → have A's MAC, forward via port to SW1
+7. **SW1**: receives ARP reply → cache B's MAC → forward to A's port
+8. **A:** receives ARP reply → cache B's MAC → send actual Ethernet frame
+9. **SW1**: forward frame based on MAC table
+10. **SW2:** forward frame based on MAC table
+11. **B**: receive frame → process packet
+## 4. Addressing (L3/L2)
 ### 4.1 MAC Address (L2)
-- 6 bytes: 3 bytes Organisationally Unique Identifier (OUI), 3 bytes device
+- 6 bytes: 3 bytes Organizationally Unique Identifier (OUI), 3 bytes device
 - Globally unique Hexadecimal (0-9, A-F)
-#### 4.1.1 Ethernet Frame
-- **Header (22 bytes)**
+#### 4.1.1 Ethernet Frame (64 bytes)
+- **Header (14 bytes)**
 
-| Preamble             | Start Frame Delimiter (SFD) | Desti | Source | Length/Type                                     |
-| -------------------- | --------------------------- | ----- | ------ | ----------------------------------------------- |
-| 7                    | 1                           | 6     | 6      | 2                                               |
-| sync receiver clocks | end of preamble             |       |        | LENGTH <= 1500 <= x <= 1536 <= TYPE (IPv4/IPv6) |
-
+| Desti   | Source  | Length/Type                                     |
+| ------- | ------- | ----------------------------------------------- |
+| 6 bytes | 6 bytes | 2 bytes                                         |
+|         |         | LENGTH <= 1500 <= x <= 1536 <= TYPE (IPv4/IPv6) |
 - **Payload (46 bytes)**
 	- Padding bytes if needed
 - **Trailer (4 bytes)**
 	  - Frame Check Sequence (FCS)
 	    - Detects corrupted data by running Cyclic Redundancy Check (CRC) algorithm
 
+**Not actually part of Ethernet Frame**
+
+| Preamble             | Start Frame Delimiter (SFD) |
+| -------------------- | --------------------------- |
+| 7 bytes              | 1 bytes                     |
+| sync receiver clocks | end of preamble             |
 ### 4.2 IPv4 Addressing - 32 bits (L3)
 - 32 bits/4 octets, 8 bits per octet
 - 8 bits = max value 255
 - Need configure IPsec
 #### 4.2.1 Subnet Classes
-- A B C, easy as 1 2 3
+- `A B C, easy as 1 2 3` (Class A = 0XXX, Class B = 10XX, Class C = 110XX)
 - Some are reserved (127.0.0.1)
 - ==Subnet prefix must match class==
 
-| Class | Fixed Bit | Range                         | Subnet        |     |
-| ----- | --------- | ----------------------------- | ------------- | --- |
-| A     | 1         | 10.0.0.0 - 10.255.255.255     | 255.0.0.0     |     |
-| B     | 2         | 172.16.0.0 - 172.16.255.255   | 255.255.0.0   |     |
-| C     | 3         | 192.168.0.0 - 192.168.255.255 | 255.255.255.0 |     |
-| D     | 4         | 224.0.0.0 - 239.255.255.255   | Multicast     |     |
-| E     | 5         | 240.0.0.0 - 255.255.255.255   | Reserved      |     |
+| Class | First Octet Range | Prefix Length | Leading Bits | Default Mask    | Purpose / Notes                   |
+| ----- | ----------------- | ------------- | ------------ | --------------- | --------------------------------- |
+| A     | 1 – 126           | /8            | 0            | `255.0.0.0`     | Large networks (127 for loopback) |
+| B     | 128 – 191         | /16           | 10           | `255.255.0.0`   | Medium networks                   |
+| C     | 192 – 223         | /24           | 110          | `255.255.255.0` | Small networks                    |
+| D     | 224 – 239         |               | 1110         | N/A             | Multicast                         |
+| E     | 240 – 255         |               | 1111         | N/A             | Experimental / Reserved           |
 #### 4.2.2 Binary Calculation
 
 | Base    | 2^8 | 2^7 | 2^6 | 2^5 | 2^4 | 2^3 | 2^2 | 2^1 |
@@ -162,16 +199,15 @@ debugInConsole: false
 | Cum     | 128 | 192 | 224 | 240 | 248 | 252 | 254 | 255 |
 | Binary  | 1   | 0   | 1   | 1   | 1   | 0   | 0   | 1   |
 | Decimal | 128 | 0   | 32  | 16  | 8   | 0   | 0   | 1   |
-Example
 
-| Example           | IP 1             | IP 2           | How                    |
-| ----------------- | ---------------- | -------------- | ---------------------- |
-| IP address        | 192.168.24.19/24 | 10.0.1.15/8    | N.A.                   |
-| Subnet mask       | 255.255.255.0    | 255.0.0.0      | bits taken for network |
-| Network address   | 192.168.24.0     | 10.0.0.0       | smallest               |
-| Broadcast address | 192.168.24.255   | 10.255.255.255 | largest                |
-| Host addresses    | 192.168.24.19    | 10.0.1.15      | same                   |
-| Default gateway   | 192.168.24.1     | 10.0.0.1       | first usable           |
+| Example           | IP 1               | IP 2             | How                    |
+| ----------------- | ------------------ | ---------------- | ---------------------- |
+| IP address        | `192.168.24.19/24` | `10.0.1.15/8`    | N.A.                   |
+| Subnet mask       | `255.255.255.0`    | `255.0.0.0`      | bits taken for network |
+| Network address   | `192.168.24.0`     | `10.0.0.0`       | smallest, host all `0` |
+| Broadcast address | `192.168.24.255`   | `10.255.255.255` | largest, host all `1`  |
+| Host addresses    | `192.168.24.19`    | `10.0.1.15`      | same                   |
+| Default gateway   | `192.168.24.1`     | `10.0.0.1`       | first usable           |
 #### 4.2.3 Sub-sub Netting (Variable Length Subnet Masking - VLSM)   
 - Network: 192.168.10.0/26
 - Subnet Mask: 255.255.255.192
@@ -183,13 +219,13 @@ Example
 - Sub-subnet based on requirements
 	- e.g. 1, "support >= 6 IPs per block", use /29, since 8 IPs per block
 	- e.g. 2,
-  
-	| Subnet (/26)       | Network   | Usable   | Broadcast |
-	| ------------------ | --------- | ----- | ------ |
-	| 1 | 192.168.10.0   | .1-62    | .63  |
-	| 2 | 192.168.10.64  | .65-126  | .127 |
-	| 3 | 192.168.10.128 | .129-190 | .191 |
-	| 4 | 192.168.10.192 | .193-254 | .255 |
+
+| Subnet (/26) | Network          | Usable   | Broadcast |
+| ------------ | ---------------- | -------- | --------- |
+| 1            | `192.168.10.0`   | .1-62    | .63       |
+| 2            | `192.168.10.64`  | .65-126  | .127      |
+| 3            | `192.168.10.128` | .129-190 | .191      |
+| 4            | `192.168.10.192` | .193-254 | .255      |
 ### 4.3 IPv6 Addressing - 128 bits (L3)
 - Larger address space
 - Simpler header
@@ -274,7 +310,7 @@ Example
 - **Router**
 	- Path determination
 	- Packet forwarding
-#### 6.2.1 VLAN
+#### 6.2.1 VLAN Routing (L3)
 - [CLI](Cisco%20Hands%20On.md#2.4%20VLAN)
 - Separate L2 broadcast domain
 - Security, traffic control, performance
@@ -340,8 +376,17 @@ Example
   - **PAT**: many-to-one (distinguished by TCP/UDP ports)
   - **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
   - **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
-
-### 6.3 Network Services (L2)
+#### 6.2.4 Infrastructure ACL (iACL)
+- **Permits only authorized traffic to infra equipments, as well as permit transit traffic**
+- Protects traffic destined to the network infra equipment to mitigate directed attacks
+- Design depends on protocols used on the network infra equipment
+- Deployed at network ingress points as a first line of defense
+- Deployed elsewhere accordingly
+- Disable unneeded services: [preserve resources, eliminates potential exploits]
+```
+Router#show control-plane host open-ports
+```
+### 6.3 Network Services
 #### 6.3.1 Switches
 	- Uses MAC to forward frames
 	- Maintains MAC table (dynamic/static)
@@ -385,7 +430,7 @@ Example
 #### 6.3.4 Domain Name Service (DNS)
 - resolves domain name IP
 
-#### 6.3.4 Syslog
+#### 6.3.5 Syslog
 - [CLI](Cisco%20Hands%20On.md#2.6%20Syslog)
 - Configure devices to send syslog messages on privilege mode, forward to:
   - Logging buffer
@@ -410,7 +455,7 @@ Example
     - Hostname
   - Message
     - Text
-#### 6.3.5 SNMP (Simple Network Management Protocol)
+#### 6.3.6 Simple Network Management Protocol (SNMP)
 - **SNMP Manager**: Polls agents on network
 - **SNMP Agent**: Stores info and responds to manager requests, generates traps
 - **MIB**: DB of objects
@@ -422,23 +467,13 @@ Example
   - A → get-response → M
   - A → trap → M
   - A → inform → M
-#### 6.3.6 Software Clock, NTP
+#### 6.3.7 Software Clock, Network Time Protocol (NTP)
 - [CLI](Cisco%20Hands%20On.md#2.7%20Software%20Clock,%20NTP)
-- Network Time Protocol (NTP)
-  - Correct time within networks for tracking of events
-  - Clock sync is critical for correct chronological table of events, digital certs, auth protocols
-  - Port UDP 123
-  - Stratum (1-15)
-#### 6.3.7 Infrastructure ACL (iACL)
-- **Permits only authorized traffic to infra equipments, as well as permit transit traffic**
-- Protects traffic destined to the network infra equipment to mitigate directed attacks
-- Design depends on protocols used on the network infra equipment
-- Deployed at network ingress points as a first line of defense
-- Deployed elsewhere accordingly
-- Disable unneeded services: [preserve resources, eliminates potential exploits]
-```
-Router#show control-plane host open-ports
-```
+- Correct time within networks for tracking of events
+- Clock sync is critical for correct chronological table of events, digital certs, auth protocols
+- Port UDP 123
+- Stratum (1-15)
+
 ## 7. Network Security
 ### 7.1 Firewall & IDS/IPS
 - Operate on L3 and L4
@@ -469,8 +504,6 @@ Router#show control-plane host open-ports
 - Applying IPv4 ACLs 
   - **Standard**: near destination (affects only source IP, place later = ok)
   - **Extended**: near source (more fields, save BW early)
-
-
 ### 7.3 Network Device Security
 - [Setting Switch Password](Cisco%20Hands%20On.md#2.2%20Switch%20Config)
 - [Security Related](Cisco%20Hands%20On.md#2.9%20Security%20Related)

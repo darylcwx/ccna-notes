@@ -97,11 +97,11 @@ Switch(config)#hostname <new switch host name>
 // setting password (1): plaintext, (2) secure by default (MD5 hashed)
 Switch#conf t
 Switch(config)#enable password <password>
-Switch(config)#service password-encryption
+Switch(config)#service password-encryption // type 7 encryption
 Switch(config)#exit
 Switch#show running-config | include enable	// filters for "enable" in running-config
 // OR //
-Switch(config)#enable secret <password>
+Switch(config)#enable secret <password> // type 5 encryption (MD5)
 
 // setting username and password
 Switch#conf t
