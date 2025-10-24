@@ -9,7 +9,9 @@ includeLinks: true
 hideWhenEmpty: false 
 debugInConsole: false 
 ```
+
 ## 1. Products
+
 - NX-OS
 	- Nexus Validation Training (NVT)
 		- Comprehensive end-to-end systems test
@@ -18,135 +20,77 @@ debugInConsole: false
 - Switches
 	- Nexus 4000 - 9000
 	- ACI (Application Centric Infrastructure)
-## 2. Cisco CLI
+
+## 2. General CLI
+
 - user exec mode (>)
 - privileged exec mode (#)
-### 2.1 Router Config
-```
-// start
-Router>enable 
-Router#configure terminal
-Router(config)#hostname <new router host name>
-Router(config)#
-Router(config)#exit
-Router#
 
-// show
-Router#show version
-Router#show protocols
-Router#show arp
-Router#show cdp neighbors <detail (for IPv4)> (cisco)
-Router#show lldp neighbors 		   			  (general)
-Router#show running-config
-Router#show startup-config
-Router#show interfaces [interface-id]
-Router#show interfaces description
-Router#show ip protocols
-Router#show ip interface brief
-Router#show ip route
-Router#show ipv6 interface brief
-Router#show ipv6 route
-Router#show ipv6 neighbors
+## 3. Switch Config
 
-// config interface
-// in config-if mode, add "do" to execute "show" commands 
-// e.g. Router(config-if)#do sh ipv6 interface brief
+### 3.1 Basic
 
-// hide from lldp neighbor discovery
-Router(config-if)# [no] lldp run
-Router(config-if)# [no] lldp transmit (hide from others in LLDP table)
-Router(config-if)# [no] lldp receive  (don't see others in LLDP table)
+- By default
+	- **NO** `shutdown` command applied
+	- in `up/up` state if connected : `down/down` state if not connected
 
-Router(config)#interface gigabitEthernet 0/0
-
-- Router(config-if)#ip address <ipv4> <subnet-mask>
-OR
-- Router(config-if)#ipv6 address <ipv6>/<prefix>
-OR
-- Router(config-if)#ipv6 address autoconfig
-
-Router(config-if)#no shutdown
-```
-```
-// generate RSA key
-crypto key generate rsa
-2048
-
-// enable SSH
-Router(config)#ip ssh version 2
-Router(config)#exit
-Router#show ip ssh
-
-// set vty lines for SSH transport
-Router#configure terminal
-Router(config)#line vty 0 4
-Router(config-line)#transport input ssh
-Router(config-line)#login local
-Router(config-line)#exit
-
-// configure local account
-Router(config)#username Joe privilege 15 secret CISCO
-Router(config)#
-```
-### 2.2 Switch Config
 ```
 // start
 Switch#conf t
 Switch(config)#hostname <new switch host name>
 ```
+
 ```
 // setting password (1): plaintext, (2) secure by default (MD5 hashed)
 Switch#conf t
 Switch(config)#enable password <password>
-Switch(config)#service password-encryption // type 7 encryption
+Switch(config)#service password-encryption       // type 7 encryption
 Switch(config)#exit
-Switch#show running-config | include enable	// filters for "enable" in running-config
-// OR //
-Switch(config)#enable secret <password> // type 5 encryption (MD5)
+Switch#show running-config | include enable	     // filters run-conf for "enable"
+// == OR ==//
+Switch(config)#enable secret <password>          // type 5 encryption (MD5)
 
 // setting username and password
 Switch#conf t
 Switch(config)#username <username> <password/secret> <password>
 Switch(config)#line console 0
-Switch(config-line)#login local
+Switch(config-line)#login local                  // use local login
 Switch(config-line)#end
-Switch#show running-config | include username
+Switch#show running-config | include username    // filters run-conf for "username"
 username <username> <password/secret> <password>
 Switch#show running-config partition line
-...
 
 // example login
 Switch#disable
 Switch>enable
 Password: <password>
 ```
+
+```
+// disabling multiple interfaces
+Switch(config)#int range f0/5 - 6, f0/9 - 12
+Switch(config-if-range)#description ## not in use ##
+Switch(config-if-range)#shutdown
+```
+
 ```
 // show
-Switch#show mac address-table
-Switch#show spanning-tree
-Switch#show interface status
-Switch#show controllers
-Switch#show running-config
-Switch#show startup-config
+Switch#show mac address-table            // MAC table entries
+Switch#show spanning-tree               // STP state, root bridge info
+Switch#show interface status            // port status, VLAN, duplex, speed, type
+Switch#show controllers                 // hardware stats (PHY, errors)
+Switch#show running-config              // active config
+Switch#show startup-config              // saved config
 
 // make configs persistent
-Switch#copy running-config startup-config // `copy run start` works too
+Switch#copy running-config startup-config      // `copy run start` works too
 
 // wipe configs
 Switch#erase startup-config
 ```
-### 2.3 Test configs
-```
-ping <ipv4/ipv6> [source <interface>]	(packet loss)
-telnet <ipv4/ipv6> [port]				(port check, clear text)
-tracert <ipv4>							(hop path windows)
-traceroute <ipv4>						(hop path mac/linux)
-traceroute ipv6 <ipv6>					(IPv6 hop path)
-ssh user@<ipv4/ipv6>					
-arp -a
-netstat									(active ports/connections)
-```
-### 2.4 VLAN
+
+### 3.2 VLAN
+
 ```
 // show
 Switch#show vlan brief
@@ -161,6 +105,7 @@ Switch(config)#vlan <number> (number: standard 1-1005, extended 1006-4094)
 Switch(config-vlan)#name <name>
 Switch(config)#interface <interface>
 ```
+
 ```
 // access 
 // belongs to 1 VLAN, used for end devices
@@ -169,6 +114,7 @@ Switch(config-if)#switchport mode access
 OR 
 - Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
 ```
+
 ```
 // trunk
 // carries traffic for multiple VLANs
@@ -180,14 +126,18 @@ Switch(config-if)#switchport trunk native vlan 99 (untagged VLANs)
 Switch(config-if)#switchport trunk allowed vlan 10,20,30,99
 Switch(config-if)#
 ```
+
 ```
 // verify
 // "dynamic desirable" = auto mode, "switchport" = static access
 Switch#show interfaces <interface> switchport
 Switch#show interfaces trunk
 ```
-### 2.5 EtherChannel
+
+### 3.3 EtherChannel
+
 - Bundle multiple interfaces into 1 logical trunk (port-channel), configure VLAN/trunk on channel, bring links up, check summary
+
 ```
 // show
 Switch#show etherchannel summary
@@ -211,94 +161,31 @@ Switch(config-if)#switchport trunk allowed vlan 1,2,20
 Switch(config-if)#interface range GigabitEthernet0/1-4
 Switch(config-if-range)#no shutdown
 ```
-### 2.6 Syslog
-```
-// send syslog to Loopback0
-Router(config)#logging host <IPv4>
-Router(config)#logging trap informational
-Router(config)#logging source-interface Loopback0
-```
-### 2.7 Software Clock, NTP
-```
-Router#show clock
-Router#show clock detail
-Router#clock set 18:00:00 17 Oct 2025
 
-// sync NTP
-Central(config)#ntp master 2
-Branch(config)#ntp server 209.165.201.1
-SW1(config)#ntp server 10.1.1.1
 ```
-### 2.8 Router Power-On Sequence
-- On boot,
-  
-	| Component | Function | Description |
-	| --- | --- | --- |
-	| ROM | POST | Perform POST |
-	| ROM | Bootstrap | Load Bootstrap |
-	| Flash, TFTP server | Cisco IOS | Load OS |
-	| NVRAM, TFTP server, Console | Config | Load config file or enter setup mode |
-```
-Router#show file systems
+// generate RSA key
+crypto key generate rsa
+2048
 
-// this means still in "bios"
-rommon>
+// enable SSH
+Router(config)#ip ssh version 2
+Router(config)#exit
+Router#show ip ssh
 
-// manual boot
-Branch(config)#boot system flash:/c2900....bin // from flash
-Branch(config)#boot system tftp://c2900....bin // from TFTP server
-Branch(config)#boot system rom
-```
-- Validates IOS Images via MD5 checksum
-- Store and manage IOS images and configs on a central TFTP server
-- Secure Copy Protocol (SCP) for secure file transfer
-```
-// save config to a TFTP server
-Branch#copy running-config tftp:
-Address...? 172.16.1.100
-Desti filename..? config.cfg
-[copied in X secs]
+// set vty lines for SSH transport
+Router#configure terminal
+Router(config)#line vty 0 4
+Router(config-line)#transport input ssh
+Router(config-line)#login local
+Router(config-line)#exit
 
-// merge config file from TFTP
-Branch#copy tftp: running-config
-Address...? x
-Source filename? config.cfg
-...
+// configure local account
+Router(config)#username Joe privilege 15 secret CISCO
+Router(config)#
 ```
-### 2.9 Security Related
-```
-// logout on timeout
-Switch#conf f
-Switch(config)#line console 0 
-Switch(config-line)#exec-timeout 5
-```
-```
-// securing remote access - virtual terminal password config
-Switch(config)#line vty 0 15
-Switch(config-line)#login
-Switch(config-line)#password <password>
-```
-```
-// SSH config
-Switch (config)#hostname Switch
-Switch(config)#ip domain-name cisco.com
-Switch(config)#username <username> secret <secret>
-Switch(config)#crypto key generate rsa modulus 2048
-...
-*Dec 25 13:37:42.000 %SSH-5-ENABLED: SSH 1.99 has been enabled
-...
-Switch(config)#line vty 0 15
-Switch(config-line)#login local
-Switch(config-line)#transport input ssh
-Switch(config-line)#exit
-Switch(config)#ip ssh version 2
-```
-```
-// login banner
-Switch(config)#banner login "Please enter uName and pWord."
-// a user trying to connect will see the above message
-```
-### 2.10 Port Security
+
+### 3.4 Port Security
+
 - Change the switchport mode from auto to either
 access or trunk
 - Set the max number of secure MACs
@@ -306,6 +193,7 @@ access or trunk
 - Set the violation mode (optional): [protect, restrict, shutdown (default)]
 - Set aging parameters (optional): [aging time, aging type {absolute (default) | inactivity}]
 - Enable port security
+
 ```
 Switch(config)# interface g0/8
 Switch(config-if)# switchport mode access
@@ -318,37 +206,106 @@ Switch(config-if)# switchport port-security aging time 120
 // show
 Switch#show port-security
 Switch#show port-security inerface GigabitEthernet0/8
-// port-status secure-down == violation
 
-// 
+// port-status secure-down == violation
 Switch#no switchport port-security mac-address sticky
 ```
-### 2.11 Dynamic ARP Inspection (DAI)
-```
-//enable DAI on VLAN
-ip arp inspection <vlan-id>
 
-// enable DAI on an interface
-ip arp inspection trust
+### 3.5 Dynamic ARP Inspection (DAI)
+
+- Layer 2 security feature to prevent ARP spoofing by validating ARP packets against DHCP snooping table
+
 ```
-## 3. Routing Table
-- **Example**
+Switch(config)#ip arp inspection <vlan-id>     // enable DAI on VLAN
+
+Switch(config-if)#ip arp inspection trust      // enable DAI on an interface
+```
+
+### 3.6 Syslog
+
+```
+// send syslog to Loopback0
+
+Router(config)#logging host <IPv4>
+
+Router(config)#logging trap informational
+
+Router(config)#logging source-interface Loopback0
+```
+
+## 4. Router Config
+
+### 4.1 Basic
+
+- By default
+	- `shutdown` command applied
+	- in `administratively down/down` state
+```
+// start
+Router>enable 
+Router#configure terminal
+Router(config)#hostname <new router host name>
+Router(config)#
+Router(config)#exit
+Router#
+
+// show
+Router#show version                 // OS version, uptime, model, serial, etc
+Router#show protocols               // Routing protocols & active interfaces
+Router#show arp                     // ARP table: IP ↔ MAC mappings
+Router#show cdp neighbors detail    // Cisco Discovery info (device ID, IP, intf)
+Router#show lldp neighbors          // LLDP neighbor info (vendor-neutral)
+Router#show running-config          // Current active config in RAM
+Router#show startup-config          // Saved config in NVRAM
+Router#show interfaces [intf-id]    // Detailed stats: bandwidth, errors, duplex
+Router#show interfaces description  // Interface names + brief status
+Router#show ip protocols            // Shows routing protocol parameters
+Router#show ip interface brief      // Quick IP + interface status summary
+Router#show ip route                // IPv4 routing table
+Router#show ipv6 interface brief    // IPv6 interface summary
+Router#show ipv6 route              // IPv6 routing table
+Router#show ipv6 neighbors          // IPv6 neighbor (ND) table
+
+// config interface
+// in config-if mode, add "do" to execute "show" commands 
+// e.g. Router(config-if)#do sh ipv6 interface brief
+
+// hide from lldp neighbor discovery
+Router(config-if)# [no] lldp run
+Router(config-if)# [no] lldp transmit (hide from others in LLDP table)
+Router(config-if)# [no] lldp receive  (don't see others in LLDP table)
+
+Router(config)#interface gigabitEthernet 0/0
+
+- Router(config-if)#ip address <ipv4> <subnet-mask>
+OR
+- Router(config-if)#ipv6 address <ipv6>/<prefix>
+OR
+- Router(config-if)#ipv6 address autoconfig
+
+Router(config-if)#no shutdown
+```
+
+### 4.2 Routing Table
 
 | Code  | Destination Network | [Admin Distance/Metric] | Next-hop IP        | Time Elapsed | Outgoing Interface |
 | ----- | ------------------- | ----------------------- | ------------------ | ------------ | ------------------ |
-| **C** | 192.168.1.0/24      | –                       | directly connected | –            | Gigabit| |Ethernet0/0 |
+| **C** | 192.168.1.0/24      | –                       | directly connected | –            | GigabitEthernet0/0 |
 | **S** | 0.0.0.0/0           | [1/0]                   | via 192.168.1.1    | permanent    | GigabitEthernet0/0 |
 | **D** | 10.10.10.0/24       | [90/30720]              | via 192.168.1.2    | 00:00:12     | GigabitEthernet0/1 |
 | **O** | 172.16.0.0/16       | [110/20]                | via 10.1.1.2       | 00:00:30     | GigabitEthernet0/2 |
 | **R** | 192.168.2.0/24      | [120/1]                 | via 10.0.0.1       | 00:02:15     | Serial0/0/0        |
+
 - **Codes**
   	- **C**: Direct connection
   	- **L**: Local Interface
  	- **R**: RIP (Routing Information Protocol)
  	- **D**: EIGRP (Enhanced Interior Gateway Routing Protocol)
-	- **O**: OSPF (Open Shortest Path First) 
+	- **O**: OSPF (Open Shortest Path First)
 	- **S**: Static (manually configured)
-## 4. NAT (Network Address Translation)
+
+### 4.3 Network Address Translation (NAT)
+
 ```
 // show
 Router(config)#show ip nat translations
@@ -368,7 +325,9 @@ Router(config)#ip nat inside source list 1 pool NAT-POOL
 Router(config)#access-list 1 permit 172.16.1.0 0.0.0.255
 Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overload
 ```
-## 5. ACL (Access Control Lists)
+
+### 4.4 Access Control Lists (ACL)
+
 ```
 // by number
 Router(config)#access-list 1 deny host 172.16.3.3
@@ -379,20 +338,24 @@ Router(config)# ip access-list standard acl1
 Router(config-std-nacl)# deny host 172.16.3.3
 Router(config-std-nacl)# permit 172.16.0.0 0.0.255.255
 ```
+
 ```
 // extended IPv4
 Router(config)#ip-access-list extended 101
 Router(config-ext-nacl)#permit tcp host 172.16.3.3 range 56000 60000 host 203.0.113.30 eq 80
 ```
+
 ```
 // delete
 Router(config)#no access-list <access-list-number>
 Router(config)#no ip access-list <standard/extended> <access-list-name>
 ```
+
 ```
 // modify
-// delete then redo
+// delete config then redo
 ```
+
 ```
 // apply
 Router(config-if)#ip access-group access-list-number ??????
@@ -400,5 +363,111 @@ Router(config-if)#ip access-group access-list-number ??????
 Router#show access-lists
 Router(config)#interface GigabitEthernet 0/1
 Router(config-if)#ip access-group 15 out
+```
 
+### 4.5 Security (SSH, local)
+
+```
+// logout on timeout
+Switch#conf f
+Switch(config)#line console 0 
+Switch(config-line)#exec-timeout 5
+```
+
+```
+// securing remote access - virtual terminal password config
+Switch(config)#line vty 0 15
+Switch(config-line)#login
+Switch(config-line)#password <password>
+```
+
+```
+// SSH config
+Switch (config)#hostname Switch
+Switch(config)#ip domain-name cisco.com
+Switch(config)#username <username> secret <secret>
+Switch(config)#crypto key generate rsa modulus 2048
+...
+*Dec 25 13:37:42.000 %SSH-5-ENABLED: SSH 1.99 has been enabled
+...
+Switch(config)#line vty 0 15
+Switch(config-line)#login local
+Switch(config-line)#transport input ssh
+Switch(config-line)#exit
+Switch(config)#ip ssh version 2
+```
+
+```
+// login banner
+Switch(config)#banner login "Please enter uName and pWord."
+// a user trying to connect will see the above message
+```
+
+### 4.6 Time Sync (Clock, NTP)
+
+```
+Router#show clock
+Router#show clock detail
+Router#clock set 18:00:00 17 Oct 2025
+
+// sync NTP
+Central(config)#ntp master 2
+Branch(config)#ntp server 209.165.201.1
+SW1(config)#ntp server 10.1.1.1
+```
+
+## 5. Test Configs
+
+```
+ping <ipv4/ipv6> [source <interface>]	(packet loss)
+telnet <ipv4/ipv6> [port]				(port check, clear text)
+tracert <ipv4>							(hop path windows)
+traceroute <ipv4>						(hop path mac/linux)
+traceroute ipv6 <ipv6>					(IPv6 hop path)
+ssh user@<ipv4/ipv6>
+arp -a
+netstat									(active ports/connections)
+```
+
+## 6. Router Power-On Sequence
+
+- On boot,
+
+| Component              | Function  | Description                             |
+| ---------------------- | --------- | --------------------------------------- |
+| ROM                    | POST      | Perform Power-On Self-Test (POST)       |
+| ROM                    | Bootstrap | Load bootstrap program                  |
+| Flash / TFTP Server    | Cisco IOS | Load operating system (Cisco IOS)       |
+| NVRAM / TFTP / Console | Config    | Load startup config or enter setup mode |
+
+```
+Router#show file systems
+
+// this means still in "bios"
+rommon>
+
+// manual boot
+Branch(config)#boot system flash:/c2900....bin // from flash
+
+Branch(config)#boot system tftp://c2900....bin // from TFTP server
+
+Branch(config)#boot system rom
+```
+
+- Validates IOS Images via MD5 checksum
+- Store and manage IOS images and configs on a central TFTP server
+- Secure Copy Protocol (SCP) for secure file transfer
+
+```
+// save config to a TFTP server
+
+Branch#copy running-config tftp:
+Address...? 172.16.1.100
+Desti filename..? config.cfg
+[copied in X secs]
+
+// merge config file from TFTP
+Branch#copy tftp: running-config
+Address...? x
+Source filename? config.cfg
 ```
