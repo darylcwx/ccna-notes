@@ -78,6 +78,7 @@ debugInConsole: false
 ### 3.1 Physical Media Types
 
 - **Twisted Pair (ethernet)**
+	- Twisted because protects against electromagnetic interference
 	- UTP (Unshielded Twisted Pair): 100m
 	- STP (Shielded Twisted Pair)
 		- Reduce interference
@@ -89,34 +90,35 @@ debugInConsole: false
 		- GigabitEthernet: all 4 pairs used (1-8)
 	- **Cable types:**
 		- Straight-through: host ↔ switch
-		- Crossover: switch ↔ switch / host ↔ host
+		- Crossover: switch ↔ switch / host ↔ host / router ↔ router (if auto MDI-X disabled)
 - **Optical Fiber**
 	- [core, cladding, buffer]
 	- [9, 125, 250] µm
 	- Types
 		- Multi-mode: [LED, slow BW, 2km, $]
 		- Single-mode: [laser, high BW, 40+km, $$$]
+	- Connected to Small Form-Factor Pluggables (SFP)
 - **Coaxial Cable**
 	- Copper core, Legacy use
 
 #### 3.1.1 Ethernet Media Table
 
-| Media Type    | Max Speed   | Cabling / Fiber       | Max Distance | Pairs Used | Notes                 |
-| ------------- | ----------- | --------------------- | ------------ | ---------- | --------------------- |
-| 10BASE-T      | 10 Mbps     | UTP Cat3/Cat5         | 100 m        | 2          | Twisted pair, RJ45    |
-| 100BASE-TX    | 100 Mbps    | UTP Cat5              | 100 m        | 2          | 2 pairs used          |
-| 1000BASE-T    | 1 Gbps      | UTP Cat5e/6           | 100 m        | 4          | 4 pairs used          |
-| 10GBASE-T     | 10 Gbps     | UTP Cat6a/7           | 100 m        | 4          | 4 pairs, RJ45         |
-| 1000BASE-SX   | 1 Gbps      | Multimode fiber       | 550 m        | N/A        | Short wavelength, MMF |
-| 1000BASE-LX   | 1 Gbps      | Single-mode fiber     | 10 km        | N/A        | Long wavelength, SMF  |
-| 10GBASE-SR    | 10 Gbps     | Multimode fiber       | 300 m        | N/A        | Short wavelength      |
-| 10GBASE-LR    | 10 Gbps     | Single-mode fiber     | 10 km        | N/A        | Long wavelength       |
-| 40G/100G QSFP | 40/100 Gbps | Multimode/Single-mode | Varies       | N/A        | Data center/backbone  |
+| IEEE Std | Media Type                 | Max Speed   | Cabling / Fiber   | Max Distance | Pairs Used | Notes                                          |
+| -------- | -------------------------- | ----------- | ----------------- | ------------ | ---------- | ---------------------------------------------- |
+| 802.3i   | 10BASE-T                   | 10 Mbps     | UTP Cat3/Cat5     | 100 m        | 2          | Original Ethernet (Baseband over twisted pair) |
+| 802.3u   | 100BASE-TX                 | 100 Mbps    | UTP Cat5          | 100 m        | 2          | Fast Ethernet, 2 pairs                         |
+| 802.3ab  | 1000BASE-T                 | 1 Gbps      | UTP Cat5e/6       | 100 m        | 4          | Gigabit Ethernet, all pairs used               |
+| 802.3an  | 10GBASE-T                  | 10 Gbps     | UTP Cat6a/7       | 100 m        | 4          | 10-Gigabit over copper                         |
+| 802.3z   | 1000BASE-SX                | 1 Gbps      | Multimode fiber   | 550 m        | N/A        | Short-range fiber (MMF)                        |
+| 802.3z   | 1000BASE-LX                | 1 Gbps      | Single-mode fiber | 10 km        | N/A        | Long-range fiber (SMF)                         |
+| 802.3ae  | 10GBASE-SR                 | 10 Gbps     | Multimode fiber   | 300 m        | N/A        | Short-range fiber                              |
+| 802.3ae  | 10GBASE-LR                 | 10 Gbps     | Single-mode fiber | 10 km        | N/A        | Long-range fiber                               |
+| 802.3ba  | 40GBASE-SR4 / 100GBASE-LR4 | 40/100 Gbps | MMF / SMF         | Varies       | N/A        | Data center / backbone links                   |
 
 ### 3.2 Communication Types
 
 - **Unicast**: one-to-one (flooding)
-- **Broadcast**: one-to-all (ARP)
+- **Broadcast**: one-to-all, FFFF:FFFF:FFFF (ARP)
 - **Anycast**: one-to-nearest/best (CDNs)
 - **Multicast**: one-to-selected (netflix)
 
@@ -161,7 +163,7 @@ debugInConsole: false
 	- For TCP, acknowledgments and retransmissions handle reliability.
 	- For UDP, best-effort delivery continues without guaranteed retransmission.
 
-### 3.4 Address Resolution Protocol (ARP)
+### 3.4 Address Resolution Protocol (ARP) - 0x0806
 
 ![](attachments/Fundamentals%20of%20Networking/IMG-20251022165531530.png)
 
@@ -179,10 +181,12 @@ debugInConsole: false
 
 ## 4. Addressing (L3/L2)
 
-### 4.1 MAC Address (L2)
+### 4.1 MAC Address - 48 Bits (L2)
 
 - 6 bytes: 3 bytes Organizationally Unique Identifier (OUI), 3 bytes device
 - Globally unique Hexadecimal (0-9, A-F)
+- Broadcast = `FFFF:FFFF:FFFF`
+- Auto clears "aging" after 5 minutes
 
 #### 4.1.1 Ethernet Frame (64 bytes)
 
@@ -203,16 +207,42 @@ debugInConsole: false
 
 | Preamble             | Start Frame Delimiter (SFD) |
 | -------------------- | --------------------------- |
-| 7 bytes              | 1 bytes                     |
+| 7 bytes              | 1 bytes (10101011)          |
 | sync receiver clocks | end of preamble             |
 
 ### 4.2 IPv4 Addressing - 32 Bits (L3)
 
-- 32 bits/4 octets, 8 bits per octet
+- 4 bytes/octets, 8 bits per octet
 - 8 bits = max value 255
 - Need configure IPsec
 
-#### 4.2.1 Subnet Classes
+#### 4.2.1 Headers (20-60 bytes)
+- Max Transmission Unit (MTU) = 1500 bytes (1480 bytes due to 4-byte increments)
+	- Fragmented is over
+
+| Field                                                                                                | Size (bits) | Description                                                 |
+| ---------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------- |
+| Version                                                                                              | 4           | binary = 0100                                               |
+| Internet Header Length (IHL)                                                                         | 4           | header length in **4 byte increments** (5-15 = 20-60 bytes) |
+| Type of Service (ToS) = Differentiated Services Code Point (DSCP) + Explicit Congestion Notification | 6 + 2       | priority + congestion                                       |
+| Total Length                                                                                         | 16          | total packet size in bytes (header + data, <=65535)         |
+| =======================                                                                              | ======      | =====================================                       |
+| Identification                                                                                       | 16          | fragmentation and reassembly                                |
+| Flags                                                                                                | 3           | fragments (0, Don't Frag, More Frag)                        |
+| Fragment Offset                                                                                      | 13          | position of fragment                                        |
+| =======================                                                                              | ======      | =====================================                       |
+| Time To Live (TTL)                                                                                   | 8           | max hops before packet dropped                              |
+| Protocol                                                                                             | 8           | TCP - 6, UDP - 17, ICMP - 1, OSPF - 89)                     |
+| Header Checksum                                                                                      | 16          | error-checking for header (hash)                            |
+| =======================                                                                              | ======      | =====================================                       |
+| Source Address                                                                                       | 32          | IPv4 address of sender                                      |
+| =======================                                                                              | ======      | =====================================                       |
+| Destination Address                                                                                  | 32          | IPv4 address of receiver                                    |
+| =======================                                                                              | ======      | =====================================                       |
+| Options (if IHL > 5)                                                                                 | 0-320       | extra options for control/debugging                         |
+| Padding                                                                                              | Variable    | aligns header to 32-bit boundary                            |
+
+#### 4.2.2 Subnet Classes
 
 - `A B C, easy as 1 2 3` (Class A = 0XXX, Class B = 10XX, Class C = 110XX)
 - Some are reserved (127.0.0.1)
@@ -220,13 +250,13 @@ debugInConsole: false
 
 | Class | First Octet Range | Prefix Length | Leading Bits | Default Mask    | Purpose / Notes                   |
 | ----- | ----------------- | ------------- | ------------ | --------------- | --------------------------------- |
-| A     | 1 – 126           | /8            | 0            | `255.0.0.0`     | Large networks (127 for loopback) |
-| B     | 128 – 191         | /16           | 10           | `255.255.0.0`   | Medium networks                   |
-| C     | 192 – 223         | /24           | 110          | `255.255.255.0` | Small networks                    |
-| D     | 224 – 239         |               | 1110         | N/A             | Multicast                         |
-| E     | 240 – 255         |               | 1111         | N/A             | Experimental / Reserved           |
+| A     | 1 – 126           | /8            | 0            | `255.0.0.0`     | large networks (127 for loopback) |
+| B     | 128 – 191         | /16           | 10           | `255.255.0.0`   | medium networks                   |
+| C     | 192 – 223         | /24           | 110          | `255.255.255.0` | small networks                    |
+| D     | 224 – 239         |               | 1110         | N/A             | multicast                         |
+| E     | 240 – 255         |               | 1111         | N/A             | experimental / reserved           |
 
-#### 4.2.2 Binary Calculation
+#### 4.2.3 Binary Calculation
 
 | Base    | 2^8 | 2^7 | 2^6 | 2^5 | 2^4 | 2^3 | 2^2 | 2^1 |
 | ------- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -244,7 +274,7 @@ debugInConsole: false
 | Host addresses    | `192.168.24.19`    | `10.0.1.15`      | same                   |
 | Default gateway   | `192.168.24.1`     | `10.0.0.1`       | first usable           |
 
-#### 4.2.3 Sub-sub Netting (Variable Length Subnet Masking - VLSM)
+#### 4.2.4 Sub-sub Netting (Variable Length Subnet Masking - VLSM)
 
 - Network: 192.168.10.0/26
 - Subnet Mask: 255.255.255.192
@@ -264,50 +294,52 @@ debugInConsole: false
 | 3            | `192.168.10.128` | .129-190 | .191      |
 | 4            | `192.168.10.192` | .193-254 | .255      |
 
-### 4.3 IPv6 Addressing - 128 Bits (L3)
+### 4.3 IPv6 Addressing - 128 Bits, 0x86DD (L3)
 
 - Larger address space
 - Simpler header
 - Security (built-in encryption) and mobility
 - Transition
 - No broadcast addresses
-- 64 bits network, 64 bits interface
+- 64 bits **network**, 64 bits **interface**
 
-#### 4.3.1 Link-Local Unicast Addresses
+#### 4.3.1 Headers (40 bytes)
+
+| Field               | Size (bits) | Description                        |
+| ------------------- | ----------- | ---------------------------------- |
+| Version             | 4           | binary = 0110                      |
+| Traffic Class       | 8           | packet priority / QoS              |
+| Flow Label          | 20          | packet flow for special handling   |
+| Payload Length      | 16          |                                    |
+| Next Header         | 8           | next protocol (TCP, UDP, etc.)     |
+| Hop Limit           | 8           | max hops before discard (like TTL) |
+| Source Address      | 128         | IPv6 address of sender             |
+| Destination Address | 128         | IPv6 address of receiver           |
+
+#### 4.3.2 Link-Local Unicast Addresses
 
 - Prefix: `FE80::/10`
 - Local link only/same switch
 - Used for Neighbor Discovery Protocol (NDP - similar to ARP), Router Comms/Ads, Auto-config (SLAAC)
 
-#### 4.3.2 Unique Local Address
+#### 4.3.3 Unique Local Address
 
 - Prefix: `FC00::/7`
 - Private internal networks
 - Used for within organization, not public
 
-#### 4.3.3 Multicast
+#### 4.3.4 Multicast
 
 - Prefix: `FF00::/8`
 
-#### 4.3.4 Anycast
+#### 4.3.5 Anycast
 
 - Lowest cost (CDN)
 
-#### 4.3.5 Other
+#### 4.3.6 Other
 
 - Loopback: `::1` for testing purposes
 - Unspecified `::` "no address" placeholder
-
-#### 4.3.6 Headers (40 bytes)
-
-- **Version (4b)**: 6
-- **Traffic Class (8b)**: QoS priority
-- **Flow Label (20b)**: Packet flow
-- **Payload Length (16b)**: Size of data
-- **Next Header (8b)**: Type of next header
-- **Hop Limit (8b)**: Max hops (TTL)
-- **Source Address (128b)**: Sender
-- **Destination Address (128b)**: Receiver
 
 #### 4.3.7 Address Allocation
 
@@ -462,15 +494,20 @@ Router#show control-plane host open-ports
 
 #### 6.3.1 Switches
 
-	- Uses MAC to forward frames
-	- Maintains MAC table (dynamic/static)
-      	- Determined from source MAC (incoming ARP request, ARP reply)
-	- Use **Flooding** when destination MAC unknown, destination found ? record : ignore
-	- Use **Spanning Tree Protocol** to avoid loops
-	- Implements **ARP** to resolve IP to MAC
-	- **Duplex**
-		- Half (sync, one at a time, walkie-talkie)
-		- Full (async, simultaneous, no collisions)
+- Uses MAC to forward frames
+- Maintains MAC table (dynamic/static)
+	- Determined from source MAC (incoming ARP request, ARP reply)
+- Use **Flooding** when destination MAC unknown, destination found ? record : ignore
+- Use **Spanning Tree Protocol** to avoid loops
+- Implements **ARP** to resolve IP to MAC
+- **Auto-negotiation**: Interfaces 'advertise' their `speed` and `duplex` settings
+- **Duplex**
+	- Half (sync, one at a time, walkie-talkie)
+	- Full (async, simultaneous, no collisions)
+- Hubs
+	- Half-duplex
+	- Layer 1 repeaters
+	- Carrier Sense Multiple Access with Collision Detection (CSMA/CD)
 
 #### 6.3.2 Spanning Tree Protocol (STP)
 
@@ -569,27 +606,29 @@ Router#show control-plane host open-ports
 - [CLI](Cisco%20Hands%20On.md#5.%20ACL%20(Access%20Control%20Lists))
 - Permit/Deny
 - **Wildcard Masking**
-  - Inverse subnet mask (`0` match, `1` any)
-  - ACL permits `192.168.1.0`, wildcard `0.0.0.255`
-	- First 3 octets must match, last octet can be anything
-  - ACL permits `172.16.16.1`, wildcard `0.0.15.255`
-	| Item | Range | IP |
-	| --- | --- | --- |
-	| IP | 1010 1100.0001 0000.0001 0000.0000 0001 | `172.16.16.1` |
-	| Mask | 0000 0000.0000 0000.0000 1111.1111 1111 | `0.0.15.255` |
-	| Result | 1010 1100.0001 0000.0001 XXXX.XXXX XXXX | `172.16.16.0` - `172.16.31.255`
-  - Allows `172.16.16.X - 172.16.31.X`
-  - Permit `host`/`any`
+	- Inverse subnet mask (`0` match, `1` any)
+	- ACL permits `192.168.1.0`, wildcard `0.0.0.255`
+		- First 3 octets must match, last octet can be anything
+	- ACL permits `172.16.16.1`, wildcard `0.0.15.255`
+		- Allows `172.16.16.X - 172.16.31.X`
+		- Permit `host`/`any`
+
+| Item   | Binary                                          | IP                            |
+| ------ | ----------------------------------------------- | ----------------------------- |
+| IP     | `1010 1100`.`0001 0000`.`0001 0000`.`0000 0001` | `172.16.16.1`                 |
+| Mask   | `0000 0000`.`0000 0000`.`0000 1111`.`1111 1111` | `0.0.15.255`                  |
+| Result | `1010 1100`.`0001 0000`.`0001 XXXX`.`XXXX XXXX` | `172.16.16.0 - 172.16.31.255` |
+
 - **Types**: [number, name]
 - Config Standard IPv4
-  - Earlier rules take precedence, implicit deny all at end
-  - **Format**: `access-list <acl-number> <permit/deny> <source [wildcard]> | host <address>/<name> | any`
-  - **Example**: `access-list 1 permit 172.16.0.0 0.0.255.255`
+	- Earlier rules take precedence, implicit deny all at end
+	- **Format**: `access-list <acl-number> <permit/deny> <source [wildcard]> | host <address>/<name> | any`
+	- **Example**: `access-list 1 permit 172.16.0.0 0.0.255.255`
 - Config Extended IPv4
-  - **Format**: `<sequence-number> <permit/deny> <tcp/icmp/...> <source IPv4 + port> <desti IPv4 + port>`
+	- **Format**: `<sequence-number> <permit/deny> <tcp/icmp/...> <source IPv4 + port> <desti IPv4 + port>`
 - Applying IPv4 ACLs
-  - **Standard**: near destination (affects only source IP, place later = ok)
-  - **Extended**: near source (more fields, save BW early)
+	- **Standard**: near destination (affects only source IP, place later = ok)
+	- **Extended**: near source (more fields, save BW early)
 
 ### 7.3 Network Device Security
 
