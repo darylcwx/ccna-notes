@@ -110,13 +110,11 @@ debugInConsole: false
 - Application Tab (dependencies)
 	- Unresolved = reported
 - Service/URL Category Tab
-	- New Service Definition (assigned ports that applications can use, by default only: service-http, service-https)
+- New Service Definition (assigned ports that applications can use, by default only: service-http, service-https)
 - Actions Settings (scheduling)
 	- Usage Tab (audit)
-
 - Enable Intrazone and Interzone Logging
 - Find unused Security Policy Rules (remove to up efficiency/simplification)
-- 
 
 ## Agenda
 
