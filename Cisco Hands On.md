@@ -19,7 +19,7 @@ debugInConsole: false
 	- Agents talk to relevant agents to solve problems
 - Switches
 	- Nexus 4000 - 9000
-	- ACI (Application Centric Infrastructure)
+	- ACPI (Application Centric Infrastructure)
 
 ## 2. General CLI
 
@@ -32,7 +32,7 @@ debugInConsole: false
 
 - By default
 	- **NO** `shutdown` command applied
-	- in `up/up` state if connected : `down/down` state if not connected
+	- in `up/up` state if connected: `down/down` state if not connected
 
 ```
 // start
@@ -67,16 +67,10 @@ Password: <password>
 ```
 
 ```
-// config multiple interfaces
+// disabling multiple interfaces
 Switch(config)#int range f0/5 - 6, f0/9 - 12
-Switch(config-if-range)#description ## not in use ##     // set description
-Switch(config-if-range)# speed 100                       // 100 Mbps
-Switch(config-if-range)# duplex full                     // 100 Mbps
-
-// 
-Switch#clear mac address-table dynamic
-Switch#clear mac address-table dynamic address <mac address>
-Switch#clear mac address-table dynamic interface <interface id>         
+Switch(config-if-range)#description ## not in use ##
+Switch(config-if-range)#shutdown
 ```
 
 ```
@@ -87,7 +81,6 @@ Switch#show interface status            // port status, VLAN, duplex, speed, typ
 Switch#show controllers                 // hardware stats (PHY, errors)
 Switch#show running-config              // active config
 Switch#show startup-config              // saved config
-Switch#show arp
 
 // make configs persistent
 Switch#copy running-config startup-config      // `copy run start` works too
@@ -95,17 +88,6 @@ Switch#copy running-config startup-config      // `copy run start` works too
 // wipe configs
 Switch#erase startup-config
 ```
-
-#### 3.1.1 Show Interfaces Errors
-
-![](attachments/Cisco%20Hands%20On/IMG-20251024155143.png)
-
-- **Runts**: frames smaller than the minimum frame size (64 bytes)
-- **Giants:** frames larger than the maximum frame size (1518 bytes)
-- **CRC:** failed the CRC check (in the Ethernet FCS trailer)
-- **Frame:** incorrect format (due to an error)
-- **Input errors:** total counters, such as the above four
-- **Output errors:** frames sent, but failed due to error
 
 ### 3.2 VLAN
 
@@ -283,9 +265,7 @@ Router#show ip route                // IPv4 routing table
 Router#show ipv6 interface brief    // IPv6 interface summary
 Router#show ipv6 route              // IPv6 routing table
 Router#show ipv6 neighbors          // IPv6 neighbor (ND) table
-```
 
-```
 // config interface
 // in config-if mode, add "do" to execute "show" commands 
 // e.g. Router(config-if)#do sh ipv6 interface brief
@@ -308,21 +288,15 @@ Router(config-if)#no shutdown
 
 ### 4.2 Routing Table
 
+`show ip route`
+
 | Code  | Destination Network | [Admin Distance/Metric] | Next-hop IP        | Time Elapsed | Outgoing Interface |
 | ----- | ------------------- | ----------------------- | ------------------ | ------------ | ------------------ |
-| **C** | 192.168.1.0/24      | –                       | directly connected | –            | GigabitEthernet0/0 |
+| **C** | 192.168.1.0/24      |–| directly connected |–| GigabitEthernet0/0 |
 | **S** | 0.0.0.0/0           | [1/0]                   | via 192.168.1.1    | permanent    | GigabitEthernet0/0 |
 | **D** | 10.10.10.0/24       | [90/30720]              | via 192.168.1.2    | 00:00:12     | GigabitEthernet0/1 |
 | **O** | 172.16.0.0/16       | [110/20]                | via 10.1.1.2       | 00:00:30     | GigabitEthernet0/2 |
 | **R** | 192.168.2.0/24      | [120/1]                 | via 10.0.0.1       | 00:02:15     | Serial0/0/0        |
-
-- **Codes**
-  	- **C**: Direct connection
-  	- **L**: Local Interface
- 	- **R**: RIP (Routing Information Protocol)
- 	- **D**: EIGRP (Enhanced Interior Gateway Routing Protocol)
-	- **O**: OSPF (Open Shortest Path First)
-	- **S**: Static (manually configured)
 
 ### 4.3 Network Address Translation (NAT)
 
@@ -439,14 +413,14 @@ SW1(config)#ntp server 10.1.1.1
 ## 5. Test Configs
 
 ```
-ping <ipv4/ipv6> [source <interface>]    // ICMP echo request/reply -> packet loss
-telnet <ipv4/ipv6> [port]                // port check, clear text  
-tracert <ipv4>                           // hop path (Windows)  
-traceroute <ipv4>                        // hop path (mac/Linux)  
-traceroute ipv6 <ipv6>                   // IPv6 hop path  
-ssh user@<ipv4/ipv6>                     // remote login (encrypted)  
-arp -a                                   // view ARP table  
-netstat                                  // active ports/connections  
+ping <ipv4/ipv6> [source <interface>]	(packet loss)
+telnet <ipv4/ipv6> [port]				(port check, clear text)
+tracert <ipv4>							(hop path windows)
+traceroute <ipv4>						(hop path mac/linux)
+traceroute ipv6 <ipv6>					(IPv6 hop path)
+ssh user@<ipv4/ipv6>
+arp -a
+netstat									(active ports/connections)
 ```
 
 ## 6. Router Power-On Sequence

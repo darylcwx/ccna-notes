@@ -33,7 +33,7 @@ debugInConsole: false
 - Needs router to communicate across other VLANs
 - Security, performance, management
 - IEEE 802.1Q (VLAN tagging protocol)
-  - [ Desti MAC, Source MAC, **VLAN Tag**, Type/Length , Payload, FCS]
+  - [Desti MAC, Source MAC, **VLAN Tag**, Type/Length, Payload, FCS]
   - 4 byte VLAN Tag in Ethernet frame (L2)
 	- **Type**: 16 bits, `0x8100`
 	- **Priority**: 3 bits, QoS priority
@@ -168,7 +168,7 @@ debugInConsole: false
 ![](attachments/Fundamentals%20of%20Networking/IMG-20251022165531530.png)
 
 1. A → B (knows IP only)
-2. **Check ARP cache:** known ? send : send L2 broadcast frame (ff:ff:ff:ff:ff:ff)
+2. **Check ARP cache:** known? send: send L2 broadcast frame (ff:ff:ff:ff:ff:ff)
 3. **SW1:** receives broadcast, cache A's MAC → floods broadcast
 4. **SW2:** receives broadcast, cache A's MAC → floods broadcast
 5. **B:** receives ARP request → IP match? yes → send unicast ARP reply
@@ -217,6 +217,7 @@ debugInConsole: false
 - Need configure IPsec
 
 #### 4.2.1 Headers (20-60 bytes)
+
 - Max Transmission Unit (MTU) = 1500 bytes (1480 bytes due to 4-byte increments)
 	- Fragmented is over
 
@@ -250,11 +251,11 @@ debugInConsole: false
 
 | Class | First Octet Range | Prefix Length | Leading Bits | Default Mask    | Purpose / Notes                   |
 | ----- | ----------------- | ------------- | ------------ | --------------- | --------------------------------- |
-| A     | 1 – 126           | /8            | 0            | `255.0.0.0`     | large networks (127 for loopback) |
-| B     | 128 – 191         | /16           | 10           | `255.255.0.0`   | medium networks                   |
-| C     | 192 – 223         | /24           | 110          | `255.255.255.0` | small networks                    |
-| D     | 224 – 239         |               | 1110         | N/A             | multicast                         |
-| E     | 240 – 255         |               | 1111         | N/A             | experimental / reserved           |
+| A     | 1–126           | /8            | 0            | `255.0.0.0`     | large networks (127 for loopback) |
+| B     | 128–191         | /16           | 10           | `255.255.0.0`   | medium networks                   |
+| C     | 192–223         | /24           | 110          | `255.255.255.0` | small networks                    |
+| D     | 224–239         |               | 1110         | N/A             | multicast                         |
+| E     | 240–255         |               | 1111         | N/A             | experimental / reserved           |
 
 #### 4.2.3 Binary Calculation
 
@@ -289,10 +290,10 @@ debugInConsole: false
 
 | Subnet (/26) | Network          | Usable   | Broadcast |
 | ------------ | ---------------- | -------- | --------- |
-| 1            | `192.168.10.0`   | .1-62    | .63       |
-| 2            | `192.168.10.64`  | .65-126  | .127      |
-| 3            | `192.168.10.128` | .129-190 | .191      |
-| 4            | `192.168.10.192` | .193-254 | .255      |
+| 1            | `192.168.10.0`   |.1-62    |.63       |
+| 2            | `192.168.10.64`  |.65-126  |.127      |
+| 3            | `192.168.10.128` |.129-190 |.191      |
+| 4            | `192.168.10.192` |.193-254 |.255      |
 
 ### 4.3 IPv6 Addressing - 128 Bits, 0x86DD (L3)
 
@@ -381,7 +382,7 @@ debugInConsole: false
 ### 6.1 Transport Layer (L4)
 
 - **TCP/IP**
-	- 3-way: [ SYN, SYN/ACK, ACK ]
+	- 3-way: [SYN, SYN/ACK, ACK]
 	- Guaranteed delivery (reliability, data integrity)
 	- Resend if error, interrupting streaming/music
 - **UDP**
@@ -402,9 +403,19 @@ debugInConsole: false
 	- **Source addy**
 	- **Destination addy**
 	- Options, Padding
-- **Router**
-	- Path determination
-	- Packet forwarding
+- **Routing**
+	-  **Codes**
+		- **C**: Direct connection
+		- **L**: Local Interface
+		- **R**: RIP (Routing Information Protocol)
+		- **D**: EIGRP (Enhanced Interior Gateway Routing Protocol)
+		- **O**: OSPF (Open Shortest Path First)
+		- **S**: Static (manually configured)
+	- Connected `C` vs vs Local `L` routes
+		- Connected route = forward
+		- Local route = router receive for itself
+	- Choose most specific route (longest prefix length)
+	- Drop packet if no route found
 
 #### 6.2.1 VLAN Routing (L3)
 
@@ -427,7 +438,9 @@ debugInConsole: false
 		- Best for complex/high-traffic networks
 		- \$\$\$, requires more physical interfaces
 
-#### 6.2.2 Dynamic Routing Protocols
+#### 6.2.2 Static Routing
+
+#### 6.2.3 Dynamic Routing Protocols
 
 - Up-to-date, best available path (Dijkstra)
 - Each router builds a topology map (LSDB - Link-State DB)
@@ -460,7 +473,7 @@ debugInConsole: false
   - Path-Vector
   - [BGP (border gateway protocol)]
 
-#### 6.2.3 Network Address Translation
+#### 6.2.4 Network Address Translation
 
 - [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
 - translate private → public IPs
@@ -478,9 +491,9 @@ debugInConsole: false
   - **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
   - **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
 
-#### 6.2.4 Infrastructure ACL (iACL)
+#### 6.2.5 Infrastructure ACL (iACL)
 
-- **Permits only authorized traffic to infra equipments, as well as permit transit traffic**
+- **Permits only authorized traffic to infra equipment, as well as permit transit traffic**
 - Protects traffic destined to the network infra equipment to mitigate directed attacks
 - Design depends on protocols used on the network infra equipment
 - Deployed at network ingress points as a first line of defense
@@ -497,7 +510,7 @@ Router#show control-plane host open-ports
 - Uses MAC to forward frames
 - Maintains MAC table (dynamic/static)
 	- Determined from source MAC (incoming ARP request, ARP reply)
-- Use **Flooding** when destination MAC unknown, destination found ? record : ignore
+- Use **Flooding** when destination MAC unknown, destination found? record: ignore
 - Use **Spanning Tree Protocol** to avoid loops
 - Implements **ARP** to resolve IP to MAC
 - **Auto-negotiation**: Interfaces 'advertise' their `speed` and `duplex` settings
@@ -557,7 +570,7 @@ Router#show control-plane host open-ports
   - Priority (8b)
 	- Facility (5b)
 	- Severity (3b)
-	  - Seen from `%CDP-4-NATIVE_VLAN_MISMATCH: ...`
+	  - Seen from `%CDP-4-NATIVE_VLAN_MISMATCH:...`
 	  - 0: Emergency
 	  - 1: Alert
 	  - 2: Critical
