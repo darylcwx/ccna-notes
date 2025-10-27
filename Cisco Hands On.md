@@ -32,7 +32,7 @@ debugInConsole: false
 
 - By default
 	- **NO** `shutdown` command applied
-	- in `up/up` state if connected: `down/down` state if not connected
+	- in `up/up` state if connected : `down/down` state if not connected
 
 ```
 // start
@@ -240,6 +240,7 @@ Router(config)#logging source-interface Loopback0
 - By default
 	- `shutdown` command applied
 	- in `administratively down/down` state
+
 ```
 // start
 Router>enable 

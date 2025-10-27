@@ -137,7 +137,7 @@ debugInConsole: false
 4. ARP request arrives at the switch:
 	- Switch receives the broadcast frame on the port connected to Host A.
 	- Switch checks its MAC address table:
-	-  Adds/updates entry for Host A's MAC address and associated port.
+	- Adds/updates entry for Host A's MAC address and associated port.
 	- Since broadcast frames must be sent to all devices, the switch floods the ARP request out on all other ports (except the incoming port).
 5. Host B receives ARP request:
 	- Checks if the IP in ARP request matches its own.
@@ -169,7 +169,7 @@ debugInConsole: false
 ![](attachments/Fundamentals%20of%20Networking/IMG-20251022165531530.png)
 
 1. A → B (knows IP only)
-2. **Check ARP cache:** known? send: send L2 broadcast frame (ff:ff:ff:ff:ff:ff)
+2. **Check ARP cache:** known ? send : send L2 broadcast frame (ff:ff:ff:ff:ff:ff)
 3. **SW1:** receives broadcast, cache A's MAC → floods broadcast
 4. **SW2:** receives broadcast, cache A's MAC → floods broadcast
 5. **B:** receives ARP request → IP match? yes → send unicast ARP reply
@@ -291,10 +291,10 @@ debugInConsole: false
 
 | Subnet (/26) | Network          | Usable   | Broadcast |
 | ------------ | ---------------- | -------- | --------- |
-| 1            | `192.168.10.0`   |.1-62    |.63       |
-| 2            | `192.168.10.64`  |.65-126  |.127      |
-| 3            | `192.168.10.128` |.129-190 |.191      |
-| 4            | `192.168.10.192` |.193-254 |.255      |
+| 1            | `192.168.10.0`   | .1-62    | .63       |
+| 2            | `192.168.10.64`  | .65-126  | .127      |
+| 3            | `192.168.10.128` | .129-190 | .191      |
+| 4            | `192.168.10.192` | .193-254 | .255      |
 
 ### 4.3 IPv6 Addressing - 128 Bits, 0x86DD (L3)
 
@@ -405,7 +405,7 @@ debugInConsole: false
 	- **Destination addy**
 	- Options, Padding
 - **Routing**
-	-  **Codes**
+	- **Codes**
 		- **C**: Direct connection
 		- **L**: Local Interface
 		- **R**: RIP (Routing Information Protocol)
@@ -500,6 +500,7 @@ debugInConsole: false
 - Deployed at network ingress points as a first line of defense
 - Deployed elsewhere accordingly
 - Disable unneeded services: [preserve resources, eliminates potential exploits]
+
 ```
 Router#show control-plane host open-ports
 ```
