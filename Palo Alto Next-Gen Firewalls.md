@@ -187,7 +187,38 @@ debugInConsole: false
 	- Determine what to inspect
 - Reasons not to: [prohibited by law, non-standard SSL implementation, new CA, specific server certs required, server requires client certificate]
 
-## 10. Logs and Report
+## 10. URL Filtering
+
+- Got URL Filtering license ? URL Filtering profile : Security Rule
+- Precedence (predefined, EDL, bottom)
+
+## 11. Logs and Report
+
+- Dashboard: [data filter, URL filer, threats] of last hour
+- Application Command Center (ACC):  widgets
+- Logs
+	- Firewall: timestamped list of events
+	- Traffic: entry for each firewall session
+	- Threat: when detected in allowed traffic
+		- Critical, high: blocked, Medium: might need to be blocked, Low, informational: alerts
+	- URL: for CI/CD of Security policy/URL filtering profiles
+	- WildFire: who sent, who received, filename/URL link used to deliver
+	- Data: when sensitive files seen by firewall
+	- Unified: all-in-one
+- App Scope Reports
+	- Summary: top 5 of below
+	- Change monitor: largest increase in the number of sessions over selected time period
+	- Threat monitor: largest number of sessions over selected time period
+	- Threat map: source/desti of threats by country
+	- Network monitor: bandwidth consumption
+	- Traffic map: source/desti of traffic by country
+- Predefined and Custom Reports
+	- Choose columns
+	- Schedule or on-demand
+	- Web interface or export
+- Device Telemetry
+	- Sharing of data with Cloud
+	- Log availability, log analysis (PAN-OS software), log retention, alerts, automated responses
 
 ## 11. PAN OS Upgrade
 
