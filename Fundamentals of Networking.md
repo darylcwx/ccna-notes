@@ -54,7 +54,8 @@ debugInConsole: false
 	- Can be connected to switch, or another AP, or have SIM card
 	- Can be cloud-based AP (NaaS)
 - **WLAN controller**
-	- Configures AP automatically/centrally
+	- 
+
 - **BYOD**
 	- [Cost savings, Reduced hardware expenses, Work from anywhere, Secure remote collaboration, Employee satisfaction]
 - **VPN**
