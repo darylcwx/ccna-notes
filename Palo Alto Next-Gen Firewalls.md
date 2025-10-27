@@ -116,6 +116,81 @@ debugInConsole: false
 - Enable Intrazone and Interzone Logging
 - Find unused Security Policy Rules (remove to up efficiency/simplification)
 
+## 5. NAT Policy
+
+- Private (internal) users to access the public internet (outbound)
+- Public (external) users to access private (internal) servers
+
+### 5.1 Source NAT Config
+
+![](assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027123836439.png)
+
+- **Static IP**: fixed 1-to-1, changes source IP, same source port, implicit bidirectional rule feature
+- **Dynamic IP**: 1-to-1 of source IP (no port number), private source address translates to next available address in the range
+- **Dynamic IP and Port (DIPP)**: multiple clients to use same public IP with different source port numbers
+	- Oversubscription: IP and port pair used multiple times in concurrent sessions
+
+### 5.2 Destination NAT Config
+
+![](assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027123957855.png)
+
+- Static IP:
+- Dynamic IP: translates original IP to destination host with a DHCP-assigned IP
+
+## 6. App ID
+
+### 6.1 Attack Surface
+
+- UDP Traffic
+	- not-applicable
+		- traffic dropped per policy before application identified
+	- incomplete
+		- Three-way handshake did not complete or was followed by no data
+	- insufficient-data
+		- Not enough payload for identification
+	- unknown-TCP
+		- unidentifiable TCP traffic.
+	- unknown-p2p
+		- unidentifiable peer-to-peer traffic
+- 
+
+### 6.2 Concepts and Operation
+
+- Application Shifts (network traffic from one application to another)
+- Application Dependencies
+- Implicit Applications
+
+## 7. Security Profiles
+
+- Content-ID: advanced threat prevention engine and policies to inspect and control content traversing the firewall
+- Scans for: [software vuln. exploits, viruses, spyware, malicious URLs, restricted files and data]
+- Additional security checks on allowed traffic (no point inspecting blocked traffic)
+- Threat logs
+- Vulnerability, Antivirus, Anti-Spyware, File Blocking, Data Filtering Profiles
+
+## 8. WildFire (Threat Intelligence Cloud)
+
+![](assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027151452261.png)
+
+- Continuously updates malware/phishing samples to cloud detected from unknown file/url uploads
+- Verdicts: [benign, grayware, malicious, phishing]
+
+## 9. Decryption
+
+### SSL/TLS
+
+- Encryption for data privacy, Hashing for data integrity, Certs for auth
+- Asymmetric Digital Certificate (PUB_KEY, PRIV_KEY) to share session key (symmetric)
+- Forward Proxy
+	- Firewall that acts as MITM to intercept and decrypt packets
+	- Not a must to decrypt traffic, but just to check certificate
+	- Determine what to inspect
+- Reasons not to: [prohibited by law, non-standard SSL implementation, new CA, specific server certs required, server requires client certificate]
+
+## 10. Logs and Report
+
+## 11. PAN OS Upgrade
+
 ## Agenda
 
  - Manage Firewall Configurations

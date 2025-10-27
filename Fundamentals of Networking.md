@@ -166,7 +166,7 @@ debugInConsole: false
 
 ### 3.4 Address Resolution Protocol (ARP) - 0x0806
 
-![](attachments/Fundamentals%20of%20Networking/IMG-20251022165531530.png)
+![](assets/Fundamentals%20of%20Networking/img-20251022165531530.png)
 
 1. A → B (knows IP only)
 2. **Check ARP cache:** known ? send : send L2 broadcast frame (ff:ff:ff:ff:ff:ff)
