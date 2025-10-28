@@ -35,13 +35,9 @@ debugInConsole: false
 	- in `up/up` state if connected : `down/down` state if not connected
 
 ```
-
 // start
-
 Switch#conf t
-
 Switch(config)#hostname <new switch host name>
-
 ```
 
 ```
@@ -49,159 +45,102 @@ Switch(config)#hostname <new switch host name>
 // setting password (1): plaintext, (2) secure by default (MD5 hashed)
 
 Switch#conf t
-
 Switch(config)#enable password <password>
-
 Switch(config)#service password-encryption       // type 7 encryption
-
 Switch(config)#exit
-
 Switch#show running-config | include enable	     // filters run-conf for "enable"
-
 // == OR ==//
-
 Switch(config)#enable secret <password>          // type 5 encryption (MD5)
 
 // setting username and password
-
 Switch#conf t
-
 Switch(config)#username <username> <password/secret> <password>
-
 Switch(config)#line console 0
-
 Switch(config-line)#login local                  // use local login
-
 Switch(config-line)#end
-
 Switch#show running-config | include username    // filters run-conf for "username"
-
 username <username> <password/secret> <password>
-
 Switch#show running-config partition line
 
 // example login
-
 Switch#disable
-
 Switch>enable
-
 Password: <password>
 
-```
+// reset if no password 
+Switch#write erase
+reload
 
 ```
 
+```
 // disabling multiple interfaces
-
 Switch(config)#int range f0/5 - 6, f0/9 - 12
-
 Switch(config-if-range)#description ## not in use ##
-
 Switch(config-if-range)#shutdown
-
 ```
 
 ```
-
 // show
-
 Switch#show mac address-table            // MAC table entries
-
 Switch#show spanning-tree               // STP state, root bridge info
-
 Switch#show interface status            // port status, VLAN, duplex, speed, type
-
 Switch#show controllers                 // hardware stats (PHY, errors)
-
 Switch#show running-config              // active config
-
 Switch#show startup-config              // saved config
 
 // make configs persistent
-
 Switch#copy running-config startup-config      // `copy run start` works too
+Switch#write memory
 
 // wipe configs
-
 Switch#erase startup-config
-
 ```
 
 ### 3.2 VLAN
 
 ```
-
 // show
-
 Switch#show vlan brief
-
 Switch#show interfaces trunk
-
 Router#show vlans (trunking's subinterfaces)
-
 Router#show running-config interface gig0/1.10 (subinterface config)
-
 Router#show ip route
+Router#ip route 0.0.0.0 0.0.0.0 8.8.8.8     // default gateway
 
 // config
-
 Switch#conf t
-
 Switch(config)#vlan <number> (number: standard 1-1005, extended 1006-4094)
-
 Switch(config-vlan)#name <name>
-
 Switch(config)#interface <interface>
-
 ```
 
 ```
-
 // access
-
 // belongs to 1 VLAN, used for end devices
-
 Switch(config-if)#switchport mode access
-
 - Switch(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
 OR
 - Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
-
 ```
 
 ```
-
 // trunk
-
 // carries traffic for multiple VLANs
-
 // connects (Sw to Sw) or (Sw to Routers)
-
 // tags frames with VLAN ID using IEEE 802.1Q
-
 Switch(config-if)#switchport mode trunk
-
 Switch(config-if)#switchport trunk encapsulation dot1q (specifies 802.1Q)
-
 Switch(config-if)#switchport trunk native vlan 99 (untagged VLANs)
-
 Switch(config-if)#switchport trunk allowed vlan 10,20,30,99
-
 Switch(config-if)#
-
 ```
 
 ```
-
 // verify
-
 // "dynamic desirable" = auto mode, "switchport" = static access
-
 Switch#show interfaces <interface> switchport
-
 Switch#show interfaces trunk
-
 ```
 
 ### 3.3 EtherChannel
@@ -355,77 +294,45 @@ Router(config)#logging source-interface Loopback0
 	- in `administratively down/down` state
 
 ```
-
 // start
-
 Router>enable
-
 Router#configure terminal
-
 Router(config)#hostname <new router host name>
-
 Router(config)#
-
 Router(config)#exit
-
 Router#
 
 // show
-
 Router#show version                 // OS version, uptime, model, serial, etc
-
 Router#show protocols               // Routing protocols & active interfaces
-
 Router#show arp                     // ARP table: IP ↔ MAC mappings
-
 Router#show cdp neighbors detail    // Cisco Discovery info (device ID, IP, intf)
-
 Router#show lldp neighbors          // LLDP neighbor info (vendor-neutral)
-
 Router#show running-config          // Current active config in RAM
-
 Router#show startup-config          // Saved config in NVRAM
-
 Router#show interfaces [intf-id]    // Detailed stats: bandwidth, errors, duplex
-
 Router#show interfaces description  // Interface names + brief status
-
 Router#show ip protocols            // Shows routing protocol parameters
-
 Router#show ip interface brief      // Quick IP + interface status summary
-
 Router#show ip route                // IPv4 routing table
-
 Router#show ipv6 interface brief    // IPv6 interface summary
-
 Router#show ipv6 route              // IPv6 routing table
-
 Router#show ipv6 neighbors          // IPv6 neighbor (ND) table
 
 // config interface
-
 // in config-if mode, add "do" to execute "show" commands
-
 // e.g. Router(config-if)#do sh ipv6 interface brief
-
 // hide from lldp neighbor discovery
-
 Router(config-if)# [no] lldp run
-
 Router(config-if)# [no] lldp transmit (hide from others in LLDP table)
-
 Router(config-if)# [no] lldp receive  (don't see others in LLDP table)
-
 Router(config)#interface gigabitEthernet 0/0
-
 - Router(config-if)#ip address <ipv4> <subnet-mask>
 OR
 - Router(config-if)#ipv6 address <ipv6>/<prefix>
 OR
 - Router(config-if)#ipv6 address autoconfig
-
 Router(config-if)#no shutdown
-
 ```
 
 ### 4.2 Routing Table
@@ -625,23 +532,14 @@ SW1(config)#ntp server 10.1.1.1
 ## 5. Test Configs
 
 ```
-
 ping <ipv4/ipv6> [source <interface>]	(packet loss)
-
 telnet <ipv4/ipv6> [port]				(port check, clear text)
-
 tracert <ipv4>							(hop path windows)
-
 traceroute <ipv4>						(hop path mac/linux)
-
 traceroute ipv6 <ipv6>					(IPv6 hop path)
-
 ssh user@<ipv4/ipv6>
-
 arp -a
-
 netstat									(active ports/connections)
-
 ```
 
 ## 6. Router Power-On Sequence
@@ -656,7 +554,6 @@ netstat									(active ports/connections)
 | NVRAM / TFTP / Console | Config    | Load startup config or enter setup mode |
 
 ```
-
 Router#show file systems
 
 // this means still in "bios"
@@ -670,7 +567,6 @@ Branch(config)#boot system flash:/c2900....bin // from flash
 Branch(config)#boot system tftp://c2900....bin // from TFTP server
 
 Branch(config)#boot system rom
-
 ```
 
 - Validates IOS Images via MD5 checksum
@@ -678,7 +574,6 @@ Branch(config)#boot system rom
 - Secure Copy Protocol (SCP) for secure file transfer
 
 ```
-
 // save config to a TFTP server
 
 Branch#copy running-config tftp:
@@ -693,3 +588,5 @@ Branch#copy tftp: running-config
 Address...? x
 Source filename? config.cfg
 ```
+
+## 7. Week 4 Hands On

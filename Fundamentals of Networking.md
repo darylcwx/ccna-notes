@@ -252,11 +252,11 @@ debugInConsole: false
 
 | Class | First Octet Range | Prefix Length | Leading Bits | Default Mask    | Purpose / Notes                   |
 | ----- | ----------------- | ------------- | ------------ | --------------- | --------------------------------- |
-| A     | 1–126           | /8            | 0            | `255.0.0.0`     | large networks (127 for loopback) |
-| B     | 128–191         | /16           | 10           | `255.255.0.0`   | medium networks                   |
-| C     | 192–223         | /24           | 110          | `255.255.255.0` | small networks                    |
-| D     | 224–239         |               | 1110         | N/A             | multicast                         |
-| E     | 240–255         |               | 1111         | N/A             | experimental / reserved           |
+| A     | 1–126             | /8            | 0            | `255.0.0.0`     | large networks (127 for loopback) |
+| B     | 128–191           | /16           | 10           | `255.255.0.0`   | medium networks                   |
+| C     | 192–223           | /24           | 110          | `255.255.255.0` | small networks                    |
+| D     | 224–239           |               | 1110         | N/A             | multicast                         |
+| E     | 240–255           |               | 1111         | N/A             | experimental / reserved           |
 
 #### 4.2.3 Binary Calculation
 
@@ -418,7 +418,7 @@ debugInConsole: false
 	- Choose most specific route (longest prefix length)
 	- Drop packet if no route found
 
-#### 6.2.1 VLAN Routing (L3)
+#### 6.2.1 Inter-VLAN Routing (L3)
 
 - [CLI](Cisco%20Hands%20On.md#2.4%20VLAN)
 - Separate L2 broadcast domain
@@ -481,9 +481,10 @@ debugInConsole: false
 - Terminology/Translation Mechanism
 
 | Source IPv4   | Source IPv4   | Desti IPv4    | Desti IPv4     |
-| ------------- | ------------- |:------------- | -------------- |
+| ------------- | ------------- | :------------ | -------------- |
 | inside local  | inside global | outside local | outside global |
 | 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1  |
+|               |               |               |                |
 
 - **Static NAT**: one-to-one
 	- **Port Forwarding**: external port → specific internal port
@@ -504,6 +505,12 @@ debugInConsole: false
 ```
 Router#show control-plane host open-ports
 ```
+
+#### 6.2.6 Hot Standby Router Protocol
+
+- HSRP/VRRP/GLBP
+- If HSRP breaks, active-active, "split brain"
+- 
 
 ### 6.3 Network Services
 
