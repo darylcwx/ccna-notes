@@ -81,6 +81,21 @@ Switch(config-if-range)#shutdown
 ```
 
 ```
+conf t
+interface GigabitEthernet0/0/1
+ switchport mode access
+ switchport access vlan 112
+ spanning-tree portfast
+exit
+
+interface GigabitEthernet0/0/2
+ switchport mode access
+ switchport access vlan 112
+ spanning-tree portfast
+exit
+```
+
+```
 // show
 Switch#show mac address-table            // MAC table entries
 Switch#show spanning-tree               // STP state, root bridge info
