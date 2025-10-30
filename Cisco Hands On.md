@@ -26,6 +26,22 @@ debugInConsole: false
 - user exec mode (>)
 - privileged exec mode (#)
 
+### 2.1 SSH
+
+```
+Switch#conf t
+Switch(config)#ip domain-name <ip>
+Switch(config)#crypto key generate rsa
+Switch(config)#username <> privilege <> secret <>
+Switch(config)#ip ssh version 2
+Switch(config)#line vty 0 4
+Switch(config)#transport input ssh
+Switch(config)#login local
+Switch(config)#exec-timeout 10 0
+Switch(config)#end
+Switch(config)#write mem
+```
+
 ## 3. Switch Config
 
 ### 3.1 Basic
