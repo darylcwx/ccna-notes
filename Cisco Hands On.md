@@ -605,3 +605,16 @@ Source filename? config.cfg
 ```
 
 ## 7. Week 4 Hands On
+
+### 7.1 Save Local Config
+
+PuTTY > Session > Logging > 
+
+1. "All session output"
+2. Browse > save location
+PuTTY > Session > start connection:
+
+```
+RTR01# terminal length 0     // ignores --more--  
+RTR01# show running-config
+```
