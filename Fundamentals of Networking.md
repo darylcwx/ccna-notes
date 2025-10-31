@@ -746,6 +746,9 @@ Router#show control-plane host open-ports
 - Asymmetric routing
 	- Traceroute for A, B, C and C, B, A
 	- No traceroute = hop by hop checks
+- High Availability Between Firewalls
+	- HA for session information
+		- If link breaks, both FW think they are master, traffic fails
 
 #### 9.1.1 Steps
 
