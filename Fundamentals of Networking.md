@@ -384,6 +384,7 @@ debugInConsole: false
 
 - **TCP/IP**
 	- 3-way: [SYN, SYN/ACK, ACK]
+		- 
 	- Guaranteed delivery (reliability, data integrity)
 	- Resend if error, interrupting streaming/music
 - **UDP**
