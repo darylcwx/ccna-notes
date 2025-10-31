@@ -634,3 +634,25 @@ PuTTY > Session > start connection:
 RTR01# terminal length 0     // ignores --more--  
 RTR01# show running-config
 ```
+
+### 7.2 Factory Reset
+
+- FW - Fortinet
+	- CLI>exec factoryreset
+- FW - palo alto
+	- Restore to 1st version
+- Router/Switch
+	- Switch(config)#write erase
+	- Switch(config)#del vlan.dat
+	- Switch(config)#reload
+
+### 7.3 Common Troubleshooting Problems
+
+- Gateway
+	- Router(config)#ip route 0.0.0.0 0.0.0.0
+	- Going to internet ok, but coming back specific
+- Off internet/wifi
+- Firewall
+	- Source/Destination/Port/Service (must have)
+- Port Channel
+	- Ensure both switches use the same (LACP, PAgP, EtherChannel)
