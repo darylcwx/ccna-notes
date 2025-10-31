@@ -749,6 +749,7 @@ Router#show control-plane host open-ports
 - High Availability Between Firewalls
 	- HA for session information
 		- If link breaks, both FW think they are master, traffic fails
+- ARP/MAC incomplete == IP conflict
 
 #### 9.1.1 Steps
 
