@@ -441,6 +441,7 @@ debugInConsole: false
 		- \$\$\$, requires more physical interfaces
 
 #### 6.2.2 Static Routing
+- 
 
 #### 6.2.3 Dynamic Routing Protocols
 
