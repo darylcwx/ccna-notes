@@ -384,6 +384,7 @@ debugInConsole: false
 
 - **TCP/IP**
 	- 3-way: [SYN, SYN/ACK, ACK]
+		- Establish first before traffic flows
 		- 
 	- Guaranteed delivery (reliability, data integrity)
 	- Resend if error, interrupting streaming/music
@@ -441,6 +442,7 @@ debugInConsole: false
 		- \$\$\$, requires more physical interfaces
 
 #### 6.2.2 Static Routing
+
 - 
 
 #### 6.2.3 Dynamic Routing Protocols
@@ -739,7 +741,11 @@ Router#show control-plane host open-ports
 - Software
 - Config
 
-### 9.1 Recommended
+### 9.1 Problems
+
+- Asymmetric routing
+	- Traceroute for A, B, C and C, B, A
+	- No traceroute = hop by hop checks
 
 #### 9.1.1 Steps
 
