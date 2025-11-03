@@ -14,14 +14,14 @@ debugInConsole: false
 
 850/1000 to pass, ~2 minutes per question
 
-### Question Style
+### 1.1 Question Style
 
 1. Configure
 2. Monitor
 3. Troubleshoot
 4. Combination/More MCQ
 
-### Example Lab Questions
+### 1.2 Example Lab Questions
 
 - Full question
   1. hostname
@@ -56,3 +56,7 @@ debugInConsole: false
 - Introducing Network Programmability
 - Examining the Security Threat Landscape
 - Implementing Threat Defense Technologies
+
+## 4. Bring For Test
+- NRIC
+- 
