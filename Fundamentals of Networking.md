@@ -281,10 +281,13 @@ debugInConsole: false
 - Network: 192.168.10.0/26
 - Subnet Mask: 255.255.255.192
 - Block size (by CIDR): 1st bit = 128, 2nd bit = 64
-	- /26 = 256-192 = 64 remaining IP, 256/64 = 4 blocks
-	- /27 = 256-224 = 32 remaining IP, 256/32 = 8 blocks
-	- /28 = 256-240 = 16 remaining IP, 256/16 = 16 blocks
-	- /29 = 256-248 = 8 remaining IP, 256/8 = 32 blocks
+	- /26 = 192 = 64 remaining IP (62 usable), 256/64 = 4 blocks
+	- /27 = 224 = 32 remaining IP (30), 256/32 = 8 blocks
+	- /28 = 240 = 16 remaining IP (14), 256/16 = 16 blocks
+	- /29 = 248 = 8 remaining IP (6), 256/8 = 32 blocks
+	- /30 = 252 = 4 remaining IP (2), 256/4 = 64 blocks
+	- /31 = 254 = 2 remaining IP (0), usable only for point-to-point connection
+	- /32 - used for one specific host
 - Sub-subnet based on requirements
 	- e.g. 1, "support >= 6 IPs per block", use /29, since 8 IPs per block
 	- e.g. 2,
