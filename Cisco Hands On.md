@@ -133,7 +133,6 @@ Switch#erase startup-config
 ```
 // show
 Switch#show vlan brief
-Switch#show interfaces trunk
 Router#show vlans (trunking's subinterfaces)
 Router#show running-config interface gig0/1.10 (subinterface config)
 Router#show ip route
@@ -141,37 +140,49 @@ Router#ip route 0.0.0.0 0.0.0.0 8.8.8.8     // default gateway
 
 // config
 Switch#conf t
-Switch(config)#vlan <number> (number: standard 1-1005, extended 1006-4094)
+Switch(config)#vlan <number> 
 Switch(config-vlan)#name <name>
-Switch(config)#interface <interface>
 ```
 
 ```
 // access
 // belongs to 1 VLAN, used for end devices
 Switch(config-if)#switchport mode access
-- Switch(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
-OR
-- Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
+
+Switch(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
+// OR
+Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
 ```
 
 ```
 // trunk
 // carries traffic for multiple VLANs
-// connects (Sw to Sw) or (Sw to Routers)
-// tags frames with VLAN ID using IEEE 802.1Q
+Switch#show interfaces trunk
+
 Switch(config-if)#switchport mode trunk
-Switch(config-if)#switchport trunk encapsulation dot1q (specifies 802.1Q)
-Switch(config-if)#switchport trunk native vlan 99 (untagged VLANs)
+Switch(config-if)#switchport trunk encapsulation dot1q 
+
+// tag VLANs
 Switch(config-if)#switchport trunk allowed vlan 10,20,30,99
-Switch(config-if)#
+
+// diff switch but same native VLAN 
+Switch(config-if)#switchport trunk native vlan 99
+
+Switch#show interfaces trunk
 ```
 
 ```
-// verify
-// "dynamic desirable" = auto mode, "switchport" = static access
-Switch#show interfaces <interface> switchport
-Switch#show interfaces trunk
+// router on a stick
+R1(config)#int g0/0
+
+R1(config-if)#int g0/0.10
+R1(config-subif)#encap dot1q 20
+R1(config-subif)#ip addr <ip>
+
+R1(config-subif)#int g0/0.20
+R1(config-subif)#encap
+
+R1#sh ip int br
 ```
 
 ### 3.3 EtherChannel

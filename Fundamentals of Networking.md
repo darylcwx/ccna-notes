@@ -32,14 +32,20 @@ debugInConsole: false
 - Logical segmentation into separate broadcast domains
 - Needs router to communicate across other VLANs
 - Security, performance, management
-- IEEE 802.1Q (VLAN tagging protocol)
+- IEEE 802.1Q Tag Format (VLAN tagging protocol)
   - [Desti MAC, Source MAC, **VLAN Tag**, Type/Length, Payload, FCS]
   - 4 byte VLAN Tag in Ethernet frame (L2)
-	- **Type**: 16 bits, `0x8100`
-	- **Priority**: 3 bits, QoS priority
-	- **CFI**: 1 bit
-	- **VLAN ID**: 12 bits, VLAN number (0-4095)
-
+	- **TPID**: 16 bits, `0x8100`
+	- **Priority Code Point (PCP)**: 3 bits, Class of Service (CoS) priority
+	- **Drop Eligible Indicator (DEI)**: 1 bit
+	- **VLAN ID**: 12 bits, VLAN number (1- 4094)
+- VLAN Range
+	- Normal VLANs (1-1005)
+	- Extended VLANs (1006-4094)
+	- Older devices cannot use ext. range
+- dot1q has native VLAN (VLAN 1)
+	- native VLAN need to be same across switches
+	- native VLAN is untagged 
 ### 2.2 WAN
 
 - Spans large geographic area
@@ -425,15 +431,15 @@ debugInConsole: false
 
 #### 6.2.1 Inter-VLAN Routing (L3)
 
-- [CLI](Cisco%20Hands%20On.md#2.4%20VLAN)
+- [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
 - Separate L2 broadcast domain
 - Security, traffic control, performance
 - Options
 	1. Router on a stick
-		- Single physical interfaces, Sub-interface config for each VLAN
-			- IP address that acts as default gateway
-			- `Fa0/1.10` for VLAN 10
-			- `Fa0/1.20` for VLAN 20
+		- Route between multiple VLANs
+		- Switch int = regular trunk
+		- Router int = Sub-interface config for each VLAN
+			- Send frames out of sub-interface with its configured VLAN tag 
 	  	- $, Simple
 	2. Layer 3 Switch (Switch with routing capabilities)
 	  	- SVI (Switched Virtual Interfaces) configs
