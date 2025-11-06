@@ -28,6 +28,8 @@ debugInConsole: false
 
 #### 2.1.1 VLAN (L2)
 
+- [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
+- [6.2.1 Inter-VLAN Routing (L3)](#6.2.1%20Inter-VLAN%20Routing%20(L3))
 - VLAN maps to a unique subnet (L3)
 - Logical segmentation into separate broadcast domains
 - Needs router to communicate across other VLANs
@@ -44,8 +46,9 @@ debugInConsole: false
 	- Extended VLANs (1006-4094)
 	- Older devices cannot use ext. range
 - dot1q has native VLAN (VLAN 1)
-	- native VLAN need to be same across switches
-	- native VLAN is untagged 
+	- native VLAN need to be same across switches, best to change to unused VLAN
+	- native VLAN is untagged
+
 ### 2.2 WAN
 
 - Spans large geographic area
@@ -432,27 +435,33 @@ debugInConsole: false
 #### 6.2.1 Inter-VLAN Routing (L3)
 
 - [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
+- [2.1.1 VLAN (L2)](#2.1.1%20VLAN%20(L2))
 - Separate L2 broadcast domain
 - Security, traffic control, performance
 - Options
-	1. Router on a stick
-		- Route between multiple VLANs
-		- Switch int = regular trunk
-		- Router int = Sub-interface config for each VLAN
-			- Send frames out of sub-interface with its configured VLAN tag 
-	  	- $, Simple
-	2. Layer 3 Switch (Switch with routing capabilities)
-	  	- SVI (Switched Virtual Interfaces) configs
-	  	- Each SVI has a IP address that acts as default gateway
-	  	- \$\$, Faster than RoaS, Scalable
-	3. Separate Dedicated Router
-		- Separate physical interfaces for each VLAN
-		- Best for complex/high-traffic networks
-		- \$\$\$, requires more physical interfaces
+
+##### Router on a stick
+
+- Route between multiple VLANs using a single interface on the router and switch
+- Switch int = regular trunk
+- Router int = Sub-interface config for each VLAN
+- Send frames out of sub-interface with its configured VLAN tag
+- $, Simple, easy  congestion
+
+##### Layer 3 Switch (Switch with routing capabilities)
+
+- Routing ok, Inter-VLAN ok, Config routes ok
+- Switch Virtual Interfaces (SVI) are virtual interfaces
+- Each SVI has an IP address that PC uses as default gateway
+- $\$, Faster than RoaS, Scalable
+
+##### Separate Dedicated Router
+
+- Separate physical interfaces for each VLAN
+- Best for complex/high-traffic networks
+- \$\$\$, requires more physical interfaces
 
 #### 6.2.2 Static Routing
-
-- 
 
 #### 6.2.3 Dynamic Routing Protocols
 

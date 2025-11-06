@@ -133,10 +133,12 @@ Switch#erase startup-config
 ```
 // show
 Switch#show vlan brief
+Switch#show interfaces trunk
+
 Router#show vlans (trunking's subinterfaces)
 Router#show running-config interface gig0/1.10 (subinterface config)
 Router#show ip route
-Router#ip route 0.0.0.0 0.0.0.0 8.8.8.8     // default gateway
+Router#ip route 0.0.0.0 0.0.0.0 8.8.8.8
 
 // config
 Switch#conf t
@@ -174,15 +176,30 @@ Switch#show interfaces trunk
 ```
 // router on a stick
 R1(config)#int g0/0
+R1(config-if)#no shut
 
 R1(config-if)#int g0/0.10
-R1(config-subif)#encap dot1q 20
-R1(config-subif)#ip addr <ip>
+R1(config-subif)#encap dot1q 10 <native>
+R1(config-subif)#ip addr <ip> // last usable
 
 R1(config-subif)#int g0/0.20
-R1(config-subif)#encap
+R1(config-subif)#encap dot1q 20 <native>
 
 R1#sh ip int br
+```
+
+```
+// layer 3 switch
+// allow layer 3 routing
+Switch(config)#ip routing
+
+// create vlan first
+Switch(config)#int vlan10
+
+// config int
+Switch(config)#int g0/1
+Switch(config-if)#no switchport 
+Switch(config-if)#no shut 
 ```
 
 ### 3.3 EtherChannel
