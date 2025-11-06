@@ -587,10 +587,19 @@ Router#show control-plane host open-ports
 - Hello BPDU every 2 seconds out all interfaces
 	- Only switches can send
 - Bridge ID == Priority (4 bits) + VID (12) + MAC (48)
-	- VID for Cisco's Per-VLAN Spanning Tree (PVST)
+	- VID for PVST
 - Default bridge priority = 32768
 	- Priority == priority ? lowest MAC address
 	- Priority (multiples of 4096)+1
+- Root Ports and Non-designated Ports expect to receive BPDUs
+	- If not received by
+- Different root bridge for different VLANs to maximize interface bandwidth (load balancing)
+
+```
+// changing priority 
+Sw(config)#spanning-tree vlan 1 cost 
+Sw(config)#spanning-tree vlan 1 port-priority (+32)
+```
 
 ##### Steps
 
@@ -610,24 +619,77 @@ Router#show control-plane host open-ports
 		1. Lowest Root cost
 		2. Lowest Bridge ID
 	- Other port blocking
+4. Primary/Secondary Root Bridge
+
+```
+// reduces priority by 4096
+Sw(config)#spanning-tree vlan 1 root primary
+Sw(config)#spanning-tree vlan 1 root secondary
+Sw(config)#do show spanning-tree
+```
+
+##### States
+
+| **State**      | **Type**     | **Duration** | **BPDUs** | **Traffic** | **MAC Learning** |
+| -------------- | ------------ | ------------ | --------- | ----------- | ---------------- |
+| **Forwarding** | stable       | N/A          | tx/rx     | tx/rx       | yes              |
+| **Blocking**   | stable       | N/A          | rx only   | no          | no               |
+| **Listening**  | transitional | ~15 sec      | tx/rx     | no          | no               |
+| **Learning**   | transitional | ~15 sec      | tx/rx     | no          | yes              |
+
+```
+Sw(config)#spanning-tree mode pvst/rapid-pvst
+```
+
+##### Timers
+
+- Root bridges' timers decides the entire networks' timers
+
+| **Timer**         | **Purpose**                                                                                                | **Duration**            |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------- |
+| **Hello**         | RB send Hello BPDUs                                                                                        | **2 sec**               |
+| **Forward Delay** | port stays in Listening and Learning (total 30s)                                                           | **15 sec**              |
+| **Max Age**       | if Hello BPDUs not received by 20s, reevaluate, change to listening, learning, then forwarding (total 50s) | **20 sec** (≈10× Hello) |
 
 ##### Standards
 
   - IEEE 802.1D (CST, legacy, only 1 tree for entire network)
-  - PVST+ (Cisco fork that provides 1 STP per VLAN)
+  - Regular STP
+	  - `0180.c200.0000`
+  - PVST (Per-VLAN, only ISL, not used anym)
+  - PVST+ (802.1q)
+	  - `01:00:0c:cc:cc:cd`
   - 802.1s MSTP (Maps multiple VLANs into same STP)
   - 802.1w RSTP (improves convergence by revamping port roles and BPDU exchanges)
 	- Speeds recalculation when topology changes (convergence)
 	- Roles and States simplified
   - Rapid PVST+ (Cisco fork of RSTP using PVST+)
 
-- **Enhancements**
-  - PortFast (immediate transition to forwarding state)
-  - BPDU Guard (protects from loop, errdisables a port when BPDU received, used with PortFast)
+##### Enhancements
+
+  - PortFast
+	  - Immediate forwarding state
+	  - Only for end hosts
+
+```
+Sw(config)#int <int>
+Sw(config-if)#spanning-tree portfast
+Sw(config)#spanning-tree portfast default
+```
+
+  - BPDU Guard
+	  - If enabled, receiving a BPDU from another switch errdisables the port
+
+```
+Sw(config-if)#spanning-tree bpduguard enable
+Sw(config)#spanning-tree portfast bpduguard default
+```
+
   - BPDU Filter (BPDU guard but no disable, just ignore)
-  - **STP Loop Guard** (stops port forwarding if BPDUs vanish)
-  - **STP Root Guard** (prevent rouge switch from hijacking Root Bridge)
-  - [EtherChannel](Cisco%20Hands%20On.md#2.5%20EtherChannel) (combines multiple physical links into 1 logical link → redundancy + BW)
+  - Root Guard
+	  - Rejects new root bridge, disables interface
+  - Loop Guard
+	  - Stops receiving BPDUs, won't change state
 
 #### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
 

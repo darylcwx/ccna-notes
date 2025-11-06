@@ -1,33 +1,6 @@
 
+#spanning-tree vlan 10 root primary
+#spanning-tree vlan 20 root secon
 
-
-172.16.0.0/16
-
-1)
-/23, 128 subnets
-
-
-2)
-172.21.111.201/20
-
-16
-32
-48
-64
-80
-96
-
-3)
-192.168.91.78/26
-
-192.168.91.64, BC = 192.168.91.127
-
-4)
-172.16.0.0/16
-
-5)
-172.30.0.0/16
-
-1111 11 00.0000 0000
-
-64 subnets 
+#spanning-tree vlan 20 root primary
+#spanning-tree vlan 10 root second
