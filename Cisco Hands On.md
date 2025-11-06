@@ -97,21 +97,6 @@ Switch(config-if-range)#shutdown
 ```
 
 ```
-conf t
-interface GigabitEthernet0/0/1
- switchport mode access
- switchport access vlan 112
- spanning-tree portfast
-exit
-
-interface GigabitEthernet0/0/2
- switchport mode access
- switchport access vlan 112
- spanning-tree portfast
-exit
-```
-
-```
 // show
 Switch#show mac address-table            // MAC table entries
 Switch#show spanning-tree               // STP state, root bridge info
@@ -186,15 +171,9 @@ R1(config-subif)#int g0/0.20
 R1(config-subif)#encap dot1q 20 <native>
 
 R1#sh ip int br
-
-// setting native VLAN
-R1(config-subif)#encap dot1q <vid> native
-// OR
-R1(config-if)#ip add <ip>
 ```
 
 ```
-<<<<<<< HEAD
 // layer 3 switch
 // allow layer 3 routing
 Switch(config)#ip routing
@@ -208,15 +187,6 @@ Switch(config-if)#no switchport
 Switch(config-if)#no shut 
 ```
 
-=======
-// Switch Virtual Interface (SVI)
-Switch(config)#ip routing
-Switch(config)#int 'vlan10'
-Switch(config-if)#no switchport
-Switch(config-if)#no shut 
-
-```
->>>>>>> origin/main
 ### 3.3 EtherChannel
 
 - Bundle multiple interfaces into 1 logical trunk (port-channel), configure VLAN/trunk on channel, bring links up, check summary

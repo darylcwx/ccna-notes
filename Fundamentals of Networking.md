@@ -466,7 +466,7 @@ debugInConsole: false
 		- Route between multiple VLANs
 		- Switch int = regular trunk
 		- Router int = Sub-interface config for each VLAN
-			- Send frames out of sub-interface with its configured VLAN tag 
+			- Send frames out of sub-interface with its configured VLAN tag
 	  	- $, Simple
 	2. Layer 3 Switch (Switch with routing capabilities)
 	  	- SVI (Switched Virtual Interfaces) configs
@@ -477,6 +477,7 @@ debugInConsole: false
 		- Separate physical interfaces for each VLAN
 		- Best for complex/high-traffic networks
 		- \$\$\$, requires more physical interfaces
+
 >>>>>>> origin/main
 
 #### 6.2.2 Static Routing
@@ -571,9 +572,47 @@ Router#show control-plane host open-ports
 	- Layer 1 repeaters
 	- Carrier Sense Multiple Access with Collision Detection (CSMA/CD)
 
-#### 6.3.2 Spanning Tree Protocol (STP)
+#### 6.3.2 Spanning Tree Protocol (STP) L2
 
-- **Standards**
+![](assets/Fundamentals%20of%20Networking/img-20251106150320172.png)
+
+![](assets/Fundamentals%20of%20Networking/img-20251106150401815.png)
+
+- Redundancy is essential (24/7/365)
+	- Broadcast storms
+	- MAC address flapping
+- Prevent L2 loops by placing redundant ports in a blocking state, only entering a forwarding state if an active fails
+- **Forwarding state** sends & receives
+- **Blocking state** only sends or receives STP messages (called Bridge Protocol Data Units (BPDUs))
+- Hello BPDU every 2 seconds out all interfaces
+	- Only switches can send
+- Bridge ID == Priority (4 bits) + VID (12) + MAC (48)
+	- VID for Cisco's Per-VLAN Spanning Tree (PVST)
+- Default bridge priority = 32768
+	- Priority == priority ? lowest MAC address
+	- Priority (multiples of 4096)+1
+
+##### Steps
+
+1. Lowest Bridge ID = Root Bridge
+	- All ports forwarding
+2. Choose 1 Root Port for each non-root switch
+	- Ports across Root Port = forwarding
+	1. Lowest Root cost
+		- Speed [10 Mbps, 100 Mbps, 1 Gbps, 10 Gbps]
+		- STP Cost [100, 19, 4, 2]
+	2. Lowest neighbor Bridge ID
+	3. Lowest neighbor Port ID
+		- Port priority (default 128) + port number
+		- ![](assets/Fundamentals%20of%20Networking/img-20251106154116227.png)![](assets/Fundamentals%20of%20Networking/img-20251106154422338.png)
+3. Remaining collision domains
+	- 1 interface to forward
+		1. Lowest Root cost
+		2. Lowest Bridge ID
+	- Other port blocking
+
+##### Standards
+
   - IEEE 802.1D (CST, legacy, only 1 tree for entire network)
   - PVST+ (Cisco fork that provides 1 STP per VLAN)
   - 802.1s MSTP (Maps multiple VLANs into same STP)
@@ -581,16 +620,7 @@ Router#show control-plane host open-ports
 	- Speeds recalculation when topology changes (convergence)
 	- Roles and States simplified
   - Rapid PVST+ (Cisco fork of RSTP using PVST+)
-- **STP steps**
-  1. Root Bridge (lowest ID = 'CEO')
-  2. Root Port for each non-root switch
-	 - Port with cheapest cost, fastest route to 'CEO'
-  3. Designated Port for each segment
-	 - Port on the Switch with fastest path to Root Bridge
-	 - All traffic leaves that segment via the DP
-	 - Repeat for each segment
-	 - *DP = segment's VIP lane to 'CEO'*
-  4. Root ports/Designated ports → Forwarding state, all else → Blocking state
+
 - **Enhancements**
   - PortFast (immediate transition to forwarding state)
   - BPDU Guard (protects from loop, errdisables a port when BPDU received, used with PortFast)
@@ -811,7 +841,51 @@ Router#show control-plane host open-ports
   - **Output errors**: Collisions during the transmission of a frame
   - **Excessive noise**: Cable exceeds max length
   - **Excessive collision**: Duplex mismatch
-## 10. Good To Know
-### 10.1 Dynamic Trunking Protocol
 
-### 10.2 VLAN Trunking Protocol
+## 10. Good To Know
+
+### 10.1 Dynamic Trunking Protocol (DTP)
+
+- Switchport in `dynamic desirable` will form a trunk with other Switches when
+	- `switchport mode trunk`
+	- `switchport mode dynamic desirable`
+	- `switchport mode dynamic auto`
+- `switchport dynamic auto` is passive and will not actively try  nor form a trunk unless opposing switch is actively trying
+- Should be disabled via `switchport nonegotiate`
+- Trunking encapsulation
+	- `negotiate`:  `ISL` > `802.1q`
+
+![](assets/Fundamentals%20of%20Networking/img-20251106141710034.png)
+
+### 10.2 VLAN Trunking Protocol (VTP)
+
+- Configure VLANs on a central VTP server switch, other switches will sync their VLAN database to the server
+- For large networks with many VLANs
+- Rare and not recommended
+	- Old switch with higher revision number will replace VLAN database, breaking the network
+- Versions: 1, 2, 3
+- Modes: server, client, transparent
+- Cisco default = VTP server mode
+- `// anything below here not so important //`
+- VTP servers
+	- Can CRUD VLANs
+		- Increases revision number
+	- Stored in NVRAM (persistent)
+	- Advertises latest revision on trunk interfaces for sync
+		- Latest = king
+- VTP clients
+	- Cannot CRUD
+	- Not stored in NVRAM (unless VTPv3)
+	- Forwards VTP ads to other clients
+- CLI
+	- `show vtp status`
+	- `vtp domain cisco`
+- Receives VTP ads with higher, will match and join same domain
+- Transparent mode
+	- Does not participate nor sync
+	- Maintains own VLAN database in NVRAM
+	- Can CRUD but not advertised
+	- Will forward VTP ads if same domain
+- Reset revision number to 0
+	- Change domain to unused
+	- Change to transparent mode
