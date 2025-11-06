@@ -439,6 +439,7 @@ debugInConsole: false
 - Separate L2 broadcast domain
 - Security, traffic control, performance
 - Options
+<<<<<<< HEAD
 
 ##### Router on a stick
 
@@ -460,6 +461,23 @@ debugInConsole: false
 - Separate physical interfaces for each VLAN
 - Best for complex/high-traffic networks
 - \$\$\$, requires more physical interfaces
+=======
+	1. Router on a stick
+		- Route between multiple VLANs
+		- Switch int = regular trunk
+		- Router int = Sub-interface config for each VLAN
+			- Send frames out of sub-interface with its configured VLAN tag 
+	  	- $, Simple
+	2. Layer 3 Switch (Switch with routing capabilities)
+	  	- SVI (Switched Virtual Interfaces) configs
+	  	- Each SVI has a IP address that acts as default gateway
+		  	
+	  	- \$\$, Faster than RoaS, Scalable
+	3. Separate Dedicated Router
+		- Separate physical interfaces for each VLAN
+		- Best for complex/high-traffic networks
+		- \$\$\$, requires more physical interfaces
+>>>>>>> origin/main
 
 #### 6.2.2 Static Routing
 
@@ -793,3 +811,7 @@ Router#show control-plane host open-ports
   - **Output errors**: Collisions during the transmission of a frame
   - **Excessive noise**: Cable exceeds max length
   - **Excessive collision**: Duplex mismatch
+## 10. Good To Know
+### 10.1 Dynamic Trunking Protocol
+
+### 10.2 VLAN Trunking Protocol
