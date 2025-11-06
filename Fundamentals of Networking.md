@@ -444,6 +444,7 @@ debugInConsole: false
 	2. Layer 3 Switch (Switch with routing capabilities)
 	  	- SVI (Switched Virtual Interfaces) configs
 	  	- Each SVI has a IP address that acts as default gateway
+		  	
 	  	- \$\$, Faster than RoaS, Scalable
 	3. Separate Dedicated Router
 		- Separate physical interfaces for each VLAN
@@ -784,3 +785,7 @@ Router#show control-plane host open-ports
   - **Output errors**: Collisions during the transmission of a frame
   - **Excessive noise**: Cable exceeds max length
   - **Excessive collision**: Duplex mismatch
+## 10. Good To Know
+### 10.1 Dynamic Trunking Protocol
+
+### 10.2 VLAN Trunking Protocol
