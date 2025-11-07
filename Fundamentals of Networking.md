@@ -665,20 +665,30 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 	- Roles and States simplified
   - Rapid PVST+ (Cisco fork of RSTP using PVST+)
 
-##### Enhancements
+##### STP Toolkit
 
-  - PortFast
+  - PortFast (Edge)
 	  - Immediate forwarding state
 	  - Only for end hosts
+	  - Better UX
+	  - Default: enable on all access ports
 
 ```
 Sw(config)#int <int>
 Sw(config-if)#spanning-tree portfast
-Sw(config)#spanning-tree portfast default
+Sw(config)#spanning-tree portfast default 
 ```
 
   - BPDU Guard
 	  - If enabled, receiving a BPDU from another switch errdisables the port
+		  - ErrDisable Recovery
+			  - Default: disabled
+			  - `shut; no shut`
+			  - 5 mins
+			  - `Sw(config)#errdisable recovery interval <seconds>`
+		  - Disable for particular cause
+			  - `Sw(config)#errdisable recovery cause <cause>`
+	  - Default: enabled only on portfast ports
 
 ```
 Sw(config-if)#spanning-tree bpduguard enable
@@ -686,6 +696,15 @@ Sw(config)#spanning-tree portfast bpduguard default
 ```
 
   - BPDU Filter (BPDU guard but no disable, just ignore)
+	  - Per port
+		  - `Sw(config-if)#spanning-tree bpdufilter enable`
+		  - BPDU ignored
+		  - BPDU.G not triggered
+	  - Global
+		  - `Sw(config)#spanning-tree portfast bpdufilter default`
+		  - BPDU.F disabled
+		  - BPDU.G triggered (errdisable)
+
   - Root Guard
 	  - Rejects new root bridge, disables interface
   - Loop Guard
