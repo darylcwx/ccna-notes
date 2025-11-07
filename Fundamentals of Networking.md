@@ -439,7 +439,6 @@ debugInConsole: false
 - Separate L2 broadcast domain
 - Security, traffic control, performance
 - Options
-<<<<<<< HEAD
 
 ##### Router on a stick
 
@@ -461,24 +460,6 @@ debugInConsole: false
 - Separate physical interfaces for each VLAN
 - Best for complex/high-traffic networks
 - \$\$\$, requires more physical interfaces
-=======
-	1. Router on a stick
-		- Route between multiple VLANs
-		- Switch int = regular trunk
-		- Router int = Sub-interface config for each VLAN
-			- Send frames out of sub-interface with its configured VLAN tag
-	  	- $, Simple
-	2. Layer 3 Switch (Switch with routing capabilities)
-	  	- SVI (Switched Virtual Interfaces) configs
-	  	- Each SVI has a IP address that acts as default gateway
-		  	
-	  	- \$\$, Faster than RoaS, Scalable
-	3. Separate Dedicated Router
-		- Separate physical interfaces for each VLAN
-		- Best for complex/high-traffic networks
-		- \$\$\$, requires more physical interfaces
-
->>>>>>> origin/main
 
 #### 6.2.2 Static Routing
 
@@ -587,18 +568,20 @@ Router#show control-plane host open-ports
 - Hello BPDU every 2 seconds out all interfaces
 	- Only switches can send
 - Bridge ID == Priority (4 bits) + VID (12) + MAC (48)
-	- VID for PVST
+	- VID for PVST+
 - Default bridge priority = 32768
 	- Priority == priority ? lowest MAC address
 	- Priority (multiples of 4096)+1
 - Root Ports and Non-designated Ports expect to receive BPDUs
-	- If not received by
+	- If not received by Timers (see below), ...
 - Different root bridge for different VLANs to maximize interface bandwidth (load balancing)
 
 ```
 // changing priority 
 Sw(config)#spanning-tree vlan 1 cost 
 Sw(config)#spanning-tree vlan 1 port-priority (+32)
+
+Sw(config)#do sh spanning
 ```
 
 ##### Steps
@@ -658,6 +641,7 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 	  - `0180.c200.0000`
   - PVST (Per-VLAN, only ISL, not used anym)
   - PVST+ (802.1q)
+	  - Adds VID to the priority
 	  - `01:00:0c:cc:cc:cd`
   - 802.1s MSTP (Maps multiple VLANs into same STP)
   - 802.1w RSTP (improves convergence by revamping port roles and BPDU exchanges)
@@ -667,11 +651,11 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 
 ##### STP Toolkit
 
-  - PortFast (Edge)
-	  - Immediate forwarding state
-	  - Only for end hosts
-	  - Better UX
-	  - Default: enable on all access ports
+- **PortFast (Edge)**
+	- Immediate forwarding state
+	- Only for end hosts
+	- Better UX
+	- Default: enable on all access ports
 
 ```
 Sw(config)#int <int>
@@ -679,10 +663,10 @@ Sw(config-if)#spanning-tree portfast
 Sw(config)#spanning-tree portfast default 
 ```
 
-  - BPDU Guard
-	  - If enabled, receiving a BPDU from another switch errdisables the port
-		  - ErrDisable Recovery
-			  - Default: disabled
+- **BPDU Guard**
+	- If enabled, receiving a BPDU from another switch errdisables the port
+		- ErrDisable Recovery
+			 - Default: disabledbl
 			  - `shut; no shut`
 			  - 5 mins
 			  - `Sw(config)#errdisable recovery interval <seconds>`
@@ -695,20 +679,49 @@ Sw(config-if)#spanning-tree bpduguard enable
 Sw(config)#spanning-tree portfast bpduguard default
 ```
 
-  - BPDU Filter (BPDU guard but no disable, just ignore)
-	  - Per port
+ - **BPDU Filter** (BPDU guard but no disable, just ignore)
+	- Per port
 		  - `Sw(config-if)#spanning-tree bpdufilter enable`
 		  - BPDU ignored
 		  - BPDU.G not triggered
-	  - Global
+	- Global
 		  - `Sw(config)#spanning-tree portfast bpdufilter default`
 		  - BPDU.F disabled
 		  - BPDU.G triggered (errdisable)
 
-  - Root Guard
-	  - Rejects new root bridge, disables interface
-  - Loop Guard
-	  - Stops receiving BPDUs, won't change state
+- **Root Guard**
+	- Prevents <u>Designated ports</u> from becoming <u>Root ports</u>
+	1. If receive superior BPDU
+	2. Rejects new root bridge
+	3. Disables interface (BKN / ROOT_Inc)
+	- Blocks link, both ends are designated ports
+
+```
+Sw(config-if)#spanning-tree guard root
+```
+
+- **Loop Guard**
+	- Prevents <u>Non-Designated or Root ports</u> from becoming <u>Designated ports</u>
+	1. If stop receiving BPDUs,
+		- Unidirectional links usually caused by L1 hardware
+		- Software bug preventing BPDU sending
+	2. Becomes Designated port, causing L2 loop
+	3. Broken state instead of Forwarding state
+	- Still `up/up`
+
+```
+Sw(config-if)#spanning-tree guard loop
+Sw(config)#spanning-tree loopguard default
+Sw(config-if)#spanning-tree guard none
+```
+
+##### Other
+
+- Select root bridge for optimal traffic flow (minimize latency, minimize congestion) and stability, reliability
+	- By setting priority to 0
+- Loop and Root guard are mutually exclusive, and overwrites each other
+
+##### Rapid Spanning Tree Protocol
 
 #### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
 
