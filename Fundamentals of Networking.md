@@ -35,8 +35,8 @@ debugInConsole: false
 - Needs router to communicate across other VLANs
 - Security, performance, management
 - IEEE 802.1Q Tag Format (VLAN tagging protocol)
-  - [Desti MAC, Source MAC, **VLAN Tag**, Type/Length, Payload, FCS]
-  - 4 byte VLAN Tag in Ethernet frame (L2)
+	- [Desti MAC, Source MAC, **VLAN Tag**, Type/Length, Payload, FCS]
+	- 4 byte VLAN Tag in Ethernet frame (L2)
 	- **TPID**: 16 bits, `0x8100`
 	- **Priority Code Point (PCP)**: 3 bits, Class of Service (CoS) priority
 	- **Drop Eligible Indicator (DEI)**: 1 bit
@@ -63,8 +63,6 @@ debugInConsole: false
 	- Can be connected to switch, or another AP, or have SIM card
 	- Can be cloud-based AP (NaaS)
 - **WLAN controller**
-	- 
-
 - **BYOD**
 	- [Cost savings, Reduced hardware expenses, Work from anywhere, Secure remote collaboration, Employee satisfaction]
 - **VPN**
@@ -210,7 +208,7 @@ debugInConsole: false
 - **Payload (46 bytes)**
 	- Padding bytes if needed
 - **Trailer (4 bytes)**
-	  - Frame Check Sequence (FCS)
+		- Frame Check Sequence (FCS)
 		- Detects corrupted data by running Cyclic Redundancy Check (CRC) algorithm
 
 **Not actually part of Ethernet Frame**
@@ -359,11 +357,11 @@ debugInConsole: false
 
 - Static: manual interface ID
 - Static: EUI-64 interface ID
-  - Insert `FF:FE` (16 bits) in the middle of MAC
-  - Flip the `7th bit`, convert back to hexadec
+	- Insert `FF:FE` (16 bits) in the middle of MAC
+	- Flip the `7th bit`, convert back to hexadec
 - Stateless Address Autoconfig (SLAAC)
-  - `FF02::2`
-  - `Router1(config)#ipv6 address autoconfig`
+	- `FF02::2`
+	- `Router1(config)#ipv6 address autoconfig`
 - Stateful DHCP (DHCPv6)
 - Stateless DHCPv6
 
@@ -468,33 +466,33 @@ debugInConsole: false
 - Up-to-date, best available path (Dijkstra)
 - Each router builds a topology map (LSDB - Link-State DB)
 - **IGP** (Interior Gateway Protocol, used *within* a network)
-  - **Link-State** (routers share topology for full map)
+	- **Link-State** (routers share topology for full map)
 	- LSA (Link-State Advertisement) → Build full map, then Dijkstra
 	- Faster convergence
 	- [OSPF, IS-IS (intermediate to intermediate system)]
-	  - **OSPF:**
+		- **OSPF:**
 		- Backbone, Areas
 		- **Neighbor Adjacencies**
-		  - HDLC (High-Level Data Link Control)
+			- HDLC (High-Level Data Link Control)
 			- Physical p2p connection, no DR/BDR needed
-		  - Point-to-Point Sub-interface
+			- Point-to-Point Sub-interface
 			- Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
 		- **Neighbor States**
-		  - Down [no hello packets, neighbor MIA]
-		  - Init [hello received, but not recognized]
-		  - 2-Way [mutual acknowledgement, friendship established]
-		  - ExStart [electing who is master/slave]
-		  - Exchange [swapping DBDs (Database Description Packets)]
-		  - Loading [asking for missing LSAs (via LSR, LSU)]
-		  - Full [database twins, neighbors fully synced]
-  - **Distance-Vector**
+			- Down [no hello packets, neighbor MIA]
+			- Init [hello received, but not recognized]
+			- 2-Way [mutual acknowledgement, friendship established]
+			- ExStart [electing who is master/slave]
+			- Exchange [swapping DBDs (Database Description Packets)]
+			- Loading [asking for missing LSAs (via LSR, LSU)]
+			- Full [database twins, neighbors fully synced]
+	- **Distance-Vector**
 	- Share full routes with neighbors
 	- Partial view (only next hops)
 	- Slower convergence
 	- [RIP (routing info protocol), EIGRP (enhanced interior gateway routing protocol)]
 - **EGP** (Exterior Gateway Protocol, used *between* networks/ISPs)
-  - Path-Vector
-  - [BGP (border gateway protocol)]
+	- Path-Vector
+	- [BGP (border gateway protocol)]
 
 #### 6.2.4 Network Address Translation
 
@@ -506,14 +504,13 @@ debugInConsole: false
 | ------------- | ------------- | :------------ | -------------- |
 | inside local  | inside global | outside local | outside global |
 | 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1  |
-|               |               |               |                |
 
 - **Static NAT**: one-to-one
 	- **Port Forwarding**: external port → specific internal port
-  - **Dynamic NAT**: many-to-many (pool of public IPs)
-  - **PAT**: many-to-one (distinguished by TCP/UDP ports)
-  - **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
-  - **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
+- **Dynamic NAT**: many-to-many (pool of public IPs)
+- **PAT**: many-to-one (distinguished by TCP/UDP ports)
+- **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
+- **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
 
 #### 6.2.5 Infrastructure ACL (iACL)
 
@@ -532,7 +529,6 @@ Router#show control-plane host open-ports
 
 - HSRP/VRRP/GLBP
 - If HSRP breaks, active-active, "split brain"
-- 
 
 ### 6.3 Network Services
 
@@ -636,18 +632,18 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 
 ##### Standards
 
-  - IEEE 802.1D (CST, legacy, only 1 tree for entire network)
-  - Regular STP
-	  - `0180.c200.0000`
-  - PVST (Per-VLAN, only ISL, not used anym)
-  - PVST+ (802.1q)
-	  - Adds VID to the priority
-	  - `01:00:0c:cc:cc:cd`
-  - 802.1s MSTP (Maps multiple VLANs into same STP)
-  - 802.1w RSTP (improves convergence by revamping port roles and BPDU exchanges)
-	- Speeds recalculation when topology changes (convergence)
+- 802.1D (OG, legacy, only 1 tree for entire network)
+- 802.1w RSTP (improves convergence by revamping port roles and BPDU exchanges)
+- Speeds recalculation when topology changes (convergence)
 	- Roles and States simplified
-  - Rapid PVST+ (Cisco fork of RSTP using PVST+)
+- Regular STP
+	- `0180.c200.0000`
+- PVST (Per-VLAN, only ISL, not used anym)
+- PVST+ (802.1q)
+	- Adds VID to the priority
+	- `01:00:0c:cc:cc:cd`
+- 802.1s MSTP (Maps multiple VLANs into same STP)
+- Rapid PVST+ (Cisco fork of RSTP using PVST+)
 
 ##### STP Toolkit
 
@@ -667,12 +663,12 @@ Sw(config)#spanning-tree portfast default
 	- If enabled, receiving a BPDU from another switch errdisables the port
 		- ErrDisable Recovery
 			 - Default: disabledbl
-			  - `shut; no shut`
-			  - 5 mins
-			  - `Sw(config)#errdisable recovery interval <seconds>`
-		  - Disable for particular cause
-			  - `Sw(config)#errdisable recovery cause <cause>`
-	  - Default: enabled only on portfast ports
+				- `shut; no shut`
+				- 5 mins
+				- `Sw(config)#errdisable recovery interval <seconds>`
+			- Disable for particular cause
+				- `Sw(config)#errdisable recovery cause <cause>`
+		- Default: enabled only on portfast ports
 
 ```
 Sw(config-if)#spanning-tree bpduguard enable
@@ -681,13 +677,13 @@ Sw(config)#spanning-tree portfast bpduguard default
 
  - **BPDU Filter** (BPDU guard but no disable, just ignore)
 	- Per port
-		  - `Sw(config-if)#spanning-tree bpdufilter enable`
-		  - BPDU ignored
-		  - BPDU.G not triggered
+			- `Sw(config-if)#spanning-tree bpdufilter enable`
+			- BPDU ignored
+			- BPDU.G not triggered
 	- Global
-		  - `Sw(config)#spanning-tree portfast bpdufilter default`
-		  - BPDU.F disabled
-		  - BPDU.G triggered (errdisable)
+			- `Sw(config)#spanning-tree portfast bpdufilter default`
+			- BPDU.F disabled
+			- BPDU.G triggered (errdisable)
 
 - **Root Guard**
 	- Prevents <u>Designated ports</u> from becoming <u>Root ports</u>
@@ -735,27 +731,27 @@ Sw(config-if)#spanning-tree guard none
 
 - [CLI](Cisco%20Hands%20On.md#2.6%20Syslog)
 - Configure devices to send syslog messages on privilege mode, forward to:
-  - Logging buffer
-  - Console line
-  - Terminal lines
-  - Syslog server
+	- Logging buffer
+	- Console line
+	- Terminal lines
+	- Syslog server
 - Format
-  - Priority (8b)
+	- Priority (8b)
 	- Facility (5b)
 	- Severity (3b)
-	  - Seen from `%CDP-4-NATIVE_VLAN_MISMATCH:...`
-	  - 0: Emergency
-	  - 1: Alert
-	  - 2: Critical
-	  - 3: Error
-	  - 4: Warning
-	  - 5: Notification
-	  - 6: Informational
-	  - 7: Debugging
-  - Header
+		- Seen from `%CDP-4-NATIVE_VLAN_MISMATCH:...`
+		- 0: Emergency
+		- 1: Alert
+		- 2: Critical
+		- 3: Error
+		- 4: Warning
+		- 5: Notification
+		- 6: Informational
+		- 7: Debugging
+	- Header
 	- Timestamp
 	- Hostname
-  - Message
+	- Message
 	- Text
 
 #### 6.3.6 Simple Network Management Protocol (SNMP)
@@ -764,13 +760,13 @@ Sw(config-if)#spanning-tree guard none
 - **SNMP Agent**: Stores info and responds to manager requests, generates traps
 - **MIB**: DB of objects
 - **Overview**:
-  - M → get-request → A
-  - M → get-next-request → A
-  - M → get-bulk-request → A
-  - M → set-request → A
-  - A → get-response → M
-  - A → trap → M
-  - A → inform → M
+	- M → get-request → A
+	- M → get-next-request → A
+	- M → get-bulk-request → A
+	- M → set-request → A
+	- A → get-response → M
+	- A → trap → M
+	- A → inform → M
 
 #### 6.3.7 Software Clock, Network Time Protocol (NTP)
 
@@ -857,9 +853,9 @@ Sw(config-if)#spanning-tree guard none
 - Attacker forges an ARP reply to map victim IP to his MAC
 - Becomes MITM and intercepts traffic
 - **Prevention**
-  - DHCP snooping
-  - [Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#2.11%20Dynamic%20ARP%20Inspection%20(DAI))
-  - [Port Security](Fundamentals%20of%20Networking.md#7.3.4%20Port%20Security)
+	- DHCP snooping
+	- [Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#2.11%20Dynamic%20ARP%20Inspection%20(DAI))
+	- [Port Security](Fundamentals%20of%20Networking.md#7.3.4%20Port%20Security)
 
 ## 8. Network Overview and Performance
 
@@ -929,12 +925,12 @@ Sw(config-if)#spanning-tree guard none
 - Ping the default gateway
 - Ping the remote server
 - Errors and Definitions
-  - **Input queue drop**: CPU cannot process packet in time
-  - **Output queue drop**: Congestion on the interface
-  - **Input errors**: Cabling problems, interface hardware problems
-  - **Output errors**: Collisions during the transmission of a frame
-  - **Excessive noise**: Cable exceeds max length
-  - **Excessive collision**: Duplex mismatch
+	- **Input queue drop**: CPU cannot process packet in time
+	- **Output queue drop**: Congestion on the interface
+	- **Input errors**: Cabling problems, interface hardware problems
+	- **Output errors**: Collisions during the transmission of a frame
+	- **Excessive noise**: Cable exceeds max length
+	- **Excessive collision**: Duplex mismatch
 
 ## 10. Good To Know
 
