@@ -438,15 +438,15 @@ debugInConsole: false
 - Security, traffic control, performance
 - Options
 
-##### Router on a stick
+##### Router on a Stick
 
 - Route between multiple VLANs using a single interface on the router and switch
 - Switch int = regular trunk
 - Router int = Sub-interface config for each VLAN
 - Send frames out of sub-interface with its configured VLAN tag
-- $, Simple, easy  congestion
+- $, Simple, easy congestion
 
-##### Layer 3 Switch (Switch with routing capabilities)
+##### Layer 3 Switch (Switch with Routing capabilities)
 
 - Routing ok, Inter-VLAN ok, Config routes ok
 - Switch Virtual Interfaces (SVI) are virtual interfaces
@@ -551,9 +551,9 @@ Router#show control-plane host open-ports
 
 #### 6.3.2 Spanning Tree Protocol (STP) L2
 
-![](assets/Fundamentals%20of%20Networking/img-20251106150320172.png)
+![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803-1.png)
 
-![](assets/Fundamentals%20of%20Networking/img-20251106150401815.png)
+![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803-2.png)
 
 - Redundancy is essential (24/7/365)
 	- Broadcast storms
@@ -696,7 +696,6 @@ Sw(config)#spanning-tree portfast bpduguard default
 			- `Sw(config)#spanning-tree portfast bpdufilter default`
 			- BPDU.F disabled
 			- BPDU.G triggered (errdisable)
-
 - **Root Guard**
 	- Prevents <u>Designated ports</u> from becoming <u>Root ports</u>
 	1. If receive superior BPDU
@@ -737,6 +736,15 @@ Sw(config-if)#spanning-tree guard none
 	- Discarding port that receives a superior BPDU from <u>another interface on the same switch</u>
 - Functions as Root port backup
 - Built-in UplinkFast and BackboneFast (immediate Forwarding)
+- Link types
+	- Edge: port connected to end host, moves directly to Forwarding (PortFast)
+		- `Sw(config-if)#spanning-tree portfast`
+	- Point-to-point: direct connection between 2 switches
+		- Automatically detected as point to point
+		- `Sw(config-if)#spanning-tree link-type point-to-point`
+	- Shared: connection to a hub, must be half duplex
+		- Automatically detected as shared
+		- `Sw(config-if)#spanning-tree link-type shared`
 
 #### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
 
@@ -959,12 +967,12 @@ Sw(config-if)#spanning-tree guard none
 	- `switchport mode trunk`
 	- `switchport mode dynamic desirable`
 	- `switchport mode dynamic auto`
-- `switchport dynamic auto` is passive and will not actively try  nor form a trunk unless opposing switch is actively trying
+- `switchport dynamic auto` is passive and will not actively try nor form a trunk unless opposing switch is actively trying
 - Should be disabled via `switchport nonegotiate`
 - Trunking encapsulation
-	- `negotiate`:  `ISL` > `802.1q`
+	- `negotiate`: `ISL` > `802.1q`
 
-![](assets/Fundamentals%20of%20Networking/img-20251106141710034.png)
+![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803.png)
 
 ### 10.2 VLAN Trunking Protocol (VTP)
 
