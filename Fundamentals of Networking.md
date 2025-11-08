@@ -587,12 +587,12 @@ Sw(config)#do sh spanning
 2. Choose 1 Root Port for each non-root switch
 	- Ports across Root Port = forwarding
 	1. Lowest Root cost
-		- Speed [10 Mbps, 100 Mbps, 1 Gbps, 10 Gbps]
-		- STP Cost [100, 19, 4, 2]
+		- ![](assets/Fundamentals%20of%20Networking/img-20251107161808334.png)
 	2. Lowest neighbor Bridge ID
 	3. Lowest neighbor Port ID
 		- Port priority (default 128) + port number
 		- ![](assets/Fundamentals%20of%20Networking/img-20251106154116227.png)![](assets/Fundamentals%20of%20Networking/img-20251106154422338.png)
+
 3. Remaining collision domains
 	- 1 interface to forward
 		1. Lowest Root cost
@@ -609,16 +609,26 @@ Sw(config)#do show spanning-tree
 
 ##### States
 
-| **State**      | **Type**     | **Duration** | **BPDUs** | **Traffic** | **MAC Learning** |
-| -------------- | ------------ | ------------ | --------- | ----------- | ---------------- |
-| **Forwarding** | stable       | N/A          | tx/rx     | tx/rx       | yes              |
-| **Blocking**   | stable       | N/A          | rx only   | no          | no               |
-| **Listening**  | transitional | ~15 sec      | tx/rx     | no          | no               |
-| **Learning**   | transitional | ~15 sec      | tx/rx     | no          | yes              |
-
 ```
 Sw(config)#spanning-tree mode pvst/rapid-pvst
 ```
+
+###### STP
+
+| **State**      | **BPDUs** | **Traffic** | **MAC Learning** | **Type**     | **Duration** |
+| -------------- | --------- | ----------- | ---------------- | ------------ | ------------ |
+| **Blocking**   | rx only   | no          | no               | stable       | N/A          |
+| **Listening**  | tx/rx     | no          | no               | transitional | ~15 sec      |
+| **Learning**   | tx/rx     | no          | yes              | transitional | ~15 sec      |
+| **Forwarding** | tx/rx     | tx/rx       | yes              | stable       | N/A          |
+
+###### RSTP
+
+| State      | BPDUs   | Traffic | MAC Learning | Type         |
+| ---------- | ------- | ------- | ------------ | ------------ |
+| Discarding | rx only | no      | no           | stable       |
+| Learning   | tx/rx   | no      | yes          | transitional |
+| Forwarding | tx/rx   | yes     | yes          | stable       |
 
 ##### Timers
 
@@ -632,18 +642,20 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 
 ##### Standards
 
-- 802.1D (OG, legacy, only 1 tree for entire network)
-- 802.1w RSTP (improves convergence by revamping port roles and BPDU exchanges)
-- Speeds recalculation when topology changes (convergence)
-	- Roles and States simplified
-- Regular STP
+- 802.1d (OG, legacy, only 1 tree for entire network)
 	- `0180.c200.0000`
-- PVST (Per-VLAN, only ISL, not used anym)
+- 802.1w RSTP
+	- Speeds recalculation when topology changes (convergence)
+	- Roles and States simplified
+- 802.1s MSTP
+	- Maps multiple VLANs into same STP
+- PVST
+	- Cisoc's Per-VLAN, only ISL
 - PVST+ (802.1q)
 	- Adds VID to the priority
 	- `01:00:0c:cc:cc:cd`
-- 802.1s MSTP (Maps multiple VLANs into same STP)
-- Rapid PVST+ (Cisco fork of RSTP using PVST+)
+- Rapid PVST+
+	- Cisco fork of RSTP
 
 ##### STP Toolkit
 
@@ -718,6 +730,13 @@ Sw(config-if)#spanning-tree guard none
 - Loop and Root guard are mutually exclusive, and overwrites each other
 
 ##### Rapid Spanning Tree Protocol
+
+- <u>Alternate</u> port
+	- Discarding port that receives a superior BPDU from another switch
+- <u>Backup</u> port
+	- Discarding port that receives a superior BPDU from <u>another interface on the same switch</u>
+- Functions as Root port backup
+- Built-in UplinkFast and BackboneFast (immediate Forwarding)
 
 #### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
 
