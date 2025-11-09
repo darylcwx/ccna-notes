@@ -57,7 +57,6 @@ Switch(config)#hostname <new switch host name>
 ```
 
 ```
-
 // setting password (1): plaintext, (2) secure by default (MD5 hashed)
 
 Switch#conf t
@@ -86,7 +85,6 @@ Password: <password>
 // reset if no password 
 Switch#write erase
 reload
-
 ```
 
 ```
@@ -122,7 +120,7 @@ Switch#show interfaces trunk
 
 Router#show vlans (trunking's subinterfaces)
 Router#show running-config interface gig0/1.10 (subinterface config)
-Router#show ip route
+Router#show ip route [search]
 Router#ip route 0.0.0.0 0.0.0.0 8.8.8.8
 
 // config
@@ -154,8 +152,6 @@ Switch(config-if)#switchport trunk allowed vlan 10,20,30,99
 
 // diff switch but same native VLAN 
 Switch(config-if)#switchport trunk native vlan 99
-
-Switch#show interfaces trunk
 ```
 
 ```
@@ -192,28 +188,23 @@ Switch(config-if)#no shut
 - Bundle multiple interfaces into 1 logical trunk (port-channel), configure VLAN/trunk on channel, bring links up, check summary
 
 ```
-
 // show
-Switch#show etherchannel summary
+Switch(config)#do sh etherchannel summary
 
-// config
-// shutdown for safer config
-Switch#interface range GigabitEthernet 0/1-4
-Switch(config-if-range)#shutdown
+// load balancing
+Switch(config)#do sh etherchannel load-balance
+Switch(config)#port-channel load-balance [?] src-dst-mac
 
-// add port 0/1-4 to channel 1
-// mode active = use LACP
-Switch(config-if-range)#channel-group 1 mode active
-Switch(config-if-range)# exit
+// config 
+Switch(config)#int range g0/0 - 3
+Switch(config-if-range)#no switchport          // for L3 EtherChannel
+Switch(config-if-range)#channel-group 1 mode ? // auto/desirable (see DTP)
 
 // config port-channel
-Switch(config)# interface port-channel 1
+Switch(config)#int port-channel 1
+Switch(config-if)#switchport trunk encapsulation dot1q
 Switch(config-if)#switchport mode trunk
 Switch(config-if)#switchport trunk allowed vlan 1,2,20
-
-// up ports
-Switch(config-if)#interface range GigabitEthernet0/1-4
-Switch(config-if-range)#no shutdown
 ```
 
 ```
@@ -303,16 +294,16 @@ Router#
 
 // show
 Router#show version                 // OS version, uptime, model, serial, etc
-Router#show protocols               // Routing protocols & active interfaces
+Router#show protocols               // routing protocols & active interfaces
 Router#show arp                     // ARP table: IP ↔ MAC mappings
-Router#show cdp neighbors detail    // Cisco Discovery info (device ID, IP, intf)
+Router#show cdp neighbors detail    // cisco Discovery info (device ID, IP, intf)
 Router#show lldp neighbors          // LLDP neighbor info (vendor-neutral)
-Router#show running-config          // Current active config in RAM
-Router#show startup-config          // Saved config in NVRAM
-Router#show interfaces [intf-id]    // Detailed stats: bandwidth, errors, duplex
-Router#show interfaces description  // Interface names + brief status
-Router#show ip protocols            // Shows routing protocol parameters
-Router#show ip interface brief      // Quick IP + interface status summary
+Router#show running-config          // current active config in RAM
+Router#show startup-config          // saved config in NVRAM
+Router#show interfaces [intf-id]    // detailed stats: bandwidth, errors, duplex
+Router#show interfaces description  // interface names + brief status
+Router#show ip protocols            // shows routing protocol parameters
+Router#show ip interface brief      // quick IP + interface status summary
 Router#show ip route                // IPv4 routing table
 Router#show ipv6 interface brief    // IPv6 interface summary
 Router#show ipv6 route              // IPv6 routing table
@@ -334,13 +325,53 @@ OR
 Router(config-if)#no shutdown
 ```
 
+#### 4.1.1 Dynamic Routing
+
+##### RIP
+
+```
+R1(config)#router rip
+R1(config-router)#version 2
+R1(config-router)#no auto-summary        // disable auto-convert to classful
+
+// !network tells router to look within range of IP
+R1(config-router)#network 10.0.0.0       // assumed to be x/8
+R1(config-router)#network 172.16.0.0     // assumed to be x/16
+R1(config-router)#passive-interface g2/0
+R1(config-router)#default-information originate
+R1(config-router)#maximum-paths?
+R1(config-router)#distance ?
+```
+
+##### EIGRP
+
+```
+R1(config)#router eigrp 1
+R1(config-router)#no auto-summary        // disable auto-convert to classful
+R1(config-router)#variance ?             // allow unequal-cost load balancing
+
+// !network tells router to look within range of IP
+R1(config-router)#passive-interface g2/0
+R1(config-router)#network 10.0.0.0               // assumed x/8
+R1(config-router)#network 172.16.0.0 0.0.0.15    // assumed x/16 (wildcard mask)
+R1(config-router)#default-information originate
+R1(config-router)#maximum-paths ?
+R1(config-router)#distance ?
+
+// show
+R1#sh ip protocols                   // > k1 and k3 = metric
+R1#sh ip eigrp neighbors
+R1(config-router)#eigrp router-id ?  // manual, highest loopback, highest phys
+// EIGRP has internal 90, external 170 routes
+```
+
 ### 4.2 Routing Table
 
-`show ip route`
+`show ip route [search]`
 
 | Code  | Destination Network | [Admin Distance/Metric] | Next-hop IP        | Time Elapsed | Outgoing Interface |
 | ----- | ------------------- | ----------------------- | ------------------ | ------------ | ------------------ |
-| **C** | 192.168.1.0/24      |–| directly connected |–| GigabitEthernet0/0 |
+| **C** | 192.168.1.0/24      | –                       | directly connected | –            | GigabitEthernet0/0 |
 | **S** | 0.0.0.0/0           | [1/0]                   | via 192.168.1.1    | permanent    | GigabitEthernet0/0 |
 | **D** | 10.10.10.0/24       | [90/30720]              | via 192.168.1.2    | 00:00:12     | GigabitEthernet0/1 |
 | **O** | 172.16.0.0/16       | [110/20]                | via 10.1.1.2       | 00:00:30     | GigabitEthernet0/2 |

@@ -434,9 +434,15 @@ debugInConsole: false
 
 - [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
 - [2.1.1 VLAN (L2)](#2.1.1%20VLAN%20(L2))
-- Separate L2 broadcast domain
-- Security, traffic control, performance
-- Options
+
+| Item               | Explanation                               | Analogy                          |
+| ------------------ | ----------------------------------------- | -------------------------------- |
+| **Access Port**    | One VLAN, untagged.                       | One door → one room.             |
+| **Trunk Port**     | Many VLANs, tagged.                       | Elevator for all floors.         |
+| **Trunk → Access** | Trunk feeds into final access port.       | Elevator → correct door.         |
+| **L3 Switch**      | Switch that routes.                       | Switch + traffic cop.            |
+| **RoAS**           | Many VLANs via subinterfaces on one link. | One hallway with mini-doors.     |
+| **EtherChannel**   | Many links → one logical link.            | Bundle hallway into one big one. |
 
 ##### Router on a Stick
 
@@ -463,36 +469,100 @@ debugInConsole: false
 
 #### 6.2.3 Dynamic Routing Protocols
 
-- Up-to-date, best available path (Dijkstra)
-- Each router builds a topology map (LSDB - Link-State DB)
-- **IGP** (Interior Gateway Protocol, used *within* a network)
-	- **Link-State** (routers share topology for full map)
-	- LSA (Link-State Advertisement) → Build full map, then Dijkstra
-	- Faster convergence
-	- [OSPF, IS-IS (intermediate to intermediate system)]
-		- **OSPF:**
-		- Backbone, Areas
-		- **Neighbor Adjacencies**
-			- HDLC (High-Level Data Link Control)
-			- Physical p2p connection, no DR/BDR needed
-			- Point-to-Point Sub-interface
-			- Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
-		- **Neighbor States**
-			- Down [no hello packets, neighbor MIA]
-			- Init [hello received, but not recognized]
-			- 2-Way [mutual acknowledgement, friendship established]
-			- ExStart [electing who is master/slave]
-			- Exchange [swapping DBDs (Database Description Packets)]
-			- Loading [asking for missing LSAs (via LSR, LSU)]
-			- Full [database twins, neighbors fully synced]
-	- **Distance-Vector**
-	- Share full routes with neighbors
-	- Partial view (only next hops)
-	- Slower convergence
-	- [RIP (routing info protocol), EIGRP (enhanced interior gateway routing protocol)]
-- **EGP** (Exterior Gateway Protocol, used *between* networks/ISPs)
-	- Path-Vector
-	- [BGP (border gateway protocol)]
+- [OSPF, IS-IS (intermediate to intermediate system)]
+	- **OSPF:**
+	- Backbone, Areas
+	- **Neighbor Adjacencies**
+		- HDLC (High-Level Data Link Control)
+		- Physical p2p connection, no DR/BDR needed
+		- Point-to-Point Sub-interface
+		- Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
+	- **Neighbor States**
+		- Down [no hello packets, neighbor MIA]
+		- Init [hello received, but not recognized]
+		- 2-Way [mutual acknowledgement, friendship established]
+		- ExStart [electing who is master/slave]
+		- Exchange [swapping DBDs (Database Description Packets)]
+		- Loading [asking for missing LSAs (via LSR, LSU)]
+		- Full [database twins, neighbors fully synced]
+- break here
+- Forms 'adjacencies'/'neighbor relationships' to advertise routes
+- Chooses superior route via lower route <u>metric</u> for routing table
+	- [110/3] = [admin distance/metric]
+	- Same metric ? both added to routing table
+		- Called Equal Cost Multi Path (ECMP)
+			- Possible for static routes too = [1/0]
+	- Different Routing Protocol ? admin distance
+		- Lower = better
+
+##### Types of Dynamic Routing Protocols
+
+###### Admin Distance
+
+| Route Protocol / Type | AD  |     |
+| --------------------- | --- | --- |
+| Directly connected    | 0   |     |
+| Static                | 1   |     |
+| External BGP (eBGP)   | 20  |     |
+| EIGRP (internal)      | 90  |     |
+| IGRP                  | 100 |     |
+| OSPF                  | 110 |     |
+| IS-IS                 | 115 |     |
+| RIP                   | 120 |     |
+| EIGRP (external)      | 170 |     |
+| Internal BGP (iBGP)   | 200 |     |
+| Unusable route        | 255 |     |
+
+###### Floating Static Route
+
+- Not in routing table unless route learned via Dynamic is removed
+```
+// specify AD for static routes 
+R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
+```
+
+- **IGP**
+	- **Distance Vector**
+		- [routing by rumor, know next-hop only]
+		- Slower convergence
+		- Includes:
+			- **Routing Information Protocol (RIP)**
+				- Metric: Hop count (15 max)
+				- Versions
+					- **IPv4**
+						- RIPv1 [only Class A, B, C, no support for VLSM, CIDR, subnet mask]
+						- RIPv2 [VSLM, CIDR, subnet mask ok, multicast to 224.0.0.9]
+					- **IPv6**: RIPng
+				- 2 messages types
+					- **Request:** send routing table
+					- **Response:** send local routing table to neighbors
+					- Every 30 seconds
+				- Advertises router's interface
+			- **Enhanced Interior Gateway Routing Protocol (EIGRP)**
+				- Metric: f(bandwidth + delay) => BW of **slowest link** + delay of **all links**
+				- Uses wildcard subnet masking
+					- `0` match, `1` don't have to match
+				-  Terminology
+					- **Feasible distance:** router's metric value to destination
+					- **Reported/advertised distance:** neighbor's metric value to destination
+						- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
+						- Red, yellow: feasible; Blue, purple: reported
+					- **Successor**: route with lowest metric (best route)
+					- **Feasible successor**: alternate route with reported distance < successor feasible distance
+					- Unequal-cost load-balancing
+						- Only on feasible successor routes
+						- `R1(config-router)#variance 2`
+							- Allows up to 2x successor route's FD
+	- **Link State**
+		- [full network map, then best path, more CPU]
+		- Includes
+			- **Open Shortest Path First (OSPF)**
+				- Metric: Cost of each link by bandwidth
+			- **Intermediate System to Intermediate System (IS-IS)**
+				- Metric: Cost of each link in the route (default 10)
+- **EGP**
+	- Path Vector
+		-  **Border Gateway Protoc0l (BGP)**
 
 #### 6.2.4 Network Address Translation
 
@@ -753,8 +823,15 @@ Sw(config-if)#spanning-tree guard none
 - Groups interfaces together to act as a single interface
 - Load balance through 'flows' via an algo
 	- S. MAC, D. MAC, S.+D. MAC, S. IP, D. IP, S.+D. IP
-	- `Sw(config)#do sh etherchannel load-balance`
-	- `Sq(config)#port-channel; load-balance [?] src-dst-mac`
+- 3 methods
+	- Port Aggregation Protocol (PAgP)
+		- Cisco only
+	- Link Aggregation Control Protocol (LACP)
+	- Static EtherChannel
+		- Avoid
+- Up to 8 interfaces can form a single EtherChannel
+- Interfaces in an EtherChannel must have the same
+	- Duplex, speed, switchport mode, allowed VLANS/native VLAN
 
 #### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
 
@@ -825,7 +902,7 @@ Sw(config-if)#spanning-tree guard none
 - [CLI](Cisco%20Hands%20On.md#5.%20ACL%20(Access%20Control%20Lists))
 - Permit/Deny
 - **Wildcard Masking**
-	- Inverse subnet mask (`0` match, `1` any)
+	- Inverse the subnet mask (`0` match, `1` any)
 	- ACL permits `192.168.1.0`, wildcard `0.0.0.255`
 		- First 3 octets must match, last octet can be anything
 	- ACL permits `172.16.16.1`, wildcard `0.0.15.255`
