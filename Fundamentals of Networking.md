@@ -495,9 +495,7 @@ debugInConsole: false
 	- Different Routing Protocol ? admin distance
 		- Lower = better
 
-##### Types of Dynamic Routing Protocols
-
-###### Admin Distance
+ **Admin Distance**
 
 | Route Protocol / Type | AD  |     |
 | --------------------- | --- | --- |
@@ -513,7 +511,7 @@ debugInConsole: false
 | Internal BGP (iBGP)   | 200 |     |
 | Unusable route        | 255 |     |
 
-###### Floating Static Route
+**Floating Static Route**
 
 - Not in routing table unless route learned via Dynamic is removed
 ```
@@ -521,48 +519,57 @@ debugInConsole: false
 R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 ```
 
-- **IGP**
-	- **Distance Vector**
-		- [routing by rumor, know next-hop only]
-		- Slower convergence
-		- Includes:
-			- **Routing Information Protocol (RIP)**
-				- Metric: Hop count (15 max)
-				- Versions
-					- **IPv4**
-						- RIPv1 [only Class A, B, C, no support for VLSM, CIDR, subnet mask]
-						- RIPv2 [VSLM, CIDR, subnet mask ok, multicast to 224.0.0.9]
-					- **IPv6**: RIPng
-				- 2 messages types
-					- **Request:** send routing table
-					- **Response:** send local routing table to neighbors
-					- Every 30 seconds
-				- Advertises router's interface
-			- **Enhanced Interior Gateway Routing Protocol (EIGRP)**
-				- Metric: f(bandwidth + delay) => BW of **slowest link** + delay of **all links**
-				- Uses wildcard subnet masking
-					- `0` match, `1` don't have to match
-				-  Terminology
-					- **Feasible distance:** router's metric value to destination
-					- **Reported/advertised distance:** neighbor's metric value to destination
-						- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
-						- Red, yellow: feasible; Blue, purple: reported
-					- **Successor**: route with lowest metric (best route)
-					- **Feasible successor**: alternate route with reported distance < successor feasible distance
-					- Unequal-cost load-balancing
-						- Only on feasible successor routes
-						- `R1(config-router)#variance 2`
-							- Allows up to 2x successor route's FD
-	- **Link State**
-		- [full network map, then best path, more CPU]
-		- Includes
-			- **Open Shortest Path First (OSPF)**
-				- Metric: Cost of each link by bandwidth
-			- **Intermediate System to Intermediate System (IS-IS)**
-				- Metric: Cost of each link in the route (default 10)
-- **EGP**
-	- Path Vector
-		-  **Border Gateway Protoc0l (BGP)**
+##### 6.2.3.1 Routing Information Protocol (RIP)
+
+- IGP, Distance vector, routing by rumor
+- Metric: Hop count (15 max)
+- Versions
+	- **IPv4**
+		- RIPv1 [only Class A, B, C, no support for VLSM, CIDR, subnet mask]
+		- RIPv2 [VSLM, CIDR, subnet mask ok, multicast to 224.0.0.9]
+	- **IPv6**: RIPng
+- 2 messages types
+	- **Request:** send routing table
+	- **Response:** send local routing table to neighbors
+	- Every 30 seconds
+- Advertises router's interface
+
+##### 6.2.3.2 Enhanced Interior Gateway Routing Protocol (EIGRP)
+
+- IGP, Distance vector, routing by rumor
+- Metric: f(bandwidth + delay) => BW of **slowest link** + delay of **all links**
+- Uses wildcard subnet masking
+	- `0` match, `1` don't have to match
+-  Terminology
+	- **Feasible distance:** router's metric value to destination
+	- **Reported/advertised distance:** neighbor's metric value to destination
+		- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
+		- Red, yellow: feasible; Blue, purple: reported
+	- **Successor**: route with lowest metric (best route)
+	- **Feasible successor**: alternate route with reported distance < successor feasible distance
+	- Unequal-cost load-balancing
+		- Only on feasible successor routes
+		- `R1(config-router)#variance 2`
+			- Allows up to 2x successor route's FD
+
+##### 6.2.3.3 Open Shortest Path First (OSPF)
+
+- Link State, full network map via ads, best path
+- more CPU, faster convergence
+- Metric: Cost of each link by bandwidth
+- Versions
+	- v1: dead
+	- v2: used for IPv4
+	- v3: used for IPv6 (IPv4 also can)
+- Store info in **Link State Advertisements (LSA)**, organized in **Link State DB (LSDB)**
+
+##### 6.2.3.4 Intermediate System to Intermediate System (IS-IS)
+
+- Metric: Cost of each link in the route (default 10)
+
+##### 6.2.3.5 Border Gateway Protocol (BGP)
+
+- EGP, Path vector
 
 #### 6.2.4 Network Address Translation
 
