@@ -9,7 +9,9 @@ hideWhenEmpty: false
 debugInConsole: false 
 ```
 
-## 1. Components
+## 1.0 Network Fundamentals
+
+### 1.1 Components
 
 - **Endpoints** (devices)
 - **Intermediary/Network devices** (switches, routers)
@@ -18,15 +20,15 @@ debugInConsole: false
 	- Wired: Ethernet, Serial
 	- Wireless: [WLAN (802.11), Bluetooth (802.15), WiMAX (802.16)]
 
-## 2. LAN, WAN, WLAN Overview
+### 1.2 LAN, WAN, WLAN
 
-### 2.1 LAN
+#### 1.2.1 LAN
 
 - Connects devices within an area
 - Uses switches to forward data frames based on MAC
 - Typically wired with ethernet
 
-#### 2.1.1 VLAN (L2)
+#### 1.2.2 VLAN (L2)
 
 - [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
 - [6.2.1 Inter-VLAN Routing (L3)](#6.2.1%20Inter-VLAN%20Routing%20(L3))
@@ -49,14 +51,14 @@ debugInConsole: false
 	- native VLAN need to be same across switches, best to change to unused VLAN
 	- native VLAN is untagged
 
-### 2.2 WAN
+#### 1.2.3 WAN
 
 - Spans large geographic area
 - Connects multiple LANs
 - Managed by ISP or SIs
 - WAN optimizer
 
-### 2.3 WLAN
+#### 1.2.4 WLAN
 
 - **Access Points (APs)**
 	- Connects wireless clients to wired LAN
@@ -70,7 +72,7 @@ debugInConsole: false
 	- SSL & IPsec [L2, L3, L4, L3, L4]
 	- L2-in-ip [L2, L3, L2, L3, L4]
 
-### 2.4 Other
+#### 1.2.5 Other
 
 - **Data Center**
 	- [Availability, Resiliency, Scalability]
@@ -81,9 +83,9 @@ debugInConsole: false
 	- Web servers in DMZ, a controlled zone between Internet and internal network
 	- Usually a subnet the hosts public services
 
-## 3. Communication over LAN
+### 1.3 Communication over LAN
 
-### 3.1 Physical Media Types
+#### 1.3.1 Physical Media Types
 
 - **Twisted Pair (ethernet)**
 	- Twisted because protects against electromagnetic interference
@@ -109,7 +111,7 @@ debugInConsole: false
 - **Coaxial Cable**
 	- Copper core, Legacy use
 
-#### 3.1.1 Ethernet Media Table
+#### 1.3.2 Ethernet Media Table
 
 | IEEE Std | Media Type                 | Max Speed   | Cabling / Fiber   | Max Distance | Pairs Used | Notes                                          |
 | -------- | -------------------------- | ----------- | ----------------- | ------------ | ---------- | ---------------------------------------------- |
@@ -123,14 +125,14 @@ debugInConsole: false
 | 802.3ae  | 10GBASE-LR                 | 10 Gbps     | Single-mode fiber | 10 km        | N/A        | Long-range fiber                               |
 | 802.3ba  | 40GBASE-SR4 / 100GBASE-LR4 | 40/100 Gbps | MMF / SMF         | Varies       | N/A        | Data center / backbone links                   |
 
-### 3.2 Communication Types
+#### 1.3.3 Communication Types
 
 - **Unicast**: one-to-one (flooding)
 - **Broadcast**: one-to-all, FFFF:FFFF:FFFF (ARP)
 - **Anycast**: one-to-nearest/best (CDNs)
 - **Multicast**: one-to-selected (netflix)
 
-### 3.3 Host-to-Host Packet Transfer Process (same LAN)
+#### 1.3.4 Host-to-Host Packet Transfer Process (same LAN)
 
 1. Host A wants to send data to Host B:
 	- Host A has the IP address of Host B but needs Host B’s MAC address to send an Ethernet frame.
@@ -171,7 +173,7 @@ debugInConsole: false
 	- For TCP, acknowledgments and retransmissions handle reliability.
 	- For UDP, best-effort delivery continues without guaranteed retransmission.
 
-### 3.4 Address Resolution Protocol (ARP) - 0x0806
+#### 1.3.5 Address Resolution Protocol (ARP) - 0x0806
 
 ![](assets/Fundamentals%20of%20Networking/img-20251022165531530.png)
 
@@ -187,16 +189,16 @@ debugInConsole: false
 10. **SW2:** forward frame based on MAC table
 11. **B**: receive frame → process packet
 
-## 4. Addressing (L3/L2)
+### 1.4 Addressing (L3/L2)
 
-### 4.1 MAC Address - 48 Bits (L2)
+#### 1.4.1 MAC Address - 48 Bits (L2)
 
 - 6 bytes: 3 bytes Organizationally Unique Identifier (OUI), 3 bytes device
 - Globally unique Hexadecimal (0-9, A-F)
 - Broadcast = `FFFF:FFFF:FFFF`
 - Auto clears "aging" after 5 minutes
 
-#### 4.1.1 Ethernet Frame (64 bytes)
+##### Ethernet Frame (64 bytes)
 
 - **Header (14 bytes)**
 
@@ -218,13 +220,13 @@ debugInConsole: false
 | 7 bytes              | 1 bytes (10101011)          |
 | sync receiver clocks | end of preamble             |
 
-### 4.2 IPv4 Addressing - 32 Bits (L3)
+#### 1.4.2 IPv4 Addressing - 32 Bits (L3)
 
 - 4 bytes/octets, 8 bits per octet
 - 8 bits = max value 255
 - Need configure IPsec
 
-#### 4.2.1 Headers (20-60 bytes)
+##### Headers (20-60 bytes)
 
 - Max Transmission Unit (MTU) = 1500 bytes (1480 bytes due to 4-byte increments)
 	- Fragmented is over
@@ -251,7 +253,7 @@ debugInConsole: false
 | Options (if IHL > 5)                                                                                 | 0-320       | extra options for control/debugging                         |
 | Padding                                                                                              | Variable    | aligns header to 32-bit boundary                            |
 
-#### 4.2.2 Subnet Classes
+##### Subnet Classes
 
 - `A B C, easy as 1 2 3` (Class A = 0XXX, Class B = 10XX, Class C = 110XX)
 - Some are reserved (127.0.0.1)
@@ -265,7 +267,7 @@ debugInConsole: false
 | D     | 224–239           |               | 1110         | N/A             | multicast                         |
 | E     | 240–255           |               | 1111         | N/A             | experimental / reserved           |
 
-#### 4.2.3 Binary Calculation
+##### Binary Calculation
 
 | Base    | 2^8 | 2^7 | 2^6 | 2^5 | 2^4 | 2^3 | 2^2 | 2^1 |
 | ------- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -283,7 +285,7 @@ debugInConsole: false
 | Host addresses    | `192.168.24.19`    | `10.0.1.15`      | same                   |
 | Default gateway   | `192.168.24.1`     | `10.0.0.1`       | first usable           |
 
-#### 4.2.4 Subnetting (Variable Length Subnet Masking - VLSM)
+##### Subnetting (Variable Length Subnet Masking - VLSM)
 
 - Network: 192.168.10.0/26
 - Subnet Mask: 255.255.255.192
@@ -306,7 +308,7 @@ debugInConsole: false
 | 3            | `192.168.10.128` | .129-190 | .191      |
 | 4            | `192.168.10.192` | .193-254 | .255      |
 
-### 4.3 IPv6 Addressing - 128 Bits, 0x86DD (L3)
+#### 1.4.3 IPv6 Addressing - 128 Bits, 0x86DD (L3)
 
 - Larger address space
 - Simpler header
@@ -315,59 +317,45 @@ debugInConsole: false
 - No broadcast addresses
 - 64 bits **network**, 64 bits **interface**
 
-#### 4.3.1 Headers (40 bytes)
+##### Headers (40 bytes)
 
-| Field               | Size (bits) | Description                        |
-| ------------------- | ----------- | ---------------------------------- |
-| Version             | 4           | binary = 0110                      |
-| Traffic Class       | 8           | packet priority / QoS              |
-| Flow Label          | 20          | packet flow for special handling   |
-| Payload Length      | 16          |                                    |
-| Next Header         | 8           | next protocol (TCP, UDP, etc.)     |
-| Hop Limit           | 8           | max hops before discard (like TTL) |
-| Source Address      | 128         | IPv6 address of sender             |
-| Destination Address | 128         | IPv6 address of receiver           |
+| Field               | Size (bits) | Description                      |
+| ------------------- | ----------- | -------------------------------- |
+| Version             | 4           | binary = 0110                    |
+| Traffic Class       | 8           | packet priority / QoS            |
+| Flow Label          | 20          | packet flow for special handling |
+| Payload Length      | 16          | -                                |
+| Next Header         | 8           | next protocol (TCP, UDP, etc.)   |
+| Hop Limit           | 8           | max hops before discard (TTL)    |
+| Source Address      | 128         | sender IPv6 address              |
+| Destination Address | 128         | receiver IPv6 address            |
 
-#### 4.3.2 Link-Local Unicast Addresses
+##### Address Types
 
-- Prefix: `FE80::/10`
-- Local link only/same switch
-- Used for Neighbor Discovery Protocol (NDP - similar to ARP), Router Comms/Ads, Auto-config (SLAAC)
+| Type               | Prefix    | Usage / Notes                                        |
+| ------------------ | --------- | ---------------------------------------------------- |
+| Link-Local Unicast | FE80::/10 | same-link communication, NDP, router comms, SLAAC    |
+| Unique Local       | FC00::/7  | private internal networks (org only)                 |
+| Global Unicast     | n/a       | public routable addresses                            |
+| Multicast          | FF00::/8  | one-to-many (e.g., routing updates, services)        |
+| Anycast            | n/a       | assigned to multiple interfaces, lowest-cost routing |
+| Loopback           | ::1       | testing local stack                                  |
+| Unspecified        | ::        | placeholder, no address assigned                     |
 
-#### 4.3.3 Unique Local Address
+##### Address Assignment
 
-- Prefix: `FC00::/7`
-- Private internal networks
-- Used for within organization, not public
-
-#### 4.3.4 Multicast
-
-- Prefix: `FF00::/8`
-
-#### 4.3.5 Anycast
-
-- Lowest cost (CDN)
-
-#### 4.3.6 Other
-
-- Loopback: `::1` for testing purposes
-- Unspecified `::` "no address" placeholder
-
-#### 4.3.7 Address Allocation
-
-- Static: manual interface ID
-- Static: EUI-64 interface ID
+- **Static**: manual interface ID
+- **EUI-64**
 	- Insert `FF:FE` (16 bits) in the middle of MAC
 	- Flip the `7th bit`, convert back to hexadec
-- Stateless Address Autoconfig (SLAAC)
+- **Stateless Address Autoconfig (SLAAC)**
 	- `FF02::2`
 	- `Router1(config)#ipv6 address autoconfig`
-- Stateful DHCP (DHCPv6)
-- Stateless DHCPv6
+- **DHCPv6**: stateful (server), stateless (host generates)
 
-## 5. Layered Models
+### 1.5 Layered Models
 
-### 5.1 OSI Model
+#### 1.5.1 OSI Model
 
 | Layer        | Explanation                                        | Analogy                                       |
 | ------------ | -------------------------------------------------- | --------------------------------------------- |
@@ -379,7 +367,7 @@ debugInConsole: false
 | Data Link    | local delivery and switching (access)              | package handed to local delivery trucks       |
 | Physical     | transmission of raw bits                           | roads, trucks, wires                          |
 
-### 5.2 Encapsulation
+#### 1.5.2 Encapsulation
 
 | Layer       | Items                    |
 | ----------- | ------------------------ |
@@ -388,228 +376,9 @@ debugInConsole: false
 | Internet    | + Packet header (IPs)    |
 | Link        | + Frame header (MACs)    |
 
-## 6. Protocols & Services
+## 2.0 Network Access
 
-### 6.1 Transport Layer (L4)
-
-- **TCP/IP**
-	- 3-way: [SYN, SYN/ACK, ACK]
-		- Establish first before traffic flows
-		- 
-	- Guaranteed delivery (reliability, data integrity)
-	- Resend if error, interrupting streaming/music
-- **UDP**
-	- No guaranteed delivery
-	- Fast but no error-checking
-
-### 6.2 Routing (L3)
-
-- Packets treated independently
-- No data-recovery
-- Media-independent
-- IPv4 (32 bits), IPv6 (128 bits), OSI
-- [Routing table](./Cisco%20Hands%20On.md#3%20routing%20table)
-- **Headers**
-	- Version, IHL, **Service Type**, Total Length
-	- ID, Flag, Fragment Offset
-	- **TTL**, Protocol, **Header Checksum**
-	- **Source addy**
-	- **Destination addy**
-	- Options, Padding
-- **Routing**
-	- **Codes**
-		- **C**: Direct connection
-		- **L**: Local Interface
-		- **R**: RIP (Routing Information Protocol)
-		- **D**: EIGRP (Enhanced Interior Gateway Routing Protocol)
-		- **O**: OSPF (Open Shortest Path First)
-		- **S**: Static (manually configured)
-	- Connected `C` vs vs Local `L` routes
-		- Connected route = forward
-		- Local route = router receive for itself
-	- Choose most specific route (longest prefix length)
-	- Drop packet if no route found
-
-#### 6.2.1 Inter-VLAN Routing (L3)
-
-- [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
-- [2.1.1 VLAN (L2)](#2.1.1%20VLAN%20(L2))
-
-| Item               | Explanation                               | Analogy                          |
-| ------------------ | ----------------------------------------- | -------------------------------- |
-| **Access Port**    | One VLAN, untagged.                       | One door → one room.             |
-| **Trunk Port**     | Many VLANs, tagged.                       | Elevator for all floors.         |
-| **Trunk → Access** | Trunk feeds into final access port.       | Elevator → correct door.         |
-| **L3 Switch**      | Switch that routes.                       | Switch + traffic cop.            |
-| **RoAS**           | Many VLANs via subinterfaces on one link. | One hallway with mini-doors.     |
-| **EtherChannel**   | Many links → one logical link.            | Bundle hallway into one big one. |
-
-##### Router on a Stick
-
-- Route between multiple VLANs using a single interface on the router and switch
-- Switch int = regular trunk
-- Router int = Sub-interface config for each VLAN
-- Send frames out of sub-interface with its configured VLAN tag
-- $, Simple, easy congestion
-
-##### Layer 3 Switch (Switch with Routing capabilities)
-
-- Routing ok, Inter-VLAN ok, Config routes ok
-- Switch Virtual Interfaces (SVI) are virtual interfaces
-- Each SVI has an IP address that PC uses as default gateway
-- $\$, Faster than RoaS, Scalable
-
-##### Separate Dedicated Router
-
-- Separate physical interfaces for each VLAN
-- Best for complex/high-traffic networks
-- \$\$\$, requires more physical interfaces
-
-#### 6.2.2 Static Routing
-
-#### 6.2.3 Dynamic Routing Protocols
-
-- [OSPF, IS-IS (intermediate to intermediate system)]
-	- **OSPF:**
-	- Backbone, Areas
-	- **Neighbor Adjacencies**
-		- HDLC (High-Level Data Link Control)
-		- Physical p2p connection, no DR/BDR needed
-		- Point-to-Point Sub-interface
-		- Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
-	- **Neighbor States**
-		- Down [no hello packets, neighbor MIA]
-		- Init [hello received, but not recognized]
-		- 2-Way [mutual acknowledgement, friendship established]
-		- ExStart [electing who is master/slave]
-		- Exchange [swapping DBDs (Database Description Packets)]
-		- Loading [asking for missing LSAs (via LSR, LSU)]
-		- Full [database twins, neighbors fully synced]
-- break here
-- Forms 'adjacencies'/'neighbor relationships' to advertise routes
-- Chooses superior route via lower route <u>metric</u> for routing table
-	- [110/3] = [admin distance/metric]
-	- Same metric ? both added to routing table
-		- Called Equal Cost Multi Path (ECMP)
-			- Possible for static routes too = [1/0]
-	- Different Routing Protocol ? admin distance
-		- Lower = better
-
- **Admin Distance**
-
-| Route Protocol / Type | AD  |     |
-| --------------------- | --- | --- |
-| Directly connected    | 0   |     |
-| Static                | 1   |     |
-| External BGP (eBGP)   | 20  |     |
-| EIGRP (internal)      | 90  |     |
-| IGRP                  | 100 |     |
-| OSPF                  | 110 |     |
-| IS-IS                 | 115 |     |
-| RIP                   | 120 |     |
-| EIGRP (external)      | 170 |     |
-| Internal BGP (iBGP)   | 200 |     |
-| Unusable route        | 255 |     |
-
-**Floating Static Route**
-
-- Not in routing table unless route learned via Dynamic is removed
-```
-// specify AD for static routes 
-R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
-```
-
-##### 6.2.3.1 Routing Information Protocol (RIP)
-
-- IGP, Distance vector, routing by rumor
-- Metric: Hop count (15 max)
-- Versions
-	- **IPv4**
-		- RIPv1 [only Class A, B, C, no support for VLSM, CIDR, subnet mask]
-		- RIPv2 [VSLM, CIDR, subnet mask ok, multicast to 224.0.0.9]
-	- **IPv6**: RIPng
-- 2 messages types
-	- **Request:** send routing table
-	- **Response:** send local routing table to neighbors
-	- Every 30 seconds
-- Advertises router's interface
-
-##### 6.2.3.2 Enhanced Interior Gateway Routing Protocol (EIGRP)
-
-- IGP, Distance vector, routing by rumor
-- Metric: f(bandwidth + delay) => BW of **slowest link** + delay of **all links**
-- Uses wildcard subnet masking
-	- `0` match, `1` don't have to match
--  Terminology
-	- **Feasible distance:** router's metric value to destination
-	- **Reported/advertised distance:** neighbor's metric value to destination
-		- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
-		- Red, yellow: feasible; Blue, purple: reported
-	- **Successor**: route with lowest metric (best route)
-	- **Feasible successor**: alternate route with reported distance < successor feasible distance
-	- Unequal-cost load-balancing
-		- Only on feasible successor routes
-		- `R1(config-router)#variance 2`
-			- Allows up to 2x successor route's FD
-
-##### 6.2.3.3 Open Shortest Path First (OSPF)
-
-- Link State, full network map via ads, best path
-- more CPU, faster convergence
-- Metric: Cost of each link by bandwidth
-- Versions
-	- v1: dead
-	- v2: used for IPv4
-	- v3: used for IPv6 (IPv4 also can)
-- Store info in **Link State Advertisements (LSA)**, organized in **Link State DB (LSDB)**
-
-##### 6.2.3.4 Intermediate System to Intermediate System (IS-IS)
-
-- Metric: Cost of each link in the route (default 10)
-
-##### 6.2.3.5 Border Gateway Protocol (BGP)
-
-- EGP, Path vector
-
-#### 6.2.4 Network Address Translation
-
-- [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
-- translate private → public IPs
-- Terminology/Translation Mechanism
-
-| Source IPv4   | Source IPv4   | Desti IPv4    | Desti IPv4     |
-| ------------- | ------------- | :------------ | -------------- |
-| inside local  | inside global | outside local | outside global |
-| 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1  |
-
-- **Static NAT**: one-to-one
-	- **Port Forwarding**: external port → specific internal port
-- **Dynamic NAT**: many-to-many (pool of public IPs)
-- **PAT**: many-to-one (distinguished by TCP/UDP ports)
-- **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
-- **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
-
-#### 6.2.5 Infrastructure ACL (iACL)
-
-- **Permits only authorized traffic to infra equipment, as well as permit transit traffic**
-- Protects traffic destined to the network infra equipment to mitigate directed attacks
-- Design depends on protocols used on the network infra equipment
-- Deployed at network ingress points as a first line of defense
-- Deployed elsewhere accordingly
-- Disable unneeded services: [preserve resources, eliminates potential exploits]
-
-```
-Router#show control-plane host open-ports
-```
-
-#### 6.2.6 Hot Standby Router Protocol
-
-- HSRP/VRRP/GLBP
-- If HSRP breaks, active-active, "split brain"
-
-### 6.3 Network Services
-
-#### 6.3.1 Switches
+### 2.0.1 Switches
 
 - Uses MAC to forward frames
 - Maintains MAC table (dynamic/static)
@@ -626,7 +395,57 @@ Router#show control-plane host open-ports
 	- Layer 1 repeaters
 	- Carrier Sense Multiple Access with Collision Detection (CSMA/CD)
 
-#### 6.3.2 Spanning Tree Protocol (STP) L2
+### 2.1 VLANs
+
+#### 2.1.1 Dynamic Trunking Protocol (DTP)
+
+- Switchport in `dynamic desirable` will form a trunk with other Switches when
+	- `switchport mode trunk`
+	- `switchport mode dynamic desirable`
+	- `switchport mode dynamic auto`
+- `switchport dynamic auto` is passive and will not actively try nor form a trunk unless opposing switch is actively trying
+- Should be disabled via `switchport nonegotiate`
+- Trunking encapsulation
+	- `negotiate`: `ISL` > `802.1q`
+
+![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803.png)
+
+#### 2.1.2 VLAN Trunking Protocol (VTP)
+
+- Configure VLANs on a central VTP server switch, other switches will sync their VLAN database to the server
+- For large networks with many VLANs
+- Rare and not recommended
+	- Old switch with higher revision number will replace VLAN database, breaking the network
+- Versions: 1, 2, 3
+- Modes: server, client, transparent
+- Cisco default = VTP server mode
+- `// anything below here not so important //`
+- VTP servers
+	- Can CRUD VLANs
+		- Increases revision number
+	- Stored in NVRAM (persistent)
+	- Advertises latest revision on trunk interfaces for sync
+		- Latest = king
+- VTP clients
+	- Cannot CRUD
+	- Not stored in NVRAM (unless VTPv3)
+	- Forwards VTP ads to other clients
+- CLI
+	- `show vtp status`
+	- `vtp domain cisco`
+- Receives VTP ads with higher, will match and join same domain
+- Transparent mode
+	- Does not participate nor sync
+	- Maintains own VLAN database in NVRAM
+	- Can CRUD but not advertised
+	- Will forward VTP ads if same domain
+- Reset revision number to 0
+	- Change domain to unused
+	- Change to transparent mode
+
+### 2.2 Inter-VLAN Connectivity
+
+### 2.3 Spanning Tree Protocol (STP)
 
 ![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803-1.png)
 
@@ -657,7 +476,9 @@ Sw(config)#spanning-tree vlan 1 port-priority (+32)
 Sw(config)#do sh spanning
 ```
 
-##### Steps
+#### 2.3.1 Original STP
+
+##### 2.3.1.1 Steps
 
 1. Lowest Bridge ID = Root Bridge
 	- All ports forwarding
@@ -684,13 +505,13 @@ Sw(config)#spanning-tree vlan 1 root secondary
 Sw(config)#do show spanning-tree
 ```
 
-##### States
+##### 2.3.1.2 States
 
 ```
 Sw(config)#spanning-tree mode pvst/rapid-pvst
 ```
 
-###### STP
+##### 2.3.1.3 STP
 
 | **State**      | **BPDUs** | **Traffic** | **MAC Learning** | **Type**     | **Duration** |
 | -------------- | --------- | ----------- | ---------------- | ------------ | ------------ |
@@ -699,7 +520,7 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 | **Learning**   | tx/rx     | no          | yes              | transitional | ~15 sec      |
 | **Forwarding** | tx/rx     | tx/rx       | yes              | stable       | N/A          |
 
-###### RSTP
+##### 2.3.1.4 RSTP
 
 | State      | BPDUs   | Traffic | MAC Learning | Type         |
 | ---------- | ------- | ------- | ------------ | ------------ |
@@ -707,7 +528,7 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 | Learning   | tx/rx   | no      | yes          | transitional |
 | Forwarding | tx/rx   | yes     | yes          | stable       |
 
-##### Timers
+##### 2.3.3 Timers
 
 - Root bridges' timers decides the entire networks' timers
 
@@ -717,7 +538,7 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 | **Forward Delay** | port stays in Listening and Learning (total 30s)                                                           | **15 sec**              |
 | **Max Age**       | if Hello BPDUs not received by 20s, reevaluate, change to listening, learning, then forwarding (total 50s) | **20 sec** (≈10× Hello) |
 
-##### Standards
+##### 2.3.4 Standards
 
 - 802.1d (OG, legacy, only 1 tree for entire network)
 	- `0180.c200.0000`
@@ -734,7 +555,7 @@ Sw(config)#spanning-tree mode pvst/rapid-pvst
 - Rapid PVST+
 	- Cisco fork of RSTP
 
-##### STP Toolkit
+##### 2.3.5 STP Toolkit
 
 - **PortFast (Edge)**
 	- Immediate forwarding state
@@ -799,13 +620,12 @@ Sw(config)#spanning-tree loopguard default
 Sw(config-if)#spanning-tree guard none
 ```
 
-##### Other
+- Other
+	- Select root bridge for optimal traffic flow (minimize latency, minimize congestion) and stability, reliability
+		- By setting priority to 0
+	- Loop and Root guard are mutually exclusive, and overwrites each other
 
-- Select root bridge for optimal traffic flow (minimize latency, minimize congestion) and stability, reliability
-	- By setting priority to 0
-- Loop and Root guard are mutually exclusive, and overwrites each other
-
-##### Rapid Spanning Tree Protocol
+#### 2.3.2 Rapid Spanning Tree Protocol
 
 - <u>Alternate</u> port
 	- Discarding port that receives a superior BPDU from another switch
@@ -823,7 +643,7 @@ Sw(config-if)#spanning-tree guard none
 		- Automatically detected as shared
 		- `Sw(config-if)#spanning-tree link-type shared`
 
-##### EtherChannel (aka Port Channel / Link Aggregation Group)
+#### 2.3.3 EtherChannel (Port Channel / Link Aggregation Group)
 
 - [3.3 EtherChannel](Cisco%20Hands%20On.md#3.3%20EtherChannel)
 - End host bandwidth > distribution switch(es) bandwidth = oversubscription = congestion
@@ -840,15 +660,224 @@ Sw(config-if)#spanning-tree guard none
 - Interfaces in an EtherChannel must have the same
 	- Duplex, speed, switchport mode, allowed VLANS/native VLAN
 
-#### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
+## 3.0 IP Connectivity
+
+### 3.1 Routing (L3)
+
+- Packets treated independently
+- No data-recovery
+- Media-independent
+- IPv4 (32 bits), IPv6 (128 bits), OSI
+- [Routing table](./Cisco%20Hands%20On.md#3%20routing%20table)
+- **Headers**
+	- Version, IHL, **Service Type**, Total Length
+	- ID, Flag, Fragment Offset
+	- **TTL**, Protocol, **Header Checksum**
+	- **Source addy**
+	- **Destination addy**
+	- Options, Padding
+- **Routing**
+	- **Codes**
+		- **C**: Direct connection
+		- **L**: Local Interface
+		- **R**: RIP (Routing Information Protocol)
+		- **D**: EIGRP (Enhanced Interior Gateway Routing Protocol)
+		- **O**: OSPF (Open Shortest Path First)
+		- **S**: Static (manually configured)
+	- Connected `C` vs vs Local `L` routes
+		- Connected route = forward
+		- Local route = router receive for itself
+	- Choose most specific route (longest prefix length)
+	- Drop packet if no route found
+
+#### 3.1.1 Inter-VLAN Routing (L3)
+
+- [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
+- [2.1.1 VLAN (L2)](#2.1.1%20VLAN%20(L2))
+
+| Item               | Explanation                               | Analogy                          |
+| ------------------ | ----------------------------------------- | -------------------------------- |
+| **Access Port**    | One VLAN, untagged.                       | One door → one room.             |
+| **Trunk Port**     | Many VLANs, tagged.                       | Elevator for all floors.         |
+| **Trunk → Access** | Trunk feeds into final access port.       | Elevator → correct door.         |
+| **L3 Switch**      | Switch that routes.                       | Switch + traffic cop.            |
+| **RoAS**           | Many VLANs via subinterfaces on one link. | One hallway with mini-doors.     |
+| **EtherChannel**   | Many links → one logical link.            | Bundle hallway into one big one. |
+
+##### Router on a Stick
+
+- Route between multiple VLANs using a single interface on the router and switch
+- Switch int = regular trunk
+- Router int = Sub-interface config for each VLAN
+- Send frames out of sub-interface with its configured VLAN tag
+- $, Simple, easy congestion
+
+##### Layer 3 Switch (Switch with Routing capabilities)
+
+- Routing ok, Inter-VLAN ok, Config routes ok
+- Switch Virtual Interfaces (SVI) are virtual interfaces
+- Each SVI has an IP address that PC uses as default gateway
+- $\$, Faster than RoaS, Scalable
+
+##### Separate Dedicated Router
+
+- Separate physical interfaces for each VLAN
+- Best for complex/high-traffic networks
+- \$\$\$, requires more physical interfaces
+
+#### 3.1.2 Static Routing
+
+##### Floating Static Route
+
+- Not in routing table unless route learned via Dynamic is removed
+```
+// specify AD for static routes 
+R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
+```
+
+#### 3.1.3 Dynamic Routing Protocols
+
+- [OSPF, IS-IS (intermediate to intermediate system)]
+	- **OSPF:**
+	- Backbone, Areas
+	- **Neighbor Adjacencies**
+		- HDLC (High-Level Data Link Control)
+		- Physical p2p connection, no DR/BDR needed
+		- Point-to-Point Sub-interface
+		- Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
+	- **Neighbor States**
+		- Down [no hello packets, neighbor MIA]
+		- Init [hello received, but not recognized]
+		- 2-Way [mutual acknowledgement, friendship established]
+		- ExStart [electing who is master/slave]
+		- Exchange [swapping DBDs (Database Description Packets)]
+		- Loading [asking for missing LSAs (via LSR, LSU)]
+		- Full [database twins, neighbors fully synced]
+- break here
+- Forms 'adjacencies'/'neighbor relationships' to advertise routes
+- Chooses superior route via lower route <u>metric</u> for routing table
+	- [110/3] = [admin distance/metric]
+	- Same metric ? both added to routing table
+		- Called Equal Cost Multi Path (ECMP)
+			- Possible for static routes too = [1/0]
+	- Different Routing Protocol ? admin distance
+		- Lower = better
+
+ **Admin Distance**
+
+| Route Protocol / Type | AD  |     |
+| --------------------- | --- | --- |
+| Directly connected    | 0   |     |
+| Static                | 1   |     |
+| External BGP (eBGP)   | 20  |     |
+| EIGRP (internal)      | 90  |     |
+| IGRP                  | 100 |     |
+| OSPF                  | 110 |     |
+| IS-IS                 | 115 |     |
+| RIP                   | 120 |     |
+| EIGRP (external)      | 170 |     |
+| Internal BGP (iBGP)   | 200 |     |
+| Unusable route        | 255 |     |
+
+##### 3.1.3.1 Routing Information Protocol (RIP)
+
+- IGP, Distance vector, routing by rumor
+- Metric: Hop count (15 max)
+- Versions
+	- **IPv4**
+		- RIPv1 [only Class A, B, C, no support for VLSM, CIDR, subnet mask]
+		- RIPv2 [VSLM, CIDR, subnet mask ok, multicast to 224.0.0.9]
+	- **IPv6**: RIPng
+- 2 messages types
+	- **Request:** send routing table
+	- **Response:** send local routing table to neighbors
+	- Every 30 seconds
+- Advertises router's interface
+
+##### 3.1.3.2 Enhanced Interior Gateway Routing Protocol (EIGRP)
+
+- IGP, Distance vector, routing by rumor
+- Metric: f(bandwidth + delay) => BW of **slowest link** + delay of **all links**
+- Uses wildcard subnet masking
+	- `0` match, `1` don't have to match
+-  Terminology
+	- **Feasible distance:** router's metric value to destination
+	- **Reported/advertised distance:** neighbor's metric value to destination
+		- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
+		- Red, yellow: feasible; Blue, purple: reported
+	- **Successor**: route with lowest metric (best route)
+	- **Feasible successor**: alternate route with reported distance < successor feasible distance
+	- Unequal-cost load-balancing
+		- Only on feasible successor routes
+		- `R1(config-router)#variance 2`
+			- Allows up to 2x successor route's FD
+
+##### 3.1.3.3 Open Shortest Path First (OSPF)
+
+- Link State, full network map via ads, best path
+- more CPU, faster convergence
+- Metric: Cost of each link by bandwidth
+- Versions
+	- v1: dead
+	- v2: used for IPv4
+	- v3: used for IPv6 (IPv4 also can)
+- Store info in **Link State Advertisements (LSA)**, organized in **Link State DB (LSDB)**
+
+##### 3.1.3.4 Intermediate System to Intermediate System (IS-IS)
+
+- Metric: Cost of each link in the route (default 10)
+
+##### 3.1.3.5 Border Gateway Protocol (BGP)
+
+- EGP, Path vector
+
+#### 3.1.4 Network Address Translation
+
+- [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
+- translate private → public IPs
+- Terminology/Translation Mechanism
+
+| Source IPv4   | Source IPv4   | Desti IPv4    | Desti IPv4     |
+| ------------- | ------------- | :------------ | -------------- |
+| inside local  | inside global | outside local | outside global |
+| 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1  |
+
+- **Static NAT**: one-to-one
+	- **Port Forwarding**: external port → specific internal port
+- **Dynamic NAT**: many-to-many (pool of public IPs)
+- **PAT**: many-to-one (distinguished by TCP/UDP ports)
+- **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
+- **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
+
+#### 3.1.5 Infrastructure ACL (iACL)
+
+- **Permits only authorized traffic to infra equipment, as well as permit transit traffic**
+- Protects traffic destined to the network infra equipment to mitigate directed attacks
+- Design depends on protocols used on the network infra equipment
+- Deployed at network ingress points as a first line of defense
+- Deployed elsewhere accordingly
+- Disable unneeded services: [preserve resources, eliminates potential exploits]
+
+```
+Router#show control-plane host open-ports
+```
+
+#### 3.1.6 Hot Standby Router Protocol
+
+- HSRP/VRRP/GLBP
+- If HSRP breaks, active-active, "split brain"
+
+## 4.0 IP Services
+
+### 4.1 Dynamic Host Configuration Protocol (DHCP)
 
 - assigns IPs clients
 
-#### 6.3.4 Domain Name Service (DNS)
+### 4.2 Domain Name Service (DNS)
 
 - resolves domain name IP
 
-#### 6.3.5 Syslog
+### 4.3 Syslog
 
 - [CLI](Cisco%20Hands%20On.md#2.6%20Syslog)
 - Configure devices to send syslog messages on privilege mode, forward to:
@@ -875,7 +904,7 @@ Sw(config-if)#spanning-tree guard none
 	- Message
 	- Text
 
-#### 6.3.6 Simple Network Management Protocol (SNMP)
+### 4.4 Simple Network Management Protocol (SNMP)
 
 - **SNMP Manager**: Polls agents on network
 - **SNMP Agent**: Stores info and responds to manager requests, generates traps
@@ -889,7 +918,7 @@ Sw(config-if)#spanning-tree guard none
 	- A → trap → M
 	- A → inform → M
 
-#### 6.3.7 Software Clock, Network Time Protocol (NTP)
+### 4.5 Software Clock, Network Time Protocol (NTP)
 
 - [CLI](Cisco%20Hands%20On.md#2.7%20Software%20Clock,%20NTP)
 - Correct time within networks for tracking of events
@@ -897,14 +926,14 @@ Sw(config-if)#spanning-tree guard none
 - Port UDP 123
 - Stratum (1-15)
 
-## 7. Network Security
+## 5.0 Security Fundamentals
 
-### 7.1 Firewall & IDS/IPS
+### 5.1 Firewall & IDS/IPS
 
 - Operate on L3 and L4
 - DPI (Deep Packet Inspection): content-based filtering
 
-### 7.2 Access Control Lists (ACL) (L3)
+### 5.2 Access Control Lists (ACL) (L3)
 
 - [CLI](Cisco%20Hands%20On.md#5.%20ACL%20(Access%20Control%20Lists))
 - Permit/Deny
@@ -933,43 +962,43 @@ Sw(config-if)#spanning-tree guard none
 	- **Standard**: near destination (affects only source IP, place later = ok)
 	- **Extended**: near source (more fields, save BW early)
 
-### 7.3 Network Device Security
+### 5.3 Network Device Security
 
 - [Setting Switch Password](Cisco%20Hands%20On.md#2.2%20Switch%20Config)
 - [Security Related](Cisco%20Hands%20On.md#2.9%20Security%20Related)
 
-#### 7.3.1 Overview
+#### 5.3.1 Overview
 
 - **Threats**: [remote, local access, physical, environmental, electrical, maintenance]
 - **Causes**: [unauthorized, damage, theft, temperatures, humidity, voltage, improper handling, poor cabling]
 
-#### 7.3.2 Passwords
+#### 5.3.2 Passwords
 
 - **Forced entry**: [brute force, guessing, dictionary attacks]
 - **Policy**: [length, symbols; storage, protection, frequent change of password]
 - **Alternatives**: [MFA, digital certs, biometrics]
 
-#### 7.3.3 Authentication & Access Control
+#### 5.3.3 Authentication & Access Control
 
 - **802.1X**: port-based access control
 - **RADIUS**: central auth server for 802.1X
 - **Flow**: device → switch → RADIUS → allow/deny port
 - **Use case**: prevent rogue devices, secure wired/Wi-Fi ports
 
-#### 7.3.4 Port Security
+#### 5.3.4 Port Security
 
 - [CLI](Cisco%20Hands%20On.md#2.10%20Port%20Security)
 - Limit MAC per port
 - Sticky MAC option to learn allowed devices
 - Actions: [shutdown, restrict, protect]
 
-#### 7.3.5 VLAN Hopping
+#### 5.3.5 VLAN Hopping
 
 - **Attacks**: access traffic across VLANs without routing
 - **Methods**: switch spoofing, double-tagging
 - **Prevention**: [disable DTP](Cisco%20Hands%20On.md#2.4%20VLAN), set access ports, native VLAN unused, prune trunks, port security
 
-#### 7.3.6 ARP Spoofing Attack
+#### 5.3.6 ARP Spoofing Attack
 
 - Attacker forges an ARP reply to map victim IP to his MAC
 - Becomes MITM and intercepts traffic
@@ -978,9 +1007,27 @@ Sw(config-if)#spanning-tree guard none
 	- [Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#2.11%20Dynamic%20ARP%20Inspection%20(DAI))
 	- [Port Security](Fundamentals%20of%20Networking.md#7.3.4%20Port%20Security)
 
-## 8. Network Overview and Performance
+#### 5.4 IPsec (Remote Access / Site-to-Site VPNs)
 
-### 8.1 Characteristics of a Network
+## 6.0 Automation & Programmability
+
+### 6.1 Automation & Networks
+
+### 6.2 Traditional Networks & Controller-based Networking
+
+### 6.3 Controller-based, SDN
+
+### 6.4 AI & ML
+
+### 6.5 REST APIs
+
+### 6.6 Ansible, Terraform
+
+### 6.7 Components of JSON-encoded Data
+
+## 7. Good To Know
+
+### 7.1 Characteristics of a Network
 
 - **Topology**: physical connectivity of devices and logical paths of data flows
 	- Network diagram [Physical (layout), Logical (pathing), Colour legend]
@@ -994,14 +1041,14 @@ Sw(config-if)#spanning-tree guard none
 - **Cost**: expense + maintenance
 - **Virtualization**: emulated (storage, compute, network, security)
 
-### 8.2 KPIs
+### 7.2 KPIs
 
 - Bandwidth
 - Latency
 - Jitter
 - Packet Loss
 
-### 8.3 Applications
+### 7.3 Applications
 
 - **Data**: [smooth, benign, drop & delay insensitive]
 - **Voice**: [smooth, benign, drop & delay sensitive]
@@ -1012,13 +1059,13 @@ Sw(config-if)#spanning-tree guard none
 	- Generally HTTP response <= 400ms
 - **Classifications**: [batch, interactive, real-time]
 
-## 9. Troubleshooting
+## 8. Troubleshooting
 
 - Hardware
 - Software
 - Config
 
-### 9.1 Problems
+### 8.1 Problems
 
 - Asymmetric routing
 	- Traceroute for A, B, C and C, B, A
@@ -1028,7 +1075,7 @@ Sw(config-if)#spanning-tree guard none
 		- If link breaks, both FW think they are master, traffic fails
 - ARP/MAC incomplete == IP conflict
 
-#### 9.1.1 Steps
+#### 8.1.1 Steps
 
 - Identify problem
 - Gather information
@@ -1038,7 +1085,7 @@ Sw(config-if)#spanning-tree guard none
 - Test hypothesis
 - Document solutions/workaround
 
-#### 9.1.2 Actual Steps
+#### 8.1.2 Actual Steps
 
 - Verify the host IPv4 address and subnet mask
 - Ping the loopback address 					(IPv4 stack)
@@ -1053,50 +1100,16 @@ Sw(config-if)#spanning-tree guard none
 	- **Excessive noise**: Cable exceeds max length
 	- **Excessive collision**: Duplex mismatch
 
-## 10. Good To Know
+## 9. Yet to Categorize
 
-### 10.1 Dynamic Trunking Protocol (DTP)
+### Transport Layer (L4)
 
-- Switchport in `dynamic desirable` will form a trunk with other Switches when
-	- `switchport mode trunk`
-	- `switchport mode dynamic desirable`
-	- `switchport mode dynamic auto`
-- `switchport dynamic auto` is passive and will not actively try nor form a trunk unless opposing switch is actively trying
-- Should be disabled via `switchport nonegotiate`
-- Trunking encapsulation
-	- `negotiate`: `ISL` > `802.1q`
-
-![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803.png)
-
-### 10.2 VLAN Trunking Protocol (VTP)
-
-- Configure VLANs on a central VTP server switch, other switches will sync their VLAN database to the server
-- For large networks with many VLANs
-- Rare and not recommended
-	- Old switch with higher revision number will replace VLAN database, breaking the network
-- Versions: 1, 2, 3
-- Modes: server, client, transparent
-- Cisco default = VTP server mode
-- `// anything below here not so important //`
-- VTP servers
-	- Can CRUD VLANs
-		- Increases revision number
-	- Stored in NVRAM (persistent)
-	- Advertises latest revision on trunk interfaces for sync
-		- Latest = king
-- VTP clients
-	- Cannot CRUD
-	- Not stored in NVRAM (unless VTPv3)
-	- Forwards VTP ads to other clients
-- CLI
-	- `show vtp status`
-	- `vtp domain cisco`
-- Receives VTP ads with higher, will match and join same domain
-- Transparent mode
-	- Does not participate nor sync
-	- Maintains own VLAN database in NVRAM
-	- Can CRUD but not advertised
-	- Will forward VTP ads if same domain
-- Reset revision number to 0
-	- Change domain to unused
-	- Change to transparent mode
+- **TCP/IP**
+	- 3-way: [SYN, SYN/ACK, ACK]
+		- Establish first before traffic flows
+		- 
+	- Guaranteed delivery (reliability, data integrity)
+	- Resend if error, interrupting streaming/music
+- **UDP**
+	- No guaranteed delivery
+	- Fast but no error-checking
