@@ -746,6 +746,16 @@ Sw(config-if)#spanning-tree guard none
 		- Automatically detected as shared
 		- `Sw(config-if)#spanning-tree link-type shared`
 
+##### EtherChannel (aka Port Channel / Link Aggregation Group)
+
+- [3.3 EtherChannel](Cisco%20Hands%20On.md#3.3%20EtherChannel)
+- End host bandwidth > distribution switch(es) bandwidth = oversubscription = congestion
+- Groups interfaces together to act as a single interface
+- Load balance through 'flows' via an algo
+	- S. MAC, D. MAC, S.+D. MAC, S. IP, D. IP, S.+D. IP
+	- `Sw(config)#do sh etherchannel load-balance`
+	- `Sq(config)#port-channel; load-balance [?] src-dst-mac`
+
 #### 6.3.3 Dynamic Host Configuration Protocol (DHCP)
 
 - assigns IPs clients

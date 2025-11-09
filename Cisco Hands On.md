@@ -194,75 +194,49 @@ Switch(config-if)#no shut
 ```
 
 // show
-
 Switch#show etherchannel summary
 
 // config
-
 // shutdown for safer config
-
 Switch#interface range GigabitEthernet 0/1-4
-
 Switch(config-if-range)#shutdown
 
 // add port 0/1-4 to channel 1
-
 // mode active = use LACP
-
 Switch(config-if-range)#channel-group 1 mode active
-
 Switch(config-if-range)# exit
 
 // config port-channel
-
 Switch(config)# interface port-channel 1
-
 Switch(config-if)#switchport mode trunk
-
 Switch(config-if)#switchport trunk allowed vlan 1,2,20
 
 // up ports
-
 Switch(config-if)#interface range GigabitEthernet0/1-4
-
 Switch(config-if-range)#no shutdown
-
 ```
 
 ```
 
 // generate RSA key
-
 crypto key generate rsa
-
 2048
 
 // enable SSH
-
 Router(config)#ip ssh version 2
-
 Router(config)#exit
-
 Router#show ip ssh
 
 // set vty lines for SSH transport
-
 Router#configure terminal
-
 Router(config)#line vty 0 4
-
 Router(config-line)#transport input ssh
-
 Router(config-line)#login local
-
 Router(config-line)#exit
 
 // configure local account
-
 Router(config)#username Joe privilege 15 secret CISCO
-
 Router(config)#
-
 ```
 
 ### 3.4 Port Security
@@ -276,31 +250,20 @@ access or trunk
 - Enable port security
 
 ```
-
 Switch(config)# interface g0/8
-
 Switch(config-if)# switchport mode access
-
 Switch(config-if)# switchport port-security
-
 Switch(config-if)# switchport port-security maximum 2
-
 Switch(config-if)# switchport port-security violation shutdown
-
 Switch(config-if)# switchport port-security mac-address sticky
-
 Switch(config-if)# switchport port-security aging time 120
 
 // show
-
 Switch#show port-security
-
 Switch#show port-security interface GigabitEthernet0/8
 
 // port-status secure-down == violation
-
 Switch#no switchport port-security mac-address sticky
-
 ```
 
 ### 3.5 Dynamic ARP Inspection (DAI)
@@ -308,25 +271,17 @@ Switch#no switchport port-security mac-address sticky
 - Layer 2 security feature to prevent ARP spoofing by validating ARP packets against DHCP snooping table
 
 ```
-
 Switch(config)#ip arp inspection <vlan-id>     // enable DAI on VLAN
-
 Switch(config-if)#ip arp inspection trust      // enable DAI on an interface
-
 ```
 
 ### 3.6 Syslog
 
 ```
-
 // send syslog to Loopback0
-
 Router(config)#logging host <IPv4>
-
 Router(config)#logging trap informational
-
 Router(config)#logging source-interface Loopback0
-
 ```
 
 ## 4. Router Config
@@ -396,31 +351,21 @@ Router(config-if)#no shutdown
 ```
 
 // show
-
 Router(config)#show ip nat translations
 
 // config static
-
 Router(config)#ip nat inside source static 172.16.1.10 209.165.200.230 8080
-
 Router(config)#ip nat inside source static tcp 192.168.10.254 80 209.165.200.226 8080
 
 // config dynamic
-
 // acl required to specify which IPs to be translated
-
 Router(config)#access-list 1 permit 10.1.1.0 0.0.0.255
-
 Router(config)#ip nat pool NAT-POOL 209.165.200.230 209.165.200.235 netmask 255.255.255.254
-
 Router(config)#ip nat inside source list 1 pool NAT-POOL
 
 // config PAT
-
 // same idea as dynamic, but need specify outside interface
-
-Router(config)#access-list 1 permit 172.16.1.0 0.0.0.255
-
+Router(config)#access-list 1 permit 172.16.1.0 0.0.0.25
 Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overload
 
 ```
@@ -428,149 +373,90 @@ Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overloa
 ### 4.4 Access Control Lists (ACL)
 
 ```
-
 // by number
-
 Router(config)#access-list 1 deny host 172.16.3.3
-
 Router(config)#access-list 1 permit 172.16.0.0 0.0.255.255
 
 // by name
-
 Router(config)# ip access-list standard acl1
-
 Router(config-std-nacl)# deny host 172.16.3.3
-
 Router(config-std-nacl)# permit 172.16.0.0 0.0.255.255
-
 ```
 
 ```
-
 // extended IPv4
-
 Router(config)#ip-access-list extended 101
-
 Router(config-ext-nacl)#permit tcp host 172.16.3.3 range 56000 60000 host 203.0.113.30 eq 80
-
 ```
 
 ```
-
 // delete
-
 Router(config)#no access-list <access-list-number>
-
 Router(config)#no ip access-list <standard/extended> <access-list-name>
-
 ```
 
 ```
-
 // modify
-
 // delete config then redo
-
 ```
 
 ```
-
 // apply
-
 Router(config-if)#ip access-group access-list-number ??????
-
 Router#show access-lists
-
 Router(config)#interface GigabitEthernet 0/1
-
 Router(config-if)#ip access-group 15 out
-
 ```
 
 ### 4.5 Security (SSH, local)
 
 ```
-
 // logout on timeout
-
 Switch#conf f
-
 Switch(config)#line console 0
-
 Switch(config-line)#exec-timeout 5
-
 ```
 
 ```
-
 // securing remote access - virtual terminal password config
-
 Switch(config)#line vty 0 15
-
 Switch(config-line)#login
-
 Switch(config-line)#password <password>
-
 ```
 
 ```
-
 // SSH config
-
 Switch (config)#hostname Switch
-
 Switch(config)#ip domain-name cisco.com
-
 Switch(config)#username <username> secret <secret>
-
 Switch(config)#crypto key generate rsa modulus 2048
-
 ...
-
 *Dec 25 13:37:42.000 %SSH-5-ENABLED: SSH 1.99 has been enabled
-
 ...
-
 Switch(config)#line vty 0 15
-
 Switch(config-line)#login local
-
 Switch(config-line)#transport input ssh
-
 Switch(config-line)#exit
-
 Switch(config)#ip ssh version 2
-
 ```
 
 ```
-
 // login banner
-
 Switch(config)#banner login "Please enter uName and pWord."
-
 // a user trying to connect will see the above message
-
 ```
 
 ### 4.6 Time Sync (Clock, NTP)
 
 ```
-
 Router#show clock
-
 Router#show clock detail
-
 Router#clock set 18:00:00 17 Oct 2025
 
 // sync NTP
-
 Central(config)#ntp master 2
-
 Branch(config)#ntp server 209.165.201.1
-
 SW1(config)#ntp server 10.1.1.1
-
 ```
 
 ## 5. Test Configs
