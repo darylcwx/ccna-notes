@@ -1,3 +1,5 @@
+## Table of Contents
+
 ```table-of-contents
 title:
 style: nestedList
@@ -10,7 +12,6 @@ hideWhenEmpty: false
 debugInConsole: false
 ```
 
-## Table of Contents
 ## 1. Products
 
 - NX-OS
@@ -409,7 +410,7 @@ R1(config-if)#bandwidth ?
 
 | Code  | Destination Network | [Admin Distance/Metric] | Next-hop IP        | Time Elapsed | Outgoing Interface |
 | ----- | ------------------- | ----------------------- | ------------------ | ------------ | ------------------ |
-| **C** | 192.168.1.0/24      | –                       | directly connected | –            | GigabitEthernet0/0 |
+| **C** | 192.168.1.0/24      |–| directly connected |–| GigabitEthernet0/0 |
 | **S** | 0.0.0.0/0           | [1/0]                   | via 192.168.1.1    | permanent    | GigabitEthernet0/0 |
 | **D** | 10.10.10.0/24       | [90/30720]              | via 192.168.1.2    | 00:00:12     | GigabitEthernet0/1 |
 | **O** | 172.16.0.0/16       | [110/20]                | via 10.1.1.2       | 00:00:30     | GigabitEthernet0/2 |

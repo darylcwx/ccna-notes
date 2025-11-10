@@ -1,3 +1,5 @@
+## Table of Contents
+
 ```table-of-contents
 title: 
 style: nestedList
@@ -9,7 +11,6 @@ hideWhenEmpty: false
 debugInConsole: false 
 ```
 
-## Table of Contents
 ## 1.0 Network Fundamentals
 
 ### 1.1 Components
@@ -802,7 +803,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 - Metric: f(bandwidth + delay) => BW of **slowest link** + delay of **all links**
 - Uses wildcard subnet masking
 	- `0` match, `1` don't have to match
--  Terminology
+- Terminology
 	- **Feasible distance:** router's metric value to destination
 	- **Reported/advertised distance:** neighbor's metric value to destination
 		- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
@@ -815,6 +816,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 			- Allows up to 2x successor route's FD
 
 ##### 3.1.3.3 Open Shortest Path First (OSPF)
+
 - [OSPF](Cisco%20Hands%20On.md#OSPF)
 - Link State, full network map via ads, best path
 - more CPU, faster convergence
@@ -848,6 +850,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- Speed =/= BW
 - Becoming OSPF neighbors
 - 
+
 ##### 3.1.3.4 Intermediate System to Intermediate System (IS-IS)
 
 - Metric: Cost of each link in the route (default 10)
