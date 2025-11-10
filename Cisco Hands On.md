@@ -10,6 +10,7 @@ hideWhenEmpty: false
 debugInConsole: false
 ```
 
+## Table of Contents
 ## 1. Products
 
 - NX-OS
@@ -346,7 +347,7 @@ R1(config-router)#distance ?
 ##### EIGRP
 
 ```
-R1(config)#router eigrp 1
+R1(config)#router eigrp 1 // must match
 R1(config-router)#no auto-summary        // disable auto-convert to classful
 R1(config-router)#variance ?             // allow unequal-cost load balancing
 
@@ -363,6 +364,43 @@ R1#sh ip protocols                   // > k1 and k3 = metric
 R1#sh ip eigrp neighbors
 R1(config-router)#eigrp router-id ?  // manual, highest loopback, highest phys
 // EIGRP has internal 90, external 170 routes
+```
+
+##### OSPF
+
+- Basic OSPF configuration (pic?$)
+
+```
+// config
+R1(config)#router ospf 1
+R1(config-router)#network 10.0.12.0 0.0.0.3 area 0 // inverse mask 
+R1(config-router)#network 10.0.13.0 0.0.0.3 area 0
+R1(config-router)#network 172.16.1.0 0.0.0.15 area 0
+
+R1(config-router)#passive-interface g2/0 // use if itself no neighbors
+
+// config as ASBR
+R1(config)#ip route 0.0.0.0 0.0.0.0 8.8.8.8
+R1(config-router)#default-information originate
+```
+
+```
+R1(config-router)#router-id ?
+R1#clear ip ospf process > no 
+R1#sh ip protocol // autonomous system boundary router (ASBR) = a router that connects OSPF to external. #default-information originate <= R1 becomes ASBR
+```
+
+```
+// cost related
+// change reference BW
+R1(config-router)#auto-cost reference-bandwidth <mbps> // 100000
+
+// manual conf 
+R1(config)#interface g0/0
+R1(config-if)#ip ospf cost ?
+
+// int BW
+R1(config-if)#bandwidth ?
 ```
 
 ### 4.2 Routing Table

@@ -9,6 +9,7 @@ hideWhenEmpty: false
 debugInConsole: false 
 ```
 
+## Table of Contents
 ## 1.0 Network Fundamentals
 
 ### 1.1 Components
@@ -730,6 +731,7 @@ Sw(config-if)#spanning-tree guard none
 ##### Floating Static Route
 
 - Not in routing table unless route learned via Dynamic is removed
+
 ```
 // specify AD for static routes 
 R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
@@ -813,7 +815,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 			- Allows up to 2x successor route's FD
 
 ##### 3.1.3.3 Open Shortest Path First (OSPF)
-
+- [OSPF](Cisco%20Hands%20On.md#OSPF)
 - Link State, full network map via ads, best path
 - more CPU, faster convergence
 - Metric: Cost of each link by bandwidth
@@ -821,8 +823,31 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- v1: dead
 	- v2: used for IPv4
 	- v3: used for IPv6 (IPv4 also can)
-- Store info in **Link State Advertisements (LSA)**, organized in **Link State DB (LSDB)**
-
+- **Link State Advertisements (LSA)**
+	- Organised in **Link State DB (LSDB)**
+	- Flooded every 30 minutes (age timer)
+	- Dijkstra
+- Large networks: longer time to calculate, more cpu, more memory, small change = re-flood
+- Divide large networks into several smaller areas
+- Rules
+	- Each Area = unique LSDB
+	- All areas must connect to Area 0 via Backbone Routers
+	- Area Border Routers (ABR) sit in between Areas
+		- ABRs maintain a separate LSB for each Area they're in (3 is too much)
+	- Intra-area = route in same OSPF area
+	- Inter-area = route in different OSPF area
+	- Areas should be contiguous
+	- Areas must have >=1 ABR connected to backbone
+	- Interfaces in same subnet must be same area
+- OSPF Metric: Cost
+	- Reference BW (default 100) / interface BW
+		- 100 mbps / 10 mbps = 10
+	- minimum cost = 1
+	- Should change Ref BW - 100000
+	- Loop back address cost = 1
+	- Speed =/= BW
+- Becoming OSPF neighbors
+- 
 ##### 3.1.3.4 Intermediate System to Intermediate System (IS-IS)
 
 - Metric: Cost of each link in the route (default 10)
