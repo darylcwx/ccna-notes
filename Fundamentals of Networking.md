@@ -74,7 +74,6 @@ debugInConsole: false
 	- SSL & IPsec [L2, L3, L4, L3, L4]
 	- L2-in-ip [L2, L3, L2, L3, L4]
 
-
 #### 1.2.5 Other
 
 - **Data Center**
@@ -741,23 +740,6 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 #### 3.1.3 Dynamic Routing Protocols
 
-- [OSPF, IS-IS (intermediate to intermediate system)]
-	- **OSPF:**
-	- Backbone, Areas
-	- **Neighbor Adjacencies**
-		- HDLC (High-Level Data Link Control)
-		- Physical p2p connection, no DR/BDR needed
-		- Point-to-Point Sub-interface
-		- Virtual p2p connection (Frame Relay, ATM), no DR/BDR needed
-	- **Neighbor States**
-		- Down [no hello packets, neighbor MIA]
-		- Init [hello received, but not recognized]
-		- 2-Way [mutual acknowledgement, friendship established]
-		- ExStart [electing who is master/slave]
-		- Exchange [swapping DBDs (Database Description Packets)]
-		- Loading [asking for missing LSAs (via LSR, LSU)]
-		- Full [database twins, neighbors fully synced]
-- break here
 - Forms 'adjacencies'/'neighbor relationships' to advertise routes
 - Chooses superior route via lower route <u>metric</u> for routing table
 	- [110/3] = [admin distance/metric]
@@ -843,14 +825,21 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- Areas must have >=1 ABR connected to backbone
 	- Interfaces in same subnet must be same area
 - OSPF Metric: Cost
-	- Reference BW (default 100) / interface BW
-		- 100 mbps / 10 mbps = 10
-	- minimum cost = 1
-	- Should change Ref BW - 100000
+	- Reference BW (default 100) / interface BW = cost (min value = 1)
+	- Should change Ref BW 
 	- Loop back address cost = 1
 	- Speed =/= BW
 - Becoming OSPF neighbors
-- 
+	- OSPF hello for potential OSPF neighbors (10 seconds) via `224.0.0.5` (multicast)
+		- IP header with Protocol field `89`
+	- Neighbor States (Demons In Texas Eat Eels Like Fries)
+		- Down
+		- Init [hello received, own self not recognized]
+		- Two-Way [own self recognized, friendship established]
+		- ExStart [higher RID = master, lower RID = slave]
+		- Exchange [swapping DBDs (Database Description) ]
+		- Loading [asking for missing LSAs (via LSR, LSU, LSAck)]
+		- Full [fully synced, sends hello packet every 10s, resets 40s dead timer]
 
 ##### 3.1.3.4 Intermediate System to Intermediate System (IS-IS)
 

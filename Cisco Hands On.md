@@ -147,6 +147,7 @@ Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
 Switch#show interfaces trunk
 
 Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport nonegotiate
 Switch(config-if)#switchport trunk encapsulation dot1q 
 
 // tag VLANs
@@ -378,7 +379,16 @@ R1(config-router)#network 10.0.12.0 0.0.0.3 area 0 // inverse mask
 R1(config-router)#network 10.0.13.0 0.0.0.3 area 0
 R1(config-router)#network 172.16.1.0 0.0.0.15 area 0
 
-R1(config-router)#passive-interface g2/0 // use if itself no neighbors
+// conf by int
+R1(config-if)#int g0/0
+R1(config-if)#ip ospf 1 area 0
+R1(config-if)#router ospf 1
+
+// passive, use if itself no neighbors
+R1(config-router)#passive-interface g2/0
+
+R1(config-router)#passive-interface default
+R1(config-router)#no passive-interface <int>
 
 // config as ASBR
 R1(config)#ip route 0.0.0.0 0.0.0.0 8.8.8.8
@@ -388,11 +398,14 @@ R1(config-router)#default-information originate
 ```
 R1(config-router)#router-id ?
 R1#clear ip ospf process > no 
-R1#sh ip protocol // autonomous system boundary router (ASBR) = a router that connects OSPF to external. #default-information originate <= R1 becomes ASBR
+R1#sh ip protocol // autonomous system boundary router (ASBR)
+R1#default-information originate //R1 becomes ASBR
+R1#show ip ospf neighbor         // State: FULL/DR
 ```
 
 ```
 // cost related
+
 // change reference BW
 R1(config-router)#auto-cost reference-bandwidth <mbps> // 100000
 
