@@ -373,6 +373,9 @@ R1(config-router)#eigrp router-id ?  // manual, highest loopback, highest phys
 - Basic OSPF configuration (pic?$)
 
 ```
+// show
+R1#show ip ospf int br 
+
 // config
 R1(config)#router ospf 1
 R1(config-router)#network 10.0.12.0 0.0.0.3 area 0 // inverse mask 
@@ -415,6 +418,20 @@ R1(config-if)#ip ospf cost ?
 
 // int BW
 R1(config-if)#bandwidth ?
+```
+
+```
+// priority 
+R1(config-if)#ip ospf priority 255
+
+```
+
+```
+// serial int
+
+R1(config-if)#encap ppp // both sides
+R1(config-if)#clock rate // bps
+R1#show controllers [int] // DCE/DTE?
 ```
 
 ### 4.2 Routing Table

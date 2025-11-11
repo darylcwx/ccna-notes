@@ -840,7 +840,25 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 		- Exchange [swapping DBDs (Database Description) ]
 		- Loading [asking for missing LSAs (via LSR, LSU, LSAck)]
 		- Full [fully synced, sends hello packet every 10s, resets 40s dead timer]
-
+- Network Types
+	- Broadcast (ethernet, FDDI)
+		- Each subnet one DR one BDR
+			- None of those ? DROther
+			- Elected via
+				- OSPF interface priority (1)
+				- OPSF router ID
+			- Priority 0, cannot 
+		- Messages multicast `224.0.0.6`
+	- Point-to-point (PPP, HDLC)
+		- Enabled on serial int by default
+		- No DR/BDR
+		- one side DCE, other side DTE
+			- DCE need specify clock rate
+		- Encap: cHDLC (default)
+		- Encap: ppp `(config-if)#encap ppp`
+		-
+	- Non-broadcast (frame relay, x.25) 
+		- Manually configure neighbors
 ##### 3.1.3.4 Intermediate System to Intermediate System (IS-IS)
 
 - Metric: Cost of each link in the route (default 10)
