@@ -800,6 +800,8 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 ##### 3.1.3.3 Open Shortest Path First (OSPF)
 
+#take-pic
+
 - [OSPF](Cisco%20Hands%20On.md#OSPF)
 - Link State, full network map via ads, best path
 - more CPU, faster convergence
@@ -887,7 +889,33 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 - EGP, Path vector
 
-#### 3.1.4 Network Address Translation
+#### 3.1.4 First Hop Redundancy Protocol
+
+#take-pic
+
+- Virtual IP & MAC
+- Active/standby
+- Gratuitous ARP replies
+	- Sent without being requested
+	- Are broadcasts
+- Non-preemptive
+	- Won't give up role if real Active returns
+
+##### Hot Standby Router Protocol (HSRP)
+
+- Active and standby
+- V1: `224.0.0.2`
+- V2: IPv6, `224.0.0.102`
+- vMACs
+	- V1: `0000.0c07.acXX`
+	- V2: `0000.0c9f.fXXX`
+- 
+- If HSRP breaks, active-active, "split brain"
+##### Virtual Router Redundancy Protocol (VRRP)
+
+##### Gateway Load Balancing Protocol (GLBP)
+
+#### 3.1.5 Network Address Translation
 
 - [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
 - translate private → public IPs
@@ -905,7 +933,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 - **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
 - **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
 
-#### 3.1.5 Infrastructure ACL (iACL)
+#### 3.1.6 Infrastructure ACL (iACL)
 
 - **Permits only authorized traffic to infra equipment, as well as permit transit traffic**
 - Protects traffic destined to the network infra equipment to mitigate directed attacks
@@ -917,11 +945,6 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 ```
 Router#show control-plane host open-ports
 ```
-
-#### 3.1.6 Hot Standby Router Protocol
-
-- HSRP/VRRP/GLBP
-- If HSRP breaks, active-active, "split brain"
 
 ## 4.0 IP Services
 
