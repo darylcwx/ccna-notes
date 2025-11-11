@@ -144,10 +144,10 @@ Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
 ```
 // trunk
 // carries traffic for multiple VLANs
-Switch#show interfaces trunk
 
+Switch#show interfaces trunk
 Switch(config-if)#switchport mode trunk
-Switch(config-if)#switchport nonegotiate
+Switch(config-if)#switchport nonegotiate // disable DTP
 Switch(config-if)#switchport trunk encapsulation dot1q 
 
 // tag VLANs
@@ -168,8 +168,6 @@ R1(config-subif)#ip addr <ip> // last usable
 
 R1(config-subif)#int g0/0.20
 R1(config-subif)#encap dot1q 20 <native>
-
-R1#sh ip int br
 ```
 
 ```
@@ -198,20 +196,19 @@ Switch(config)#do sh etherchannel summary
 Switch(config)#do sh etherchannel load-balance
 Switch(config)#port-channel load-balance [?] src-dst-mac
 
-// config 
-Switch(config)#int range g0/0 - 3
-Switch(config-if-range)#no switchport          // for L3 EtherChannel
-Switch(config-if-range)#channel-group 1 mode ? // auto/desirable (see DTP)
-
 // config port-channel
 Switch(config)#int port-channel 1
 Switch(config-if)#switchport trunk encapsulation dot1q
 Switch(config-if)#switchport mode trunk
 Switch(config-if)#switchport trunk allowed vlan 1,2,20
+
+// config 
+Switch(config)#int range g0/0 - 3
+Switch(config-if-range)#no switchport          // for L3 EtherChannel
+Switch(config-if-range)#channel-group 1 mode ? // auto/desirable (see DTP)
 ```
 
 ```
-
 // generate RSA key
 crypto key generate rsa
 2048
@@ -404,6 +401,7 @@ R1#clear ip ospf process > no
 R1#sh ip protocol // autonomous system boundary router (ASBR)
 R1#default-information originate //R1 becomes ASBR
 R1#show ip ospf neighbor         // State: FULL/DR
+R1#show ip ospf database
 ```
 
 ```
@@ -421,9 +419,9 @@ R1(config-if)#bandwidth ?
 ```
 
 ```
-// priority 
+// priority (default 1)
 R1(config-if)#ip ospf priority 255
-
+R1#clear ip ospf process
 ```
 
 ```

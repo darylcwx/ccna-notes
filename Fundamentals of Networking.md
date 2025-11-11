@@ -812,6 +812,14 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- Organised in **Link State DB (LSDB)**
 	- Flooded every 30 minutes (age timer)
 	- Dijkstra
+	- Types
+		- Type 1 (router LSA)
+			- router ID, lists networks attached to router's OSPF int
+		- Type 2 (network LSA)
+			- DR of each 'multi-access' network (broadcast type)
+			- routers attached to multi-access network
+		- Type 5 (AS external LSA)
+			- ASBRs to describe external routes
 - Large networks: longer time to calculate, more cpu, more memory, small change = re-flood
 - Divide large networks into several smaller areas
 - Rules
@@ -826,7 +834,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- Interfaces in same subnet must be same area
 - OSPF Metric: Cost
 	- Reference BW (default 100) / interface BW = cost (min value = 1)
-	- Should change Ref BW 
+	- Should change Ref BW
 	- Loop back address cost = 1
 	- Speed =/= BW
 - Becoming OSPF neighbors
@@ -841,24 +849,36 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 		- Loading [asking for missing LSAs (via LSR, LSU, LSAck)]
 		- Full [fully synced, sends hello packet every 10s, resets 40s dead timer]
 - Network Types
-	- Broadcast (ethernet, FDDI)
+	- **Broadcast**
 		- Each subnet one DR one BDR
+			- Default on Ethernet, FDDI interface
 			- None of those ? DROther
 			- Elected via
 				- OSPF interface priority (1)
 				- OPSF router ID
-			- Priority 0, cannot 
+			- Priority 0, cannot
 		- Messages multicast `224.0.0.6`
-	- Point-to-point (PPP, HDLC)
-		- Enabled on serial int by default
+	- **Point-to-point**
+		- Default on HDLC, PPP (serial) interfaces
 		- No DR/BDR
 		- one side DCE, other side DTE
 			- DCE need specify clock rate
 		- Encap: cHDLC (default)
 		- Encap: ppp `(config-if)#encap ppp`
 		-
-	- Non-broadcast (frame relay, x.25) 
+	- **Non-broadcast**
+		- Frame relay, x.25
 		- Manually configure neighbors
+- Neighbor Requirements
+	- Same Area number
+	- Interfaces same subnet
+	- OSPF process no shut
+	- Unique router IDs
+	- Hello and Dead timers must match
+	- Auth settings must match
+	- IP MTU settings must match
+	- OSPF Network Type must match
+
 ##### 3.1.3.4 Intermediate System to Intermediate System (IS-IS)
 
 - Metric: Cost of each link in the route (default 10)
