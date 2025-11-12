@@ -447,13 +447,33 @@ R1(config-if)#standby <vlan> preempt // active router to take back over
 
 | Code  | Destination Network | [Admin Distance/Metric] | Next-hop IP        | Time Elapsed | Outgoing Interface |
 | ----- | ------------------- | ----------------------- | ------------------ | ------------ | ------------------ |
-| **C** | 192.168.1.0/24      | –                       | directly connected | –            | GigabitEthernet0/0 |
+| **C** | 192.168.1.0/24      |–| directly connected |–| GigabitEthernet0/0 |
 | **S** | 0.0.0.0/0           | [1/0]                   | via 192.168.1.1    | permanent    | GigabitEthernet0/0 |
 | **D** | 10.10.10.0/24       | [90/30720]              | via 192.168.1.2    | 00:00:12     | GigabitEthernet0/1 |
 | **O** | 172.16.0.0/16       | [110/20]                | via 10.1.1.2       | 00:00:30     | GigabitEthernet0/2 |
 | **R** | 192.168.2.0/24      | [120/1]                 | via 10.0.0.1       | 00:02:15     | Serial0/0/0        |
 
-### 4.3 Network Address Translation (NAT)
+### 4.3 IPv6
+
+```
+// enable
+R1(config)#ipv6 unicast-routing
+
+R1(config)#int g0/0
+R1(config)#ipv6 add 2001:db8:0:0::1/64 [eui-64]
+R1(config)#no shut
+
+R1(config)#int g0/1
+R1(config)#ipv6 add 2001:db8:0:1::1/64 [eui-64]
+
+// link-local int
+R1(config-if)#ipv6 enable
+
+//show
+R1(config)#do sh ipv6 int br
+```
+
+### 4.4 Network Address Translation (NAT)
 
 ```
 
@@ -477,7 +497,7 @@ Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overloa
 
 ```
 
-### 4.4 Access Control Lists (ACL)
+### 4.5 Access Control Lists (ACL)
 
 ```
 // by number
@@ -515,7 +535,7 @@ Router(config)#interface GigabitEthernet 0/1
 Router(config-if)#ip access-group 15 out
 ```
 
-### 4.5 Security (SSH, local)
+### 4.6 Security (SSH, local)
 
 ```
 // logout on timeout
@@ -553,7 +573,7 @@ Switch(config)#banner login "Please enter uName and pWord."
 // a user trying to connect will see the above message
 ```
 
-### 4.6 Time Sync (Clock, NTP)
+### 4.7 Time Sync (Clock, NTP)
 
 ```
 Router#show clock

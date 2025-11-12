@@ -1,4 +1,3 @@
-
 ## Table of Contents
 
 ```table-of-contents
@@ -134,6 +133,19 @@ debugInConsole: false
 - **Broadcast**: one-to-all, FFFF:FFFF:FFFF (ARP)
 - **Anycast**: one-to-nearest/best (CDNs)
 - **Multicast**: one-to-selected (netflix)
+
+##### Multicast
+
+| **Purpose**            | **IPv6 Address** | **IPv4 Address** |
+| ---------------------- | ---------------- | ---------------- |
+| All nodes/hosts        | `FF02::1`        | `224.0.0.1`      |
+| All routers            | `FF02::2`        | `224.0.0.2`      |
+| All OSPF routers       | `FF02::5`        | `224.0.0.5`      |
+| All OSPF DRs/BDRs      | `FF02::6`        | `224.0.0.6`      |
+| All RIP routers        | `FF02::9`        | `224.0.0.9`      |
+| All EIGRP routers      | `FF02::A`        | `224.0.0.10`     |
+| HSRP, GLBP (multicast) |—| `224.0.0.102`    |
+| VRRP (multicast)       |—| `224.0.0.18`     |
 
 #### 1.3.4 Host-to-Host Packet Transfer Process (same LAN)
 
@@ -319,6 +331,10 @@ debugInConsole: false
 - Transition
 - No broadcast addresses
 - 64 bits **network**, 64 bits **interface**
+- Each hexa = 4 bits
+- Example
+	- `FE80:0000:0000:0000:0002:0000:0080:FBE8`
+	- `FE80::2:0:0:FBE8`
 
 ##### Headers (40 bytes)
 
@@ -333,28 +349,47 @@ debugInConsole: false
 | Source Address      | 128         | sender IPv6 address              |
 | Destination Address | 128         | receiver IPv6 address            |
 
-##### Address Types
-
-| Type               | Prefix    | Usage / Notes                                        |
-| ------------------ | --------- | ---------------------------------------------------- |
-| Link-Local Unicast | FE80::/10 | same-link communication, NDP, router comms, SLAAC    |
-| Unique Local       | FC00::/7  | private internal networks (org only)                 |
-| Global Unicast     | n/a       | public routable addresses                            |
-| Multicast          | FF00::/8  | one-to-many (e.g., routing updates, services)        |
-| Anycast            | n/a       | assigned to multiple interfaces, lowest-cost routing |
-| Loopback           | ::1       | testing local stack                                  |
-| Unspecified        | ::        | placeholder, no address assigned                     |
-
 ##### Address Assignment
 
-- **Static**: manual interface ID
+- Network address
+	- `300D:F2:B34:2100::1200:1/56`
+		- 16, 32, 48; `2` = 4 bits, `1` = 4 bits, total = 56 bits
+	- `2001:DB8:8B00:1:FB89:17B:20:11/93`
+		- 16, 32, 48, 64, 80; `0` = 4 bits, `1` = 4 bits, `7` = 4, `B` = 1|011 -> 1|000, total 93 bits, 1000 = `8`
+		- ∴, Network prefix = `2001:DB8:8B00:1:FB89:178::` #practice
 - **EUI-64**
-	- Insert `FF:FE` (16 bits) in the middle of MAC
+	- Converting MAC (48) into host ID (64)
+	- Insert `FFFE` (16 bits) in the middle of MAC
 	- Flip the `7th bit`, convert back to hexadec
+	- 7th bit
+		- Universal/Local bit (U/L bit)
+			- 0 = Universally Administered Address (UAA)
+			- 1 = Locally Administered Address (LAA)
+		- EUI-64 reverses this
 - **Stateless Address Autoconfig (SLAAC)**
 	- `FF02::2`
 	- `Router1(config)#ipv6 address autoconfig`
 - **DHCPv6**: stateful (server), stateless (host generates)
+
+##### Address Types
+
+| Type           | Prefix         | Usage / Notes                                                                                                                                    |
+| -------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Global Unicast | n/a (2000::/3) | public routable addresses. 48 bits from ISP, 16 for subnets, 64 for hosts                                                                        |
+| Unique Local   | `FD00::/8`     | private internal networks (global ID)                                                                                                            |
+| Link-Local     | `FE80::/10`    | auto-generated on IPv6-enabled interfaces via EUI-64. used for single-link communication: OSPFv3, next-hops, NDP (IPv6 ARP), router comms, SLAAC |
+| Multicast      | `FF00::/8`     | one-to-many (e.g., routing updates, services)                                                                                                    |
+| Anycast        | n/a            | assigned to multiple interfaces, lowest-cost routing                                                                                             |
+| Loopback       | ::1            | testing local stack                                                                                                                              |
+| Unspecified    | ::             | placeholder, no address assigned                                                                                                                 |
+
+##### Multicast Address Scopes
+
+- Interface-local (`FF01`): within device only
+- Link-local (`FF02`): local subnet only
+- Site-local (`FF05`): LAN only
+- Org-local (`FF08`): self exp.
+- Global (`FF0E`): self exp.
 
 ### 1.5 Layered Models
 
@@ -378,6 +413,40 @@ debugInConsole: false
 | Transport   | + Segment header (ports) |
 | Internet    | + Packet header (IPs)    |
 | Link        | + Frame header (MACs)    |
+
+#### 1.5.3 Layer 4 (TCP vs UDP)
+
+- Services
+	- Reliable data transfer
+	- Error recovery
+	- Data sequencing
+	- Flow control
+- Layer 4 addressing (port numbers)
+	- App layer protocol
+	- IANA says port numbers:
+		- Well known: 0-1023
+		- Registered: 1024-49151
+		- PrivateE 49152-65535
+
+- **TCP/IP**
+	- 3-way: [SYN, SYN/ACK, ACK]
+		- Establish first before traffic flows
+	- 4-way: [FIN, ACK, FIN, ACK]
+	- Guaranteed delivery
+	- Resend if error, interrupting streaming/music
+	- Sequencing
+		- Random initial sequence number
+		- Forward acknowledgement
+	- Flow control (window size)
+	- For downloads
+	- Ports
+		- [FTP data (20), FTP control (21), SSH (22), Telnet (23), SMTP (25) DNS(53), HTTP (80), POP3 (110), HTTPS (443)]
+- **UDP**
+	- No guaranteed delivery
+	- Fast but no error-checking
+	- For voice, video
+	- Ports
+		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (62), Syslog (514)]
 
 ## 2.0 Network Access
 
@@ -892,7 +961,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 #### 3.1.4 First Hop Redundancy Protocol
 
-#take-pic of HSRP process + FHRP table
+![](assets/Fundamentals%20of%20Networking/img-20251112134600403.png)
 
 - Virtual IP & MACS
 - Active/standby
@@ -911,12 +980,14 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- V1: `0000.0c07.acXX`
 	- V2: `0000.0c9f.fXXX`
 - If HSRP breaks, active-active, "split brain"
+
 ##### Virtual Router Redundancy Protocol (VRRP)
 
 - Open standard
 - Master and slave
 - Multicast: `224.0.0.18`
 - vMAC: `0000.5e00.01XX`
+
 ##### Gateway Load Balancing Protocol (GLBP)
 
 - Cisco
@@ -927,6 +998,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 - vMAC: 0007.b400.XXYY
 	- XX = group number
 	- YY = AVF number
+
 #### 3.1.5 Network Address Translation
 
 - [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
@@ -1195,29 +1267,4 @@ Router#show control-plane host open-ports
 
 ### Transport Layer (L4)
 
-- Services
-	- Reliable data transfer
-	- Error recovery
-	- Data sequencing
-	- Flow control
-- Layer 4 addressing (port numbers)
-	- App layer protocol
-	- IANA says port numbers:
-		- Well known: 0-1023
-		- Registered: 1024-49151
-		- PrivateE 49152-65535
-
-- **TCP/IP**
-	- 3-way: [SYN, SYN/ACK, ACK]
-		- Establish first before traffic flows
-	- 4-way: [FIN, ACK, FIN, ACK]
-	- Guaranteed delivery
-	- Resend if error, interrupting streaming/music
-	- Sequencing
-		- Put segments in order
-		- Random initial sequence number
-		- Forward acknowledgement
-	- Flow control (window size)
-- **UDP**
-	- No guaranteed delivery
-	- Fast but no error-checking
+	- 
