@@ -471,6 +471,8 @@ R1(config-if)#ipv6 enable
 
 //show
 R1(config)#do sh ipv6 int br
+
+R1#show ipv6 neighbor
 ```
 
 ### 4.4 Network Address Translation (NAT)

@@ -338,16 +338,19 @@ debugInConsole: false
 
 ##### Headers (40 bytes)
 
-| Field               | Size (bits) | Description                      |
-| ------------------- | ----------- | -------------------------------- |
-| Version             | 4           | binary = 0110                    |
-| Traffic Class       | 8           | packet priority / QoS            |
-| Flow Label          | 20          | packet flow for special handling |
-| Payload Length      | 16          | -                                |
-| Next Header         | 8           | next protocol (TCP, UDP, etc.)   |
-| Hop Limit           | 8           | max hops before discard (TTL)    |
-| Source Address      | 128         | sender IPv6 address              |
-| Destination Address | 128         | receiver IPv6 address            |
+| Field               | Size (bits) | Description                    |
+| ------------------- | ----------- | ------------------------------ |
+| Version             | 4           | binary = 0110                  |
+| Traffic Class       | 8           | priority / QoS                 |
+| Flow Label          | 20          | special traffic 'flow'         |
+| =============       | ======      | ====================           |
+| Payload Length      | 16          | in bytes                       |
+| Next Header         | 8           | next protocol (TCP, UDP, etc.) |
+| Hop Limit           | 8           | max hops before discard (TTL)  |
+| =============       | ======      | ====================           |
+| Source Address      | 128         | sender IPv6 address            |
+| =============       | ======      | ====================           |
+| Destination Address | 128         | receiver IPv6 address          |
 
 ##### Address Assignment
 
@@ -366,30 +369,51 @@ debugInConsole: false
 			- 0 = Universally Administered Address (UAA)
 			- 1 = Locally Administered Address (LAA)
 		- EUI-64 reverses this
-- **Stateless Address Autoconfig (SLAAC)**
-	- `FF02::2`
-	- `Router1(config)#ipv6 address autoconfig`
-- **DHCPv6**: stateful (server), stateless (host generates)
 
 ##### Address Types
 
 | Type           | Prefix         | Usage / Notes                                                                                                                                    |
 | -------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Global Unicast | n/a (2000::/3) | public routable addresses. 48 bits from ISP, 16 for subnets, 64 for hosts                                                                        |
-| Unique Local   | `FD00::/8`     | private internal networks (global ID)                                                                                                            |
-| Link-Local     | `FE80::/10`    | auto-generated on IPv6-enabled interfaces via EUI-64. used for single-link communication: OSPFv3, next-hops, NDP (IPv6 ARP), router comms, SLAAC |
-| Multicast      | `FF00::/8`     | one-to-many (e.g., routing updates, services)                                                                                                    |
+| Unique Local   | `fd00::/8`     | private internal networks (global ID)                                                                                                            |
+| Link-Local     | `fe80::/10`    | auto-generated on IPv6-enabled interfaces via EUI-64. used for single-link communication: OSPFv3, next-hops, NDP (IPv6 ARP), router comms, SLAAC |
+| Multicast      | `ff00::/8`     | one-to-many (e.g., routing updates, services)                                                                                                    |
 | Anycast        | n/a            | assigned to multiple interfaces, lowest-cost routing                                                                                             |
 | Loopback       | ::1            | testing local stack                                                                                                                              |
 | Unspecified    | ::             | placeholder, no address assigned                                                                                                                 |
 
 ##### Multicast Address Scopes
 
-- Interface-local (`FF01`): within device only
-- Link-local (`FF02`): local subnet only
-- Site-local (`FF05`): LAN only
-- Org-local (`FF08`): self exp.
-- Global (`FF0E`): self exp.
+- Interface-local (`ff01`): within device only
+- Link-local (`ff02`): local subnet only
+- Site-local (`ff05`): LAN only
+- Org-local (`ff08`): self exp.
+- Global (`ff0e`): self exp.
+
+##### Neighbor Discovery Protocol (NDP)
+
+- NS <u>multicast</u> more efficient that ARP's <u>broadcast</u>
+- Stored in IPv6 neighbor table
+- **State-Less Address Auto-config (SLAAC)**
+	- 2 <u>discovery</u> message types
+		- **Router Solicitation (RS)** = ICMPv6 Type 133
+			- `ff02::2` (all routers)
+			- Request for identification when new connection
+		- **Router Advertisement (RA)** = ICMPv6 Type 134
+			- `ff02::1` (all nodes)
+			- Router announces itself
+			- Sent periodically, even without RS
+	- 2 methods
+		- manual: `R1(config)#ipv6 address prefix/XX eui-64`
+		- auto: `R1(config)#ipv6 address autoconfig` (also via eui-64)
+- 2 <u>resolution</u> message types
+	- **Neighbor Solicitation (NS)** = ICMPv6 Type 135
+		- Solicited-Node Multicast Address (targeted multicast)
+			- `ff02::1:ff` + last 6 hex digits of unicast address
+	- **Neighbor Advertisement (NA)** = ICMPv6 Type 136
+- **Duplicate Address Detection (DAD)**: <u>NS</u> & <u>NA</u>
+	- Host checks if other devices using same IPv6 address
+	- Performed any time `#no shut` or IPv6 address configured on an interface (regardless method)
 
 ### 1.5 Layered Models
 
