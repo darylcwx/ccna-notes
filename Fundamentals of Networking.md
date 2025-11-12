@@ -1,3 +1,4 @@
+
 ## Table of Contents
 
 ```table-of-contents
@@ -891,9 +892,9 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 #### 3.1.4 First Hop Redundancy Protocol
 
-#take-pic
+#take-pic of HSRP process + FHRP table
 
-- Virtual IP & MAC
+- Virtual IP & MACS
 - Active/standby
 - Gratuitous ARP replies
 	- Sent without being requested
@@ -909,12 +910,23 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 - vMACs
 	- V1: `0000.0c07.acXX`
 	- V2: `0000.0c9f.fXXX`
-- 
 - If HSRP breaks, active-active, "split brain"
 ##### Virtual Router Redundancy Protocol (VRRP)
 
+- Open standard
+- Master and slave
+- Multicast: `224.0.0.18`
+- vMAC: `0000.5e00.01XX`
 ##### Gateway Load Balancing Protocol (GLBP)
 
+- Cisco
+- Load balances routers in a single subnet
+- Active Virtual Gateway (AVG)
+- Active Virtual Forwarders (AVF) = DGW
+- Multicast (same as HSRP): `224.0.0.102`
+- vMAC: 0007.b400.XXYY
+	- XX = group number
+	- YY = AVF number
 #### 3.1.5 Network Address Translation
 
 - [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
@@ -1183,12 +1195,29 @@ Router#show control-plane host open-ports
 
 ### Transport Layer (L4)
 
+- Services
+	- Reliable data transfer
+	- Error recovery
+	- Data sequencing
+	- Flow control
+- Layer 4 addressing (port numbers)
+	- App layer protocol
+	- IANA says port numbers:
+		- Well known: 0-1023
+		- Registered: 1024-49151
+		- PrivateE 49152-65535
+
 - **TCP/IP**
 	- 3-way: [SYN, SYN/ACK, ACK]
 		- Establish first before traffic flows
-		- 
-	- Guaranteed delivery (reliability, data integrity)
+	- 4-way: [FIN, ACK, FIN, ACK]
+	- Guaranteed delivery
 	- Resend if error, interrupting streaming/music
+	- Sequencing
+		- Put segments in order
+		- Random initial sequence number
+		- Forward acknowledgement
+	- Flow control (window size)
 - **UDP**
 	- No guaranteed delivery
 	- Fast but no error-checking

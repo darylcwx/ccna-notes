@@ -432,13 +432,22 @@ R1(config-if)#clock rate // bps
 R1#show controllers [int] // DCE/DTE?
 ```
 
+#### 4.1.2 HSRP
+
+```
+R1(config-if)#standby version 1/2 
+R1(config-if)#standby <vlan> ip <vip>
+R1(config-if)#standby <vlan> priority </> // active = highest priority > highest IP
+R1(config-if)#standby <vlan> preempt // active router to take back over
+```
+
 ### 4.2 Routing Table
 
 `show ip route [search]`
 
 | Code  | Destination Network | [Admin Distance/Metric] | Next-hop IP        | Time Elapsed | Outgoing Interface |
 | ----- | ------------------- | ----------------------- | ------------------ | ------------ | ------------------ |
-| **C** | 192.168.1.0/24      |–| directly connected |–| GigabitEthernet0/0 |
+| **C** | 192.168.1.0/24      | –                       | directly connected | –            | GigabitEthernet0/0 |
 | **S** | 0.0.0.0/0           | [1/0]                   | via 192.168.1.1    | permanent    | GigabitEthernet0/0 |
 | **D** | 10.10.10.0/24       | [90/30720]              | via 192.168.1.2    | 00:00:12     | GigabitEthernet0/1 |
 | **O** | 172.16.0.0/16       | [110/20]                | via 10.1.1.2       | 00:00:30     | GigabitEthernet0/2 |
