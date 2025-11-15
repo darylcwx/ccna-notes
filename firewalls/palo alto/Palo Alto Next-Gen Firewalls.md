@@ -123,7 +123,7 @@ debugInConsole: false
 
 ### 5.1 Source NAT Config
 
-![](assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027123836439.png)
+![](../../assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027123836439.png)
 
 - **Static IP**: fixed 1-to-1, changes source IP, same source port, implicit bidirectional rule feature
 - **Dynamic IP**: 1-to-1 of source IP (no port number), private source address translates to next available address in the range
@@ -132,7 +132,7 @@ debugInConsole: false
 
 ### 5.2 Destination NAT Config
 
-![](assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027123957855.png)
+![](../../assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027123957855.png)
 
 - Static IP:
 - Dynamic IP: translates original IP to destination host with a DHCP-assigned IP
@@ -170,7 +170,7 @@ debugInConsole: false
 
 ## 8. WildFire (Threat Intelligence Cloud)
 
-![](assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027151452261.png)
+![](../../assets/Palo%20Alto%20Next-Gen%20Firewalls/img-20251027151452261.png)
 
 - Continuously updates malware/phishing samples to cloud detected from unknown file/url uploads
 - Verdicts: [benign, grayware, malicious, phishing]
@@ -195,7 +195,7 @@ debugInConsole: false
 ## 11. Logs and Report
 
 - Dashboard: [data filter, URL filer, threats] of last hour
-- Application Command Center (ACC):  widgets
+- Application Command Center (ACC): widgets
 - Logs
 	- Firewall: timestamped list of events
 	- Traffic: entry for each firewall session

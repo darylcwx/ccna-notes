@@ -503,38 +503,46 @@ Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overloa
 
 ```
 // by number
-Router(config)#access-list 1 deny host 172.16.3.3
-Router(config)#access-list 1 permit 172.16.0.0 0.0.255.255
+R1(config)#access-list 1 deny 1.1.1.1 0.0.0.0      // /24 and other
+R1(config)#access-list 1 deny 1.1.1.1              // /32 only
+R1(config)#access-list 1 deny host 1.1.1.1         // host = auto /32
+R1(config)#access-list 1 permit 172.16.0.0 0.0.255.255
 
-// by name
-Router(config)# ip access-list standard acl1
-Router(config-std-nacl)# deny host 172.16.3.3
-Router(config-std-nacl)# permit 172.16.0.0 0.0.255.255
+// by name (USE THIS)
+R1(config)#ip access-list standard acl1
+R1(config-std-nacl)#[seq. no.] deny host 1.1.1.1
+R1(config-std-nacl)#[seq. no.] permit 172.16.0.0 0.0.255.255
+
+// show
+R1(config)#do sh access-lists     // all 
+R1(config)#do sh ip access-lists  // only ip ACLs
+
+// apply to int
+R1(config)#int g0/1
+R1(config-if)#ip access-group {name|num} {in|out}
+
+// resequence
+R1(config)#ip access-list resequence {id} {start-seq-num} {increment}
 ```
 
 ```
 // extended IPv4
-Router(config)#ip-access-list extended 101
-Router(config-ext-nacl)#permit tcp host 172.16.3.3 range 56000 60000 host 203.0.113.30 eq 80
+R1(config)#ip-access-list extended 101
+R1(config-ext-nacl)#permit tcp host 172.16.3.3 range 56000 60000 host 203.0.113.30 eq 80
 ```
 
 ```
 // delete
-Router(config)#no access-list <access-list-number>
-Router(config)#no ip access-list <standard/extended> <access-list-name>
-```
-
-```
-// modify
-// delete config then redo
+R1(config)#no access-list <access-list-number>
+R1(config)#no ip access-list <standard/extended> <access-list-name>
 ```
 
 ```
 // apply
-Router(config-if)#ip access-group access-list-number ??????
-Router#show access-lists
-Router(config)#interface GigabitEthernet 0/1
-Router(config-if)#ip access-group 15 out
+R1(config-if)#ip access-group access-list-number ??????
+R1#show access-lists
+R1(config)#interface GigabitEthernet 0/1
+R1(config-if)#ip access-group 15 out
 ```
 
 ### 4.6 Security (SSH, local)
