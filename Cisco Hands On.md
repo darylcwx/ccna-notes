@@ -372,10 +372,15 @@ R1(config-router)#eigrp router-id ?  // manual, highest loopback, highest phys
 ```
 // show
 R1#show ip ospf int br 
+R1#show ip ospf int {int}
+R1#show ip ospf neigh       // State: FULL/DR
+R1#show ip ospf database
+R1#show ip proto            // autonomous system boundary router (ASBR)
+R1#show ip route
 
-// config
+// config (USE THIS)
 R1(config)#router ospf 1
-R1(config-router)#network 10.0.12.0 0.0.0.3 area 0 // inverse mask 
+R1(config-router)#network 0.0.0.0 255.255.255.255 area 0 // enable on all  
 R1(config-router)#network 10.0.13.0 0.0.0.3 area 0
 R1(config-router)#network 172.16.1.0 0.0.0.15 area 0
 
@@ -383,25 +388,17 @@ R1(config-router)#network 172.16.1.0 0.0.0.15 area 0
 R1(config-if)#int g0/0
 R1(config-if)#ip ospf 1 area 0
 R1(config-if)#router ospf 1
+R1(config-if)#ip ospf network point-to-point
 
 // passive, use if itself no neighbors
 R1(config-router)#passive-interface g2/0
 
-R1(config-router)#passive-interface default
+R1(config-router)#passive-interface default // stop on all int
 R1(config-router)#no passive-interface <int>
 
 // config as ASBR
 R1(config)#ip route 0.0.0.0 0.0.0.0 8.8.8.8
 R1(config-router)#default-information originate
-```
-
-```
-R1(config-router)#router-id ?
-R1#clear ip ospf process > no 
-R1#sh ip protocol // autonomous system boundary router (ASBR)
-R1#default-information originate //R1 becomes ASBR
-R1#show ip ospf neighbor         // State: FULL/DR
-R1#show ip ospf database
 ```
 
 ```
@@ -416,12 +413,12 @@ R1(config-if)#ip ospf cost ?
 
 // int BW
 R1(config-if)#bandwidth ?
-```
 
-```
 // priority (default 1)
 R1(config-if)#ip ospf priority 255
 R1#clear ip ospf process
+
+// hello-interval
 ```
 
 ```
@@ -504,7 +501,6 @@ Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overloa
 ```
 // by number
 R1(config)#access-list 1 deny 1.1.1.1 0.0.0.0      // /24 and other
-R1(config)#access-list 1 deny 1.1.1.1              // /32 only
 R1(config)#access-list 1 deny host 1.1.1.1         // host = auto /32
 R1(config)#access-list 1 permit 172.16.0.0 0.0.255.255
 
@@ -527,8 +523,12 @@ R1(config)#ip access-list resequence {id} {start-seq-num} {increment}
 
 ```
 // extended IPv4
+// by number
+R1(config)#access-list {number} [permit|deny] protocol src desti
+
+// by name
 R1(config)#ip-access-list extended 101
-R1(config-ext-nacl)#permit tcp host 172.16.3.3 range 56000 60000 host 203.0.113.30 eq 80
+R1(config-ext-nacl)#[seq. no.] {permit|deny} {protocol} {src} [eq/gt/lt/neq/range + src port] {desti} [eq/gt/lt/neq/range + desti port]
 ```
 
 ```
@@ -539,10 +539,8 @@ R1(config)#no ip access-list <standard/extended> <access-list-name>
 
 ```
 // apply
-R1(config-if)#ip access-group access-list-number ??????
-R1#show access-lists
 R1(config)#interface GigabitEthernet 0/1
-R1(config-if)#ip access-group 15 out
+R1(config-if)#ip access-group acl1 out
 ```
 
 ### 4.6 Security (SSH, local)

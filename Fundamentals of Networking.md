@@ -451,7 +451,7 @@ debugInConsole: false
 	- IANA says port numbers:
 		- Well known: 0-1023
 		- Registered: 1024-49151
-		- PrivateE 49152-65535
+		- Private: 49152-65535
 - **TCP/IP**
 	- 3-way: [SYN, SYN/ACK, ACK]
 		- Establish first before traffic flows
@@ -464,13 +464,27 @@ debugInConsole: false
 	- Flow control (window size)
 	- For downloads
 	- Ports
-		- [FTP data (20), FTP control (21), SSH (22), Telnet (23), SMTP (25) DNS(53), HTTP (80), POP3 (110), HTTPS (443)]
+		- FTP data (20)
+		- FTP control (21)
+		- SSH (22)
+		- Telnet (23)
+		- SMTP (25)
+		- DNS(53)
+		- HTTP (80)
+		- POP3 (110)
+		- HTTPS (443)
 - **UDP**
 	- No guaranteed delivery
 	- Fast but no error-checking
 	- For voice, video
 	- Ports
-		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (62), Syslog (514)]
+		- DNS(53)
+		- DHCP server (67)
+		- DHCP client (68)
+		- TFTP (69)
+		- SNMP agent (161)
+		- SNMP manager (62)
+		- Syslog (514)
 
 ## 2.0 Network Access
 
@@ -1144,11 +1158,12 @@ Router#show control-plane host open-ports
 | Mask   | `0000 0000`.`0000 0000`.`0000 1111`.`1111 1111` | `0.0.15.255`                  |
 | Result | `1010 1100`.`0001 0000`.`0001 XXXX`.`XXXX XXXX` | `172.16.16.0 - 172.16.31.255` |
 
-- Config Standard IPv4
+- **Standard IPv4 ACLs**
 	- Earlier rules take precedence, implicit deny all at end
-- Config Extended IPv4
+- **Extended IPv4 ACLs**
 	- **Format**: `<sequence-number> <permit/deny> <tcp/icmp/...> <source IPv4 + port> <desti IPv4 + port>`
-- Applying IPv4 ACLs
+	- [Port numbers](#1.5.3%20Layer%204%20(TCP%20Vs%20UDP))
+- **Applying IPv4 ACLs**
 	- **Standard**: near destination (affects only source IP, place later = ok)
 	- **Extended**: near source (more fields, save BW early)
 
@@ -1294,3 +1309,5 @@ Router#show control-plane host open-ports
 ### Transport Layer (L4)
 
 	- 
+
+[^1]:
