@@ -1,8 +1,0 @@
-## Weakpoints
-- RSTP
-
-
-
-
-- SVI
-- HSRP
