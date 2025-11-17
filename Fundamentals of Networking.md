@@ -504,7 +504,7 @@ debugInConsole: false
 - Trunking encapsulation
 	- `negotiate`: `ISL` > `802.1q`
 
-![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803.png)
+![](assets/Fundamentals%20of%20Networking/img-20251117111325296.png)
 
 #### 2.1.2 VLAN Trunking Protocol (VTP)
 
@@ -543,9 +543,9 @@ debugInConsole: false
 
 ### 2.3 Spanning Tree Protocol (STP)
 
-![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803-1.png)
+![](assets/Fundamentals%20of%20Networking/img-20251117111325315.png)
 
-![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803-2.png)
+![](assets/Fundamentals%20of%20Networking/img-20251117111325378.png)
 
 - Redundancy is essential (24/7/365)
 	- Broadcast storms
@@ -904,7 +904,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 - Terminology
 	- **Feasible distance:** router's metric value to destination
 	- **Reported/advertised distance:** neighbor's metric value to destination
-		- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
+		- ![](assets/Fundamentals%20of%20Networking/img-20251117111325449.png)
 		- Red, yellow: feasible; Blue, purple: reported
 	- **Successor**: route with lowest metric (best route)
 	- **Feasible successor**: alternate route with reported distance < successor feasible distance
