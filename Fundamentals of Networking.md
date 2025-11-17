@@ -915,8 +915,6 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 ##### 3.1.3.3 Open Shortest Path First (OSPF)
 
-#take-pic
-
 - [OSPF](Cisco%20Hands%20On.md#OSPF)
 - Link State, full network map via ads, best path
 - more CPU, faster convergence
@@ -1137,11 +1135,21 @@ Router#show control-plane host open-ports
 
 #### 4.5.2 NTP
 
+- [4.7 Time Sync (Clock, NTP)](Cisco%20Hands%20On.md#4.7%20Time%20Sync%20(Clock,%20NTP))
 - Auto sync via server
-- Accurate to 1ms if NTP server same LAN, ~50ms if over WAN
 - UDP port 123
 - Stratum 1-15 (higher bad)
-- Reference clocks stratum 0
+	- Accurate to 1ms if NTP server same LAN, ~50ms if over WAN
+	- Reference clocks stratum 0
+	- Stratum 1 == primary servers
+	- Stratum >2 == secondary servers (both client and server mode)
+- NTP clients request time from NTP servers
+- Hosts can 'peer' with devices at same stratum
+- 3 modes
+	- Server
+	- Client
+	- Symmetric active
+- NTP authentication (optional)
 
 ## 5.0 Security Fundamentals
 

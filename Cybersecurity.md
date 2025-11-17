@@ -43,3 +43,8 @@
 | Implement Strong Access<br>Control Measures               | 7. Restrict Access to System Components and Cardholder Data<br>by Business Need to Know<br>8. Identify Users and Authenticate Access to System<br>Components<br>9. Restrict Physical Access to Cardholder Data | limit access, least privilege, RBAC, ZTA, unique ID, auth, restrict physical access |
 | Regularly Monitor and Test<br>Networks                    | 10. Log and Monitor All Access to System Components and<br>Cardholder Data.<br>11. Test Security of Systems and Networks Regularly.                                                                            | track and monitor activities, pen test frequently                                   |
 | Maintain an Information<br>Security Policy                | 12. Support Information Security with Organizational Policies and<br>Programs.                                                                                                                                 | info sec policies                                                                   |
+
+## 3. GRC
+
+- Cybersecurity Maturity Assessment
+- 

@@ -246,11 +246,11 @@ R1(config)#[no] cdp advertise-v2
 ```
 // lldp
 R1(config)#[no] lldp run
-R1(config-if)#lldp transmit
-R1(config-if)#lldp receive
-R1(config)#lldp timer seconds
-R1(config)#lldp holdtime {seconds}
-R1(config)#lldp reinit {seconds}
+R1(config-if)#lldp transmit        // advertise
+R1(config-if)#lldp receive         // listen
+R1(config)#lldp timer seconds      // next frame
+R1(config)#lldp holdtime {seconds} // til discard
+R1(config)#lldp reinit {seconds}   // initial delay
 
 R1(config)#show lldp [traffic|int|neigh]
 ```
@@ -604,21 +604,34 @@ Switch(config)#banner login "Please enter uName and pWord."
 
 ```
 // software
-R1#show clock
-R1#show clock detail
 R1#clock set 18:00:00 17 Oct 2025
-R1(config)#clock timezone UTC
+R1(config)#clock timezone UTC {offset}
 R1(config)#clock summer-time EDT recurring {start-date} {end-date} // daylight savings
 
 // hardware
+R2#sh calendar
 R2#calendar set {hhmmss dd mmm yyyy}
 R2#clock update-cal (cal to clock)
 R2#clock read-cal (clock to cal)
 
-// sync NTP
-Central(config)#ntp master 2
-Branch(config)#ntp server 209.165.201.1
-SW1(config)#ntp server 10.1.1.1
+// config
+R1(config)#ntp server {ip} [prefer]
+R1(config)#ntp peer {ip}
+R1(config)#ntp update-calendar
+R1(config)#ntp master [stratum] // default 8 
+R1(config)#ntp source {interface} // NTP msg come from here
+
+// show
+R1(config)#do sh ntp associations
+R1(config)#do sh ntp status
+R1(config)#do sh clock detail
+
+// auth
+R1(config)#ntp authenticate
+R1(config)#ntp authentication-key {key no.} md5 {key} // create
+R1(config)#ntp trusted-key {key no.}     // specify trusted
+R1(config)#ntp server {ip} key {key no.} // specify which to use
+R1(config)#ntp peer {ip} key {key no.}
 ```
 
 ## 5. Test Configs

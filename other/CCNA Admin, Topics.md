@@ -23,19 +23,11 @@ debugInConsole: false
 
 ### 1.2 Example Lab Questions
 
-- Full question
-	1. hostname
-	2. intf description
-	3. intf ip
-	4. access/trunk
-	5. VLAN
-	6. password
-	7. vty for SSH
-- NAT
-- inter-VLAN routing
-- Troubleshooting
-	- E.g., ping something, ping fail, find source of error
-
+- OSPF
+- LACP, VLAN
+- IPv4 and IPv6
+- CDP/LLDP
+- PAT, ACL, DHCP
 ## 2. Online Test
 
 - Proctors are very strict
