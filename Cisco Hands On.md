@@ -230,7 +230,32 @@ Router(config)#username Joe privilege 15 secret CISCO
 Router(config)#
 ```
 
-### 3.4 Port Security
+### 3.4 CDP/LLDP
+
+```
+// cdp
+R1#show cdp [neigh|traffic|int|entry <name>]
+
+R1(config)#[no] cdp run 
+R1(config-if)#[no] cdp enable 
+R1(config)#cdp timer {seconds}
+R1(config)#cdp holdtime {seconds}
+R1(config)#[no] cdp advertise-v2
+```
+
+```
+// lldp
+R1(config)#[no] lldp run
+R1(config-if)#lldp transmit
+R1(config-if)#lldp receive
+R1(config)#lldp timer seconds
+R1(config)#lldp holdtime {seconds}
+R1(config)#lldp reinit {seconds}
+
+R1(config)#show lldp [traffic|int|neigh]
+```
+
+### 3.5 Port Security
 
 - Change the switchport mode from auto to either
 access or trunk
@@ -257,7 +282,7 @@ Switch#show port-security interface GigabitEthernet0/8
 Switch#no switchport port-security mac-address sticky
 ```
 
-### 3.5 Dynamic ARP Inspection (DAI)
+### 3.6 Dynamic ARP Inspection (DAI)
 
 - Layer 2 security feature to prevent ARP spoofing by validating ARP packets against DHCP snooping table
 
@@ -266,7 +291,7 @@ Switch(config)#ip arp inspection <vlan-id>     // enable DAI on VLAN
 Switch(config-if)#ip arp inspection trust      // enable DAI on an interface
 ```
 
-### 3.6 Syslog
+### 3.7 Syslog
 
 ```
 // send syslog to Loopback0
@@ -372,15 +397,10 @@ R1(config-router)#eigrp router-id ?  // manual, highest loopback, highest phys
 ```
 // show
 R1#show ip ospf int br 
-R1#show ip ospf int {int}
-R1#show ip ospf neigh       // State: FULL/DR
-R1#show ip ospf database
-R1#show ip proto            // autonomous system boundary router (ASBR)
-R1#show ip route
 
-// config (USE THIS)
+// config
 R1(config)#router ospf 1
-R1(config-router)#network 0.0.0.0 255.255.255.255 area 0 // enable on all  
+R1(config-router)#network 10.0.12.0 0.0.0.3 area 0 // inverse mask 
 R1(config-router)#network 10.0.13.0 0.0.0.3 area 0
 R1(config-router)#network 172.16.1.0 0.0.0.15 area 0
 
@@ -388,17 +408,25 @@ R1(config-router)#network 172.16.1.0 0.0.0.15 area 0
 R1(config-if)#int g0/0
 R1(config-if)#ip ospf 1 area 0
 R1(config-if)#router ospf 1
-R1(config-if)#ip ospf network point-to-point
 
 // passive, use if itself no neighbors
 R1(config-router)#passive-interface g2/0
 
-R1(config-router)#passive-interface default // stop on all int
+R1(config-router)#passive-interface default
 R1(config-router)#no passive-interface <int>
 
 // config as ASBR
 R1(config)#ip route 0.0.0.0 0.0.0.0 8.8.8.8
 R1(config-router)#default-information originate
+```
+
+```
+R1(config-router)#router-id ?
+R1#clear ip ospf process > no 
+R1#sh ip protocol // autonomous system boundary router (ASBR)
+R1#default-information originate //R1 becomes ASBR
+R1#show ip ospf neighbor         // State: FULL/DR
+R1#show ip ospf database
 ```
 
 ```
@@ -413,12 +441,12 @@ R1(config-if)#ip ospf cost ?
 
 // int BW
 R1(config-if)#bandwidth ?
+```
 
+```
 // priority (default 1)
 R1(config-if)#ip ospf priority 255
 R1#clear ip ospf process
-
-// hello-interval
 ```
 
 ```
@@ -500,47 +528,38 @@ Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overloa
 
 ```
 // by number
-R1(config)#access-list 1 deny 1.1.1.1 0.0.0.0      // /24 and other
-R1(config)#access-list 1 deny host 1.1.1.1         // host = auto /32
-R1(config)#access-list 1 permit 172.16.0.0 0.0.255.255
+Router(config)#access-list 1 deny host 172.16.3.3
+Router(config)#access-list 1 permit 172.16.0.0 0.0.255.255
 
-// by name (USE THIS)
-R1(config)#ip access-list standard acl1
-R1(config-std-nacl)#[seq. no.] deny host 1.1.1.1
-R1(config-std-nacl)#[seq. no.] permit 172.16.0.0 0.0.255.255
-
-// show
-R1(config)#do sh access-lists     // all 
-R1(config)#do sh ip access-lists  // only ip ACLs
-
-// apply to int
-R1(config)#int g0/1
-R1(config-if)#ip access-group {name|num} {in|out}
-
-// resequence
-R1(config)#ip access-list resequence {id} {start-seq-num} {increment}
+// by name
+Router(config)# ip access-list standard acl1
+Router(config-std-nacl)# deny host 172.16.3.3
+Router(config-std-nacl)# permit 172.16.0.0 0.0.255.255
 ```
 
 ```
 // extended IPv4
-// by number
-R1(config)#access-list {number} [permit|deny] protocol src desti
-
-// by name
-R1(config)#ip-access-list extended 101
-R1(config-ext-nacl)#[seq. no.] {permit|deny} {protocol} {src} [eq/gt/lt/neq/range + src port] {desti} [eq/gt/lt/neq/range + desti port]
+Router(config)#ip-access-list extended 101
+Router(config-ext-nacl)#permit tcp host 172.16.3.3 range 56000 60000 host 203.0.113.30 eq 80
 ```
 
 ```
 // delete
-R1(config)#no access-list <access-list-number>
-R1(config)#no ip access-list <standard/extended> <access-list-name>
+Router(config)#no access-list <access-list-number>
+Router(config)#no ip access-list <standard/extended> <access-list-name>
+```
+
+```
+// modify
+// delete config then redo
 ```
 
 ```
 // apply
-R1(config)#interface GigabitEthernet 0/1
-R1(config-if)#ip access-group acl1 out
+Router(config-if)#ip access-group access-list-number ??????
+Router#show access-lists
+Router(config)#interface GigabitEthernet 0/1
+Router(config-if)#ip access-group 15 out
 ```
 
 ### 4.6 Security (SSH, local)
@@ -584,9 +603,17 @@ Switch(config)#banner login "Please enter uName and pWord."
 ### 4.7 Time Sync (Clock, NTP)
 
 ```
-Router#show clock
-Router#show clock detail
-Router#clock set 18:00:00 17 Oct 2025
+// software
+R1#show clock
+R1#show clock detail
+R1#clock set 18:00:00 17 Oct 2025
+R1(config)#clock timezone UTC
+R1(config)#clock summer-time EDT recurring {start-date} {end-date} // daylight savings
+
+// hardware
+R2#calendar set {hhmmss dd mmm yyyy}
+R2#clock update-cal (cal to clock)
+R2#clock read-cal (clock to cal)
 
 // sync NTP
 Central(config)#ntp master 2

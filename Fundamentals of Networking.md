@@ -32,8 +32,8 @@ debugInConsole: false
 
 #### 1.2.2 VLAN (L2)
 
-- [3.1.1 Inter-VLAN Routing (L3)](#3.1.1%20Inter-VLAN%20Routing%20(L3))
 - [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
+- [6.2.1 Inter-VLAN Routing (L3)](#6.2.1%20Inter-VLAN%20Routing%20(L3))
 - VLAN maps to a unique subnet (L3)
 - Logical segmentation into separate broadcast domains
 - Needs router to communicate across other VLANs
@@ -113,7 +113,7 @@ debugInConsole: false
 - **Coaxial Cable**
 	- Copper core, Legacy use
 
-#### 1.3.2 Ethernet Standards Table
+#### 1.3.2 Ethernet Media Table
 
 | IEEE Std | Media Type                 | Max Speed   | Cabling / Fiber   | Max Distance | Pairs Used | Notes                                          |
 | -------- | -------------------------- | ----------- | ----------------- | ------------ | ---------- | ---------------------------------------------- |
@@ -304,7 +304,6 @@ debugInConsole: false
 
 - Network: 192.168.10.0/26
 - Subnet Mask: 255.255.255.192
-- Classless Inter-Domain Routing (CIDR)
 - Block size (by CIDR): 1st bit = 128, 2nd bit = 64
 	- /26 = 192 = 64 remaining IP (62 usable)
 	- /27 = 224 = 32 remaining IP (30)
@@ -361,7 +360,7 @@ debugInConsole: false
 	- `2001:DB8:8B00:1:FB89:17B:20:11/93`
 		- 16, 32, 48, 64, 80; `0` = 4 bits, `1` = 4 bits, `7` = 4, `B` = 1|011 -> 1|000, total 93 bits, 1000 = `8`
 		- ∴, Network prefix = `2001:DB8:8B00:1:FB89:178::` #practice
-- **Extended Unique Identifer-64 (EUI-64)**
+- **EUI-64**
 	- Converting MAC (48) into host ID (64)
 	- Insert `FFFE` (16 bits) in the middle of MAC
 	- Flip the `7th bit`, convert back to hexadec
@@ -439,7 +438,7 @@ debugInConsole: false
 | Internet    | + Packet header (IPs)    |
 | Link        | + Frame header (MACs)    |
 
-#### 1.5.3 Layer 4 (TCP Vs UDP)
+#### 1.5.3 Layer 4 (TCP vs UDP)
 
 - Services
 	- Reliable data transfer
@@ -451,7 +450,8 @@ debugInConsole: false
 	- IANA says port numbers:
 		- Well known: 0-1023
 		- Registered: 1024-49151
-		- Private: 49152-65535
+		- PrivateE 49152-65535
+
 - **TCP/IP**
 	- 3-way: [SYN, SYN/ACK, ACK]
 		- Establish first before traffic flows
@@ -464,27 +464,13 @@ debugInConsole: false
 	- Flow control (window size)
 	- For downloads
 	- Ports
-		- FTP data (20)
-		- FTP control (21)
-		- SSH (22)
-		- Telnet (23)
-		- SMTP (25)
-		- DNS(53)
-		- HTTP (80)
-		- POP3 (110)
-		- HTTPS (443)
+		- [FTP data (20), FTP control (21), SSH (22), Telnet (23), SMTP (25) DNS(53), HTTP (80), POP3 (110), HTTPS (443)]
 - **UDP**
 	- No guaranteed delivery
 	- Fast but no error-checking
 	- For voice, video
 	- Ports
-		- DNS(53)
-		- DHCP server (67)
-		- DHCP client (68)
-		- TFTP (69)
-		- SNMP agent (161)
-		- SNMP manager (62)
-		- Syslog (514)
+		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (62), Syslog (514)]
 
 ## 2.0 Network Access
 
@@ -518,7 +504,7 @@ debugInConsole: false
 - Trunking encapsulation
 	- `negotiate`: `ISL` > `802.1q`
 
-![](assets/Fundamentals%20of%20Networking/IMG-20251108182803.png)
+![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803.png)
 
 #### 2.1.2 VLAN Trunking Protocol (VTP)
 
@@ -557,9 +543,9 @@ debugInConsole: false
 
 ### 2.3 Spanning Tree Protocol (STP)
 
-![](assets/Fundamentals%20of%20Networking/IMG-20251108182803-1.png)
+![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803-1.png)
 
-![](assets/Fundamentals%20of%20Networking/IMG-20251108182803-2.png)
+![](attachments/Fundamentals%20of%20Networking/IMG-20251108182803-2.png)
 
 - Redundancy is essential (24/7/365)
 	- Broadcast storms
@@ -770,6 +756,27 @@ Sw(config-if)#spanning-tree guard none
 - Interfaces in an EtherChannel must have the same
 	- Duplex, speed, switchport mode, allowed VLANS/native VLAN
 
+### 2.4 Discovery Protocols
+
+- Periodic frames to neighbours
+- Can be considered security risk
+
+#### 2.4.1 CDP
+
+- [3.4 CDP/LLDP](Cisco%20Hands%20On.md#3.4%20CDP/LLDP)
+- CDPv2
+- Multicast at `0100.0CCC.CCCC`
+- Frame per 60s, to neighbour only
+- 180s hold time
+- S = Switch a
+
+#### 2.4.2 LLDP (IEEE 802.1AB)
+
+- Multicast at `0180.C200.000E`
+- Frame per 30s
+- 120s hold time
+- B = Bridge (switch)
+
 ## 3.0 IP Connectivity
 
 ### 3.1 Routing (L3)
@@ -778,7 +785,7 @@ Sw(config-if)#spanning-tree guard none
 - No data-recovery
 - Media-independent
 - IPv4 (32 bits), IPv6 (128 bits), OSI
-- [4.2 Routing Table](Cisco%20Hands%20On.md#4.2%20Routing%20Table)
+- [Routing table](./Cisco%20Hands%20On.md#3%20routing%20table)
 - **Headers**
 	- Version, IHL, **Service Type**, Total Length
 	- ID, Flag, Fragment Offset
@@ -802,8 +809,8 @@ Sw(config-if)#spanning-tree guard none
 
 #### 3.1.1 Inter-VLAN Routing (L3)
 
-- [2.1 VLANs](#2.1%20VLANs)
 - [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
+- [2.1.1 VLAN (L2)](#2.1.1%20VLAN%20(L2))
 
 | Item               | Explanation                               | Analogy                          |
 | ------------------ | ----------------------------------------- | -------------------------------- |
@@ -897,7 +904,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 - Terminology
 	- **Feasible distance:** router's metric value to destination
 	- **Reported/advertised distance:** neighbor's metric value to destination
-		- ![](assets/Fundamentals%20of%20Networking/IMG-20251109202735.png)
+		- ![](attachments/Fundamentals%20of%20Networking/IMG-20251109202735.png)
 		- Red, yellow: feasible; Blue, purple: reported
 	- **Successor**: route with lowest metric (best route)
 	- **Feasible successor**: alternate route with reported distance < successor feasible distance
@@ -1039,7 +1046,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 #### 3.1.5 Network Address Translation
 
-- [4.4 Network Address Translation (NAT)](Cisco%20Hands%20On.md#4.4%20Network%20Address%20Translation%20(NAT))
+- [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
 - translate private → public IPs
 - Terminology/Translation Mechanism
 
@@ -1080,7 +1087,7 @@ Router#show control-plane host open-ports
 
 ### 4.3 Syslog
 
-- [3.6 Syslog](Cisco%20Hands%20On.md#3.6%20Syslog)
+- [CLI](Cisco%20Hands%20On.md#2.6%20Syslog)
 - Configure devices to send syslog messages on privilege mode, forward to:
 	- Logging buffer
 	- Console line
@@ -1119,13 +1126,22 @@ Router#show control-plane host open-ports
 	- A → trap → M
 	- A → inform → M
 
-### 4.5 Software Clock, Network Time Protocol (NTP)
+### 4.5 Network Time Protocol (NTP)
 
-- [4.7 Time Sync (Clock, NTP)](Cisco%20Hands%20On.md#4.7%20Time%20Sync%20(Clock,%20NTP))
+#### 4.5.1 Software/Hardware Clock
+
 - Correct time within networks for tracking of events
 - Clock sync is critical for correct chronological table of events, digital certs, auth protocols
 - Port UDP 123
-- Stratum (1-15)
+- * = not considered authoritative
+
+#### 4.5.2 NTP
+
+- Auto sync via server
+- Accurate to 1ms if NTP server same LAN, ~50ms if over WAN
+- UDP port 123
+- Stratum 1-15 (higher bad)
+- Reference clocks stratum 0
 
 ## 5.0 Security Fundamentals
 
@@ -1136,14 +1152,8 @@ Router#show control-plane host open-ports
 
 ### 5.2 Access Control Lists (ACL) (L3)
 
-- [4.5 Access Control Lists (ACL)](Cisco%20Hands%20On.md#4.5%20Access%20Control%20Lists%20(ACL))
+- [CLI](Cisco%20Hands%20On.md#5.%20ACL%20(Access%20Control%20Lists))
 - Permit/Deny
-- Types
-	- Number
-		- Standard IP ACL: 1-99, 1300-1999
-	- Name
-- Apply to interface, either inbound or outbound
-- Match ACE in ACL ? return
 - **Wildcard Masking**
 	- Inverse the subnet mask (`0` match, `1` any)
 	- ACL permits `192.168.1.0`, wildcard `0.0.0.255`
@@ -1158,18 +1168,21 @@ Router#show control-plane host open-ports
 | Mask   | `0000 0000`.`0000 0000`.`0000 1111`.`1111 1111` | `0.0.15.255`                  |
 | Result | `1010 1100`.`0001 0000`.`0001 XXXX`.`XXXX XXXX` | `172.16.16.0 - 172.16.31.255` |
 
-- **Standard IPv4 ACLs**
+- **Types**: [number, name]
+- Config Standard IPv4
 	- Earlier rules take precedence, implicit deny all at end
-- **Extended IPv4 ACLs**
+	- **Format**: `access-list <acl-number> <permit/deny> <source [wildcard]> | host <address>/<name> | any`
+	- **Example**: `access-list 1 permit 172.16.0.0 0.0.255.255`
+- Config Extended IPv4
 	- **Format**: `<sequence-number> <permit/deny> <tcp/icmp/...> <source IPv4 + port> <desti IPv4 + port>`
-	- [Port numbers](#1.5.3%20Layer%204%20(TCP%20Vs%20UDP))
-- **Applying IPv4 ACLs**
+- Applying IPv4 ACLs
 	- **Standard**: near destination (affects only source IP, place later = ok)
 	- **Extended**: near source (more fields, save BW early)
 
 ### 5.3 Network Device Security
 
-[4.6 Security (SSH, local)](Cisco%20Hands%20On.md#4.6%20Security%20(SSH,%20local))
+- [Setting Switch Password](Cisco%20Hands%20On.md#2.2%20Switch%20Config)
+- [Security Related](Cisco%20Hands%20On.md#2.9%20Security%20Related)
 
 #### 5.3.1 Overview
 
@@ -1191,7 +1204,7 @@ Router#show control-plane host open-ports
 
 #### 5.3.4 Port Security
 
-- [3.4 Port Security](Cisco%20Hands%20On.md#3.4%20Port%20Security)
+- [CLI](Cisco%20Hands%20On.md#2.10%20Port%20Security)
 - Limit MAC per port
 - Sticky MAC option to learn allowed devices
 - Actions: [shutdown, restrict, protect]
@@ -1200,7 +1213,7 @@ Router#show control-plane host open-ports
 
 - **Attacks**: access traffic across VLANs without routing
 - **Methods**: switch spoofing, double-tagging
-- **Prevention**: disable DTP, set access ports, native VLAN unused, prune trunks, port security
+- **Prevention**: [disable DTP](Cisco%20Hands%20On.md#2.4%20VLAN), set access ports, native VLAN unused, prune trunks, port security
 
 #### 5.3.6 ARP Spoofing Attack
 
@@ -1208,8 +1221,8 @@ Router#show control-plane host open-ports
 - Becomes MITM and intercepts traffic
 - **Prevention**
 	- DHCP snooping
-	- [3.5 Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#3.5%20Dynamic%20ARP%20Inspection%20(DAI))
-	- [3.4 Port Security](Cisco%20Hands%20On.md#3.4%20Port%20Security)
+	- [Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#2.11%20Dynamic%20ARP%20Inspection%20(DAI))
+	- [Port Security](Fundamentals%20of%20Networking.md#7.3.4%20Port%20Security)
 
 #### 5.4 IPsec (Remote Access / Site-to-Site VPNs)
 
@@ -1309,5 +1322,3 @@ Router#show control-plane host open-ports
 ### Transport Layer (L4)
 
 	- 
-
-[^1]:
