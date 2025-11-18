@@ -47,4 +47,23 @@
 ## 3. GRC
 
 - Cybersecurity Maturity Assessment
-- 
+
+## 4. IT vs OT
+
+- Hardware or software that detects change through direct monitoring or controlling physical devices (Sensors)
+- OT asset types
+	- IED: sensors/motors
+	- RTU: remote terminal unit
+	- PLC: programmable logic controller
+	- HMI: human machine interface (software on windows)
+	- Supervisory Workstation: data and charts
+	- Data Historians: long term data
+	- Other Assets: IoT, smart sensors
+- Purdue Model
+	- IT
+		- Enterprise zone
+	- OT
+		- IDMZ
+		- Control zone
+		- Area zone
+		- Cell zone

@@ -472,6 +472,8 @@ debugInConsole: false
 	- Ports
 		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (162), Syslog (514)]
 
+<hr>
+
 ## 2.0 Network Access
 
 ### 2.0.1 Switches
@@ -777,6 +779,8 @@ Sw(config-if)#spanning-tree guard none
 - 120s hold time
 - B = Bridge (switch)
 
+<hr>
+
 ## 3.0 IP Connectivity
 
 ### 3.1 Routing (L3)
@@ -785,7 +789,7 @@ Sw(config-if)#spanning-tree guard none
 - No data-recovery
 - Media-independent
 - IPv4 (32 bits), IPv6 (128 bits), OSI
-- [Routing table](./Cisco%20Hands%20On.md#3%20routing%20table)
+- [4.2 Routing Table](Cisco%20Hands%20On.md#4.2%20Routing%20Table)
 - **Headers**
 	- Version, IHL, **Service Type**, Total Length
 	- ID, Flag, Fragment Offset
@@ -1044,7 +1048,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 
 #### 3.1.5 Network Address Translation
 
-- [CLI](Cisco%20Hands%20On.md#4.%20NAT%20(Network%20Address%20Translation))
+- [4.4 Network Address Translation (NAT)](Cisco%20Hands%20On.md#4.4%20Network%20Address%20Translation%20(NAT))
 - translate private → public IPs
 - Terminology/Translation Mechanism
 
@@ -1072,6 +1076,8 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 ```
 Router#show control-plane host open-ports
 ```
+
+<hr>
 
 ## 4.0 IP Services
 
@@ -1147,8 +1153,6 @@ R1(config-if)#ip helper-address {dhcp IP}
 ```
 R2(config-if)#ip add dhcp
 ```
-
-Text
 
 ### 4.3 Simple Network Management Protocol (SNMP)
 
@@ -1280,6 +1284,14 @@ SW1(config)# // ACL, VTY, login local
 SW1(config)# // exec timeout, transport input 
 ```
 
+### 4.7 FTP & TFTP
+
+- Differences
+- IOS File Systems
+- Using FTP/TFTP in IOS
+
+<hr>
+
 ## 5.0 Security Fundamentals
 
 ### 5.1 Firewall & IDS/IPS
@@ -1289,8 +1301,13 @@ SW1(config)# // exec timeout, transport input
 
 ### 5.2 Access Control Lists (ACL) (L3)
 
-- [CLI](Cisco%20Hands%20On.md#5.%20ACL%20(Access%20Control%20Lists))
-- Permit/Deny
+- [4.5 Access Control Lists (ACL)](Cisco%20Hands%20On.md#4.5%20Access%20Control%20Lists%20(ACL))
+- Types
+	- Number
+		- Standard IP ACL: 1-99, 1300-1999
+	- Name
+- Apply to interface, either inbound or outbound
+- Match ACE in ACL ? return
 - **Wildcard Masking**
 	- Inverse the subnet mask (`0` match, `1` any)
 	- ACL permits `192.168.1.0`, wildcard `0.0.0.255`
@@ -1305,21 +1322,16 @@ SW1(config)# // exec timeout, transport input
 | Mask   | `0000 0000`.`0000 0000`.`0000 1111`.`1111 1111` | `0.0.15.255`                  |
 | Result | `1010 1100`.`0001 0000`.`0001 XXXX`.`XXXX XXXX` | `172.16.16.0 - 172.16.31.255` |
 
-- **Types**: [number, name]
-- Config Standard IPv4
-	- Earlier rules take precedence, implicit deny all at end
-	- **Format**: `access-list <acl-number> <permit/deny> <source [wildcard]> | host <address>/<name> | any`
-	- **Example**: `access-list 1 permit 172.16.0.0 0.0.255.255`
-- Config Extended IPv4
-	- **Format**: `<sequence-number> <permit/deny> <tcp/icmp/...> <source IPv4 + port> <desti IPv4 + port>`
-- Applying IPv4 ACLs
-	- **Standard**: near destination (affects only source IP, place later = ok)
-	- **Extended**: near source (more fields, save BW early)
+- **Standard IPv4 ACLs**
+		- Earlier rules take precedence, implicit deny all at end
+- **Extended IPv4 ACLs**
+		- **Format**: `<sequence-number> <permit/deny> <tcp/icmp/...> <source IPv4 + port> <desti IPv4 + port>`
+		- [Port numbers](https://github.com/darylcwx/ccna-notes/blob/7f3c6347bb33ec3fb95330d2810fc0bd84f42c5e/Fundamentals%20of%20Networking.md#1.5.3%20Layer%204%20\(TCP%20Vs%20UDP\))
+- **Applying IPv4 ACLs**
+		- **Standard**: near destination (affects only source IP, place later = ok)
+		- **Extended**: near source (more fields, save BW early)
 
 ### 5.3 Network Device Security
-
-- [Setting Switch Password](Cisco%20Hands%20On.md#2.2%20Switch%20Config)
-- [Security Related](Cisco%20Hands%20On.md#2.9%20Security%20Related)
 
 #### 5.3.1 Overview
 
@@ -1341,7 +1353,7 @@ SW1(config)# // exec timeout, transport input
 
 #### 5.3.4 Port Security
 
-- [CLI](Cisco%20Hands%20On.md#2.10%20Port%20Security)
+- [3.5 Port Security](Cisco%20Hands%20On.md#3.5%20Port%20Security)]
 - Limit MAC per port
 - Sticky MAC option to learn allowed devices
 - Actions: [shutdown, restrict, protect]
@@ -1358,10 +1370,12 @@ SW1(config)# // exec timeout, transport input
 - Becomes MITM and intercepts traffic
 - **Prevention**
 	- DHCP snooping
-	- [Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#2.11%20Dynamic%20ARP%20Inspection%20(DAI))
-	- [Port Security](Fundamentals%20of%20Networking.md#7.3.4%20Port%20Security)
+	- [3.5 Port Security](Cisco%20Hands%20On.md#3.5%20Port%20Security)
+	- [3.6 Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#3.6%20Dynamic%20ARP%20Inspection%20(DAI))
 
 #### 5.4 IPsec (Remote Access / Site-to-Site VPNs)
+
+<hr>
 
 ## 6.0 Automation & Programmability
 
@@ -1455,7 +1469,3 @@ SW1(config)# // exec timeout, transport input
 	- **Excessive collision**: Duplex mismatch
 
 ## 9. Yet to Categorize
-
-### Transport Layer (L4)
-
-	- 
