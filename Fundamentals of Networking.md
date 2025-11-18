@@ -470,7 +470,7 @@ debugInConsole: false
 	- Fast but no error-checking
 	- For voice, video
 	- Ports
-		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (62), Syslog (514)]
+		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (162), Syslog (514)]
 
 ## 2.0 Network Access
 
@@ -1148,32 +1148,7 @@ R1(config-if)#ip helper-address {dhcp IP}
 R2(config-if)#ip add dhcp
 ```
 
-### 4.3 Syslog
-
-- [CLI](Cisco%20Hands%20On.md#2.6%20Syslog)
-- Configure devices to send syslog messages on privilege mode, forward to:
-	- Logging buffer
-	- Console line
-	- Terminal lines
-	- Syslog server
-- Format
-	- Priority (8b)
-	- Facility (5b)
-	- Severity (3b)
-		- Seen from `%CDP-4-NATIVE_VLAN_MISMATCH:...`
-		- 0: Emergency
-		- 1: Alert
-		- 2: Critical
-		- 3: Error
-		- 4: Warning
-		- 5: Notification
-		- 6: Informational
-		- 7: Debugging
-	- Header
-	- Timestamp
-	- Hostname
-	- Message
-	- Text
+Text
 
 ### 4.3 Simple Network Management Protocol (SNMP)
 
@@ -1182,17 +1157,56 @@ R2(config-if)#ip add dhcp
 - NMS can tell mDev to change configs
 
 - NMS
-	- SNMP Manager
+	- SNMP Manager (UDP 162)
 		- OS
 	- SNMP Application
 		- Interface
 - mDev
-	- SNMP Agent
+	- SNMP Agent (UDP 161)
 		- Notifs
 	- Management Info Base (MIB)
-		- Variables managed by SNMP
 		- Each variable has OID
-			- 
+			- OID contains:
+			- ISO, identified org, dod, internet, mgmt, min-2, system, sysName
+- Versions
+	- SNMPv1
+	- SNMPv2c (large msg = more efficient)
+	- SNMPv3 (enc. and auth.)
+- Messages
+	- Read
+		- get(), getNext(), getBulk()
+	- Write
+		- set()
+	- Notifs
+		- trap(), inform() - have Ack
+	- Response
+		- response()
+
+### 4.4 Syslog
+
+- [3.7 Syslog](Cisco%20Hands%20On.md#3.7%20Syslog)
+- Event logging, for analysis, troubleshooting
+- Messages from devices to server (SNMP opposite), can't pull info from devices or modify variables
+- Format
+	- `seq:time: %facility-severity-mnemonic: description`
+	- Priority (8b)
+	- Facility (5b)
+	- Severity (3b)
+		- 0: Emergency
+		- 1: Alert
+		- 2: Critical
+		- 3: Error
+		- 4: Warning
+		- 5: Notification
+		- 6: Informational
+		- 7: Debugging
+		- -: Every Awesome Cisco Engineer Will Need Icecream Daily (EACEWNID)
+- Logging Locations
+	- Console lines
+	- Vty lines (telnet/SSH, default disabled)
+	- Buffer (RAM)
+	- External server (UDP 514)
+- `#logging synchronous`
 
 ### 4.5 Network Time Protocol (NTP)
 
@@ -1220,6 +1234,51 @@ R2(config-if)#ip add dhcp
 	- Client
 	- Symmetric active
 - NTP authentication (optional)
+
+### 4.6 SSH
+
+- Console port security
+
+```
+R1(config)#line console 0 // 1 conn only
+R1(config-line)#password ccna 
+R1(config-line)#login
+R1(config-line)#login local // via local user account instead 
+R1(config-line)#exec-timeout 3 
+```
+
+- Layer 2 Mgmt IP for SSH
+
+```
+// allow SSH via SVI 
+SW1(config)#int vlan1
+SW1(config-if)#ip add {ip}
+SW1(config-if)#no shut
+SW1(config-if)#exit
+SW1(config)#ip def gate {dgw}
+
+```
+
+- Telnet (TCP 23)
+	- Old, plaintext SSH
+
+```
+// standard security first
+SW1(config)#line vty 0 15
+SW1(config)#transport input {telnet|ssh} // only these allowed
+```
+
+- SSH
+	- IOS image name 'K9' = SSH ok
+
+```
+SW1(config)#ip domain name {domain}
+SW1(config)#crypto key generate rsa
+SW1(config)# > 2048 bit keys
+SW1(config)# // enable PW,
+SW1(config)# // ACL, VTY, login local
+SW1(config)# // exec timeout, transport input 
+```
 
 ## 5.0 Security Fundamentals
 
