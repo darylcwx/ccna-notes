@@ -73,4 +73,16 @@
 	- IT =>, whereas OT <=
 - OT Security Standards
 - ISA/IEC 62443 Intl Standards and Technical Reports
-- 
+
+## 5. SecOps Fundamentals, SIEM & SOAR
+
+- Monitoring, management, of systems
+- Detecting, analyzing and responding to cyber threats
+- Mission: Prevention, Detection, Response
+- Threat Detection
+- Incident Response
+- Vulnerability Management
+- Compliance and Reporting
+
+### Security Orchestrator Automated Response
+

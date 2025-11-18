@@ -520,14 +520,20 @@ R1(config)#ip nat inside source static 192.168.0.168 100.0.0.2 // pc2
 
 // dynamic
 // acl required to specify which IPs to be translated
-Router(config)#access-list 1 permit 10.1.1.0 0.0.0.255
-Router(config)#ip nat pool NAT-POOL 209.165.200.230 209.165.200.235 netmask 255.255.255.254
-Router(config)#ip nat inside source list 1 pool NAT-POOL
+// config int first, then:
+R1(config)#access-list 1 permit 192.168.0.0 0.0.0.255               // acl
+R1(config)#ip nat pool POOL1 100.0.0.0 100.0.0.255 prefix-length 24 // pool
+Router(config)#ip nat inside source list 1 pool POOL1               // tag to pool
 
 // PAT
-// same idea as dynamic, but need specify outside interface
-Router(config)#access-list 1 permit 172.16.1.0 0.0.0.25
-Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overload
+// R1#sh ip nat trans - empty bc many-to-one instead of one-to-one
+// same as dynamic, config int first, then:
+R1(config)#access-list 1 permit 192.168.0.0 0.0.0.255               // same
+R1(config)#ip nat pool POOL1 100.0.0.0 100.0.0.3 prefix-length 24   // smaller
+R1(config)#ip nat pool POOL1 100.0.0.0 100.0.0.3 netmask {mask}     // works too
+ 
+R1(config)#ip nat inside source list 1 pool POOL1 overload
+R1(config)#ip nat inside source list 1 int g0/0 overload
 ```
 
 ### 4.5 Access Control Lists (ACL)

@@ -303,8 +303,9 @@ debugInConsole: false
 
 - Network: 192.168.10.0/26
 - Subnet Mask: 255.255.255.192
-- Block size (by CIDR): 1st bit = 128, 2nd bit = 64
-	- /26 = 192 = 64 remaining IP (62 usable)
+- Block size (by CIDR): `2^(32 - prefix)`
+	- /25 = 128 = 128 remaining IP (126 usable)
+	- /26 = 192 = 64 remaining IP (62)
 	- /27 = 224 = 32 remaining IP (30)
 	- /28 = 240 = 16 remaining IP (14)
 	- /29 = 248 = 8 remaining IP (6)
@@ -1073,6 +1074,8 @@ Router#show control-plane host open-ports
 	- B: `172.16.0.0/12` (`172.16.0.0 to 172.31.255.255`)
 	- C: `192.168.0.0/16` (`192.168.0.0 to 192.168.255.255`)
 
+#### 4.1.1 Inside/Outside Local/Global
+
 - Outside local and outside global same unless destination NAT is used
 - Inside/outside = host location
 - Local/global = perspective
@@ -1082,14 +1085,29 @@ Router#show control-plane host open-ports
 | inside local  | inside global | outside local | outside global |
 | 192.168.0.167 | 100.0.0.1     | 8.8.8.8       | 8.8.8.8        |
 
-- **Static NAT**
-	- Doesn't preserve IPs because one-to one
-	- Public IPs, so they have to be owed or registered
+#### 4.1.2 Static NAT
 
-- **Dynamic NAT**: many-to-many (pool of public IPs)
-- **PAT**: many-to-one (distinguished by TCP/UDP ports)
-- **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
-- **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
+- Doesn't preserve IPs because one-to one
+- Public IPs, so they have to be owed or registered
+- Permanent
+
+#### 4.1.3 Dynamic NAT
+
+- Static but automatic via ACLs
+- Permitted = translated, Denied = <u>still go through, just not translated</u>
+- NAT pool defines range of available `inside global` addresses
+- Still one-to-one mapping
+	- If run out = NAT Pool Exhaustion = <u>packet dropped</u>
+- Will time out, then mapping can be reused
+
+#### 4.1.4 Port Address Translation (PAT)
+
+![](assets/Fundamentals%20of%20Networking/img-20251118151631048.png)
+
+- NAT overload
+- IP still translated
+- Uses random port, and port already in use ? translate to another port
+- Saves IPs because many inside hosts share one public IP, just diff ports
 
 ### 4.2 Network Time Protocol (NTP)
 
@@ -1249,7 +1267,7 @@ R2(config-if)#ip add dhcp
 	- External server (UDP 514)
 - `#logging synchronous`
 
-### 4.7 Forwarding Per-Hop Behavior for QoS
+### 4.7 Quality of Service (QoS)
 
 ### 4.8 SSH
 
