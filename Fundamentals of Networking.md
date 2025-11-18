@@ -1267,8 +1267,59 @@ R2(config-if)#ip add dhcp
 	- External server (UDP 514)
 - `#logging synchronous`
 
-### 4.7 Quality of Service (QoS)
+### 4.7 Power Over Ethernet & Quality of Service (QoS)
 
+#### 4.7.1 IP Phones
+
+- [switchport voice vlan](Cisco%20Hands%20On.md#^b9a180)
+- Prioritize Voice over IP (VoIP) traffic
+- Internal 3-port switch
+	- 1 uplink to external switch
+	- 1 downlink to PC
+	- 1 to phone itself
+- Separate VoIP and data traffic via VLANs
+
+#### 4.7.2 PoE
+
+- Allows Power Sourcing Equipment (PSE, usually a Switch) to provide power to Powered Devices (PD, usually IP phones, IP cameras, APs) over an Ethernet Cable
+- PSE receives AC power, converts to DC, sends to PDs
+- PSE sends low power signals, monitors, then determines how much power to send
+- Power policing
+	- `[sh] power inline police [int]`
+	- `power inline police action err-disable` // requires reenabling
+	- `power inline police action log`
+
+| Name           | Standard #  | Watts | Powered Wire Pairs |
+| -------------- | ----------- | ----- | ------------------ |
+| Cisco ILP      | Proprietary | 7     | 2                  |
+| PoE (Type 1)   | 802.3af     | 15    | 2                  |
+| PoE+ (Type 2)  | 802.3at     | 30    | 2                  |
+| UPoE (Type 3)  | 802.3bt     | 60    | 4                  |
+| UPoE+ (Type 4) | 802.3bt     | 100   | 4                  |
+
+#### 4.7.3 QoS
+
+- Everything share IP network = cost savings + features = need more BW
+- QoS treats different packets differently (acceptable for interactive audio)
+	- Bandwidth
+		- Capacity (G/M/Kbps)
+		- Reserve BW for specific traffic
+	- Delay
+		- TT from source to destination = 1-way delay (<=150ms)
+		- Return back = 2-way delay
+	- Jitter (<=30ms)
+		- Some packets 10ms, some 100ms = high jitter
+		- Affects audio quality
+		- 'Jitter buffer', to provide a fixed delay to audio packets
+			- Jitter too high = overrun buffer = poor quality
+	- Loss (<=1%)
+		- Faulty cables/queues full and device discards packets
+- Queueing
+	- Receive faster than forward, enters FIFO queue
+	- Queue full = packet discarded (Tail drop)
+	- TCP global sync
+		- TCP sliding window
+			- Increase/decrease rate of traffic as needed
 ### 4.8 SSH
 
 - Console port security

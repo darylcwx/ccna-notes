@@ -84,5 +84,5 @@
 - Vulnerability Management
 - Compliance and Reporting
 
-### Security Orchestrator Automated Response
+### Security Orchestrator Automation Response
 

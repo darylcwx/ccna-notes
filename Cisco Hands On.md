@@ -132,7 +132,7 @@ Switch(config-vlan)#name <name>
 ```
 
 ```
-// access
+// access/voice
 // belongs to 1 VLAN, used for end devices
 Switch(config-if)#switchport mode access
 
@@ -140,6 +140,8 @@ Switch(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
 // OR
 Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
 ```
+
+^b9a180
 
 ```
 // trunk
