@@ -33,7 +33,6 @@ debugInConsole: false
 #### 1.2.2 VLAN (L2)
 
 - [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
-- [6.2.1 Inter-VLAN Routing (L3)](#6.2.1%20Inter-VLAN%20Routing%20(L3))
 - VLAN maps to a unique subnet (L3)
 - Logical segmentation into separate broadcast domains
 - Needs router to communicate across other VLANs
@@ -814,7 +813,6 @@ Sw(config-if)#spanning-tree guard none
 #### 3.1.1 Inter-VLAN Routing (L3)
 
 - [3.2 VLAN](Cisco%20Hands%20On.md#3.2%20VLAN)
-- [2.1.1 VLAN (L2)](#2.1.1%20VLAN%20(L2))
 
 | Item               | Explanation                               | Analogy                          |
 | ------------------ | ----------------------------------------- | -------------------------------- |
@@ -1362,7 +1360,7 @@ SW1(config)# // exec timeout, transport input
 
 - **Attacks**: access traffic across VLANs without routing
 - **Methods**: switch spoofing, double-tagging
-- **Prevention**: [disable DTP](Cisco%20Hands%20On.md#2.4%20VLAN), set access ports, native VLAN unused, prune trunks, port security
+- **Prevention** disable DTP, set access ports, native VLAN unused, prune trunks, port security
 
 #### 5.3.6 ARP Spoofing Attack
 
