@@ -1075,13 +1075,78 @@ Router#show control-plane host open-ports
 
 ## 4.0 IP Services
 
-### 4.1 Dynamic Host Configuration Protocol (DHCP)
+### 4.1 Domain Name Service (DNS)
 
-- assigns IPs clients
+- resolves domains to IP
+- device asks DNS server for IP
+- `nslookup youtube.com`
+- 'A' record for IPv4
+- quad 'A' for IPv6
+- DNS message > 512 bytes ? TCP : UDP (regardless, port 53)
+- DNS cache
+- CNAME: Alias for 'A' record
 
-### 4.2 Domain Name Service (DNS)
+```
+ipconfig {/displaydns|/flushdns}
 
-- resolves domain name IP
+// cisco as a DNS server
+R1(config)#ip dns server
+R1(config)#ip host {name} {ip}
+R1(config)#ip name-server 8.8.8.8 // backup DNS
+R1(config)#ip domain lookup // default
+R1(config)#do sh hosts
+
+// cisco as a DNS client
+R1(config)#ip name-server 8.8.8.8
+R1(config)#ip domain name {domain} // giving R1 a domain
+```
+
+### 4.2 Dynamic Host Configuration Protocol (DHCP)
+
+- Hosts to auto learn things like IP, subnet mask, DGW, DNS server etc.
+- Used for 'clients', done by router
+- Routers/servers are usually manually configured
+- "Lease" IPs to clients
+- DHCP servers UDP 67
+- DHCP clients UDP 68
+
+```
+ipconfig /release // unicast
+ipconfig /renew
+```
+
+- DORA
+1. DHCP Discover
+2. DHCP Offer (can request old IP, uni)
+3. DHCP Request
+4. DHCP Ack (uni)
+
+#### 4.2.1 Configs
+
+- Router as DHCP server
+
+```
+R1(config)#ip dhcp exclude {lower bound IP} {upper bound IP}
+R1(config)#ip dhcp pool {name}
+R1(dhcp-config)#network 192.168.1.0 /24 // subnet to give clients
+R1(dhcp-config)#dns-server 8.8.8.8
+R1(dhcp-config)#domain-name {domain}
+R1(dhcp-config)#default-router DGW
+R1(dhcp-config)#lease {D H mins}
+R1#show ip dhcp binding
+```
+
+- Router as DHCP relay agent
+
+```
+R1(config-if)#ip helper-address {dhcp IP}
+```
+
+- Router as DHCP client
+
+```
+R2(config-if)#ip add dhcp
+```
 
 ### 4.3 Syslog
 
@@ -1110,19 +1175,24 @@ Router#show control-plane host open-ports
 	- Message
 	- Text
 
-### 4.4 Simple Network Management Protocol (SNMP)
+### 4.3 Simple Network Management Protocol (SNMP)
 
-- **SNMP Manager**: Polls agents on network
-- **SNMP Agent**: Stores info and responds to manager requests, generates traps
-- **MIB**: DB of objects
-- **Overview**:
-	- M → get-request → A
-	- M → get-next-request → A
-	- M → get-bulk-request → A
-	- M → set-request → A
-	- A → get-response → M
-	- A → trap → M
-	- A → inform → M
+- mDev can notify NMS of events
+- NMS can ask mDev for sitrep
+- NMS can tell mDev to change configs
+
+- NMS
+	- SNMP Manager
+		- OS
+	- SNMP Application
+		- Interface
+- mDev
+	- SNMP Agent
+		- Notifs
+	- Management Info Base (MIB)
+		- Variables managed by SNMP
+		- Each variable has OID
+			- 
 
 ### 4.5 Network Time Protocol (NTP)
 
