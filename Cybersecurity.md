@@ -67,3 +67,10 @@
 		- Control zone
 		- Area zone
 		- Cell zone
+- Supervisory Control and Data Acquisition (SCADA)
+- Distributed Control System (DCS)
+- Confidentiality, Integrity(?), Availability
+	- IT =>, whereas OT <=
+- OT Security Standards
+- ISA/IEC 62443 Intl Standards and Technical Reports
+- 

@@ -503,25 +503,31 @@ R1#show ipv6 neighbor
 ### 4.4 Network Address Translation (NAT)
 
 ```
-
 // show
-Router(config)#show ip nat translations
+R1(config)#do sh ip nat translation
+R1(config)#do sh ip nat statistics
+R1(config)#do clear ip nat trans * // clear dynamic only
 
-// config static
-Router(config)#ip nat inside source static 172.16.1.10 209.165.200.230 8080
-Router(config)#ip nat inside source static tcp 192.168.10.254 80 209.165.200.226 8080
+// config int
+R1(config)#int g0/1
+R1(config-if)#ip nat inside
+R1(config)#int g0/0
+R1(config-if)#ip nat outside
 
-// config dynamic
+// static (duplicates will be rejected)
+R1(config)#ip nat inside source static 192.168.0.167 100.0.0.1 // pc1, removal manual
+R1(config)#ip nat inside source static 192.168.0.168 100.0.0.2 // pc2
+
+// dynamic
 // acl required to specify which IPs to be translated
 Router(config)#access-list 1 permit 10.1.1.0 0.0.0.255
 Router(config)#ip nat pool NAT-POOL 209.165.200.230 209.165.200.235 netmask 255.255.255.254
 Router(config)#ip nat inside source list 1 pool NAT-POOL
 
-// config PAT
+// PAT
 // same idea as dynamic, but need specify outside interface
 Router(config)#access-list 1 permit 172.16.1.0 0.0.0.25
 Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overload
-
 ```
 
 ### 4.5 Access Control Lists (ACL)

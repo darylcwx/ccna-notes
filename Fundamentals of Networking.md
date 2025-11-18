@@ -1044,25 +1044,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- XX = group number
 	- YY = AVF number
 
-#### 3.1.5 Network Address Translation
-
-- [4.4 Network Address Translation (NAT)](Cisco%20Hands%20On.md#4.4%20Network%20Address%20Translation%20(NAT))
-- translate private → public IPs
-- Terminology/Translation Mechanism
-
-| Source IPv4   | Source IPv4   | Desti IPv4    | Desti IPv4     |
-| ------------- | ------------- | :------------ | -------------- |
-| inside local  | inside global | outside local | outside global |
-| 192.168.10.10 | 209.165.200.5 | 209.165.201.1 | 209.165.201.1  |
-
-- **Static NAT**: one-to-one
-	- **Port Forwarding**: external port → specific internal port
-- **Dynamic NAT**: many-to-many (pool of public IPs)
-- **PAT**: many-to-one (distinguished by TCP/UDP ports)
-- **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
-- **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
-
-#### 3.1.6 Infrastructure ACL (iACL)
+#### 3.1.5 Infrastructure ACL (iACL)
 
 - **Permits only authorized traffic to infra equipment, as well as permit transit traffic**
 - Protects traffic destined to the network infra equipment to mitigate directed attacks
@@ -1079,7 +1061,64 @@ Router#show control-plane host open-ports
 
 ## 4.0 IP Services
 
-### 4.1 Domain Name Service (DNS)
+### 4.1 Network Address Translation (NAT)
+
+- [4.4 Network Address Translation (NAT)](Cisco%20Hands%20On.md#4.4%20Network%20Address%20Translation%20(NAT))
+- Short term solutions for IPv4 (not enough addresses)
+	- CIDR
+	- Private IPv4
+	- NAT
+- Private IPs (cannot be used on internet)
+	- A: `10.0.0.0/8`  (`10.0.0.0 to 10.255.255.255`)
+	- B: `172.16.0.0/12` (`172.16.0.0 to 172.31.255.255`)
+	- C: `192.168.0.0/16` (`192.168.0.0 to 192.168.255.255`)
+
+- Outside local and outside global same unless destination NAT is used
+- Inside/outside = host location
+- Local/global = perspective
+
+| Source IPv4   | Source IPv4   | Desti IPv4    | Desti IPv4     |
+| ------------- | ------------- | :------------ | -------------- |
+| inside local  | inside global | outside local | outside global |
+| 192.168.0.167 | 100.0.0.1     | 8.8.8.8       | 8.8.8.8        |
+
+- **Static NAT**
+	- Doesn't preserve IPs because one-to one
+	- Public IPs, so they have to be owed or registered
+
+- **Dynamic NAT**: many-to-many (pool of public IPs)
+- **PAT**: many-to-one (distinguished by TCP/UDP ports)
+- **Advantages**: [flexibility of connections to public network, consistency for internal network addressing, network security]
+- **Disadvantages**: [end-to-end functionality and traceability lost, degraded performance]
+
+### 4.2 Network Time Protocol (NTP)
+
+#### 4.2.1 Software/Hardware Clock
+
+- Correct time within networks for tracking of events
+- Clock sync is critical for correct chronological table of events, digital certs, auth protocols
+- Port UDP 123
+- * = not considered authoritative
+
+#### 4.2.2 NTP
+
+- [4.7 Time Sync (Clock, NTP)](Cisco%20Hands%20On.md#4.7%20Time%20Sync%20(Clock,%20NTP))
+- Auto sync via server
+- UDP port 123
+- Stratum 1-15 (higher bad)
+	- Accurate to 1ms if NTP server same LAN, ~50ms if over WAN
+	- Reference clocks stratum 0
+	- Stratum 1 == primary servers
+	- Stratum >2 == secondary servers (both client and server mode)
+- NTP clients request time from NTP servers
+- Hosts can 'peer' with devices at same stratum
+- 3 modes
+	- Server
+	- Client
+	- Symmetric active
+- NTP authentication (optional)
+
+### 4.3 Domain Name Service (DNS)
 
 - resolves domains to IP
 - device asks DNS server for IP
@@ -1105,7 +1144,7 @@ R1(config)#ip name-server 8.8.8.8
 R1(config)#ip domain name {domain} // giving R1 a domain
 ```
 
-### 4.2 Dynamic Host Configuration Protocol (DHCP)
+### 4.4 Dynamic Host Configuration Protocol (DHCP)
 
 - Hosts to auto learn things like IP, subnet mask, DGW, DNS server etc.
 - Used for 'clients', done by router
@@ -1125,7 +1164,7 @@ ipconfig /renew
 3. DHCP Request
 4. DHCP Ack (uni)
 
-#### 4.2.1 Configs
+#### 4.4.1 Configs
 
 - Router as DHCP server
 
@@ -1152,7 +1191,7 @@ R1(config-if)#ip helper-address {dhcp IP}
 R2(config-if)#ip add dhcp
 ```
 
-### 4.3 Simple Network Management Protocol (SNMP)
+### 4.5 Simple Network Management Protocol (SNMP)
 
 - mDev can notify NMS of events
 - NMS can ask mDev for sitrep
@@ -1184,7 +1223,7 @@ R2(config-if)#ip add dhcp
 	- Response
 		- response()
 
-### 4.4 Syslog
+### 4.6 Syslog
 
 - [3.7 Syslog](Cisco%20Hands%20On.md#3.7%20Syslog)
 - Event logging, for analysis, troubleshooting
@@ -1210,34 +1249,9 @@ R2(config-if)#ip add dhcp
 	- External server (UDP 514)
 - `#logging synchronous`
 
-### 4.5 Network Time Protocol (NTP)
+### 4.7 Forwarding Per-Hop Behavior for QoS
 
-#### 4.5.1 Software/Hardware Clock
-
-- Correct time within networks for tracking of events
-- Clock sync is critical for correct chronological table of events, digital certs, auth protocols
-- Port UDP 123
-- * = not considered authoritative
-
-#### 4.5.2 NTP
-
-- [4.7 Time Sync (Clock, NTP)](Cisco%20Hands%20On.md#4.7%20Time%20Sync%20(Clock,%20NTP))
-- Auto sync via server
-- UDP port 123
-- Stratum 1-15 (higher bad)
-	- Accurate to 1ms if NTP server same LAN, ~50ms if over WAN
-	- Reference clocks stratum 0
-	- Stratum 1 == primary servers
-	- Stratum >2 == secondary servers (both client and server mode)
-- NTP clients request time from NTP servers
-- Hosts can 'peer' with devices at same stratum
-- 3 modes
-	- Server
-	- Client
-	- Symmetric active
-- NTP authentication (optional)
-
-### 4.6 SSH
+### 4.8 SSH
 
 - Console port security
 
@@ -1282,11 +1296,65 @@ SW1(config)# // ACL, VTY, login local
 SW1(config)# // exec timeout, transport input 
 ```
 
-### 4.7 FTP & TFTP
+### 4.9 FTP & T (Trivial) FTP
 
-- Differences
+- Used to upgrade the OS of a network device
+	- Download new firmware and boot with it
+- Both client-server model
+- FTP (Control conn: TCP 21, Data conn: TCP 20 <= 2 active connections)
+	- user/pw auth, but no enc.
+	- FTPS (over SSL/TLS) - have enc.
+	- SFTP (SSH FTP) - new and more secure
+	- Active Mode
+		- Server initiates TCP for the 2nd Data conn
+	- Passive Mode
+		- Client initiates TCP for the 2nd Data conn
+		- Usually when FW in front of client
+- TFTP (1st msg: UDP 69, thereafter: random port (TID))
+	- no auth, no enc., lightweight
+	- Receiver will Ack
+	- No Ack by timer ? resend
+	- Lock-step communication
+		- Alternatively send messages and wait for reply
+	- 3 phases
+		- Connection
+			- Both use a random port - Transfer Identifier (TID)
+		- Data Transfer
+		- Connection Termination
 - IOS File Systems
+	
+	- disk = flash memory
+	- opaque = internal functions
+	- nvram = start conf
+	- network = external file systems
 - Using FTP/TFTP in IOS
+
+```
+// show
+R1#show files systems
+R1#show version
+R1#show flash
+
+// TFTP upgrading firmware
+R1#copy tftp: flash:
+// enter TFTP server IP {}
+// source filename {}
+// desti filename {}
+R1#conf t
+R1(config)#boot system flash:{new firmware}
+R1(config)#exit
+R1#wr
+// reboot
+R1#delete flash:{old firmware}
+```
+
+```
+// FTP 
+R1(config)#ip ftp username {user}
+R1(config)#ip ftp passowrd {pass}
+
+// same from copy onwards
+```
 
 <hr>
 
