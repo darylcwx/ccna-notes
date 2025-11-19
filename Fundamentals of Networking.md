@@ -1355,12 +1355,13 @@ R2(config-if)#ip add dhcp
 					- total 12
 					- AF{class}{d.p.}
 					- DSCP{binary sum}
-					- `100110`
+					- `100110` (6 bits)
 						- AF43
 						- DSCP38
 				- CS: class selector (8 standard values, compatible IPP)
-	- Queue Management 
+	- Queue Management
 	- Shaping/Policing
+
 ### 4.8 SSH
 
 - Console port security
