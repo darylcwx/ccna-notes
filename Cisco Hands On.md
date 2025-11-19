@@ -132,7 +132,7 @@ Switch(config-vlan)#name <name>
 ```
 
 ```
-// access/voice
+// access
 // belongs to 1 VLAN, used for end devices
 Switch(config-if)#switchport mode access
 
@@ -140,8 +140,6 @@ Switch(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
 // OR
 Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
 ```
-
-^b9a180
 
 ```
 // trunk
@@ -505,37 +503,25 @@ R1#show ipv6 neighbor
 ### 4.4 Network Address Translation (NAT)
 
 ```
+
 // show
-R1(config)#do sh ip nat translation
-R1(config)#do sh ip nat statistics
-R1(config)#do clear ip nat trans * // clear dynamic only
+Router(config)#show ip nat translations
 
-// config int
-R1(config)#int g0/1
-R1(config-if)#ip nat inside
-R1(config)#int g0/0
-R1(config-if)#ip nat outside
+// config static
+Router(config)#ip nat inside source static 172.16.1.10 209.165.200.230 8080
+Router(config)#ip nat inside source static tcp 192.168.10.254 80 209.165.200.226 8080
 
-// static (duplicates will be rejected)
-R1(config)#ip nat inside source static 192.168.0.167 100.0.0.1 // pc1, removal manual
-R1(config)#ip nat inside source static 192.168.0.168 100.0.0.2 // pc2
-
-// dynamic
+// config dynamic
 // acl required to specify which IPs to be translated
-// config int first, then:
-R1(config)#access-list 1 permit 192.168.0.0 0.0.0.255               // acl
-R1(config)#ip nat pool POOL1 100.0.0.0 100.0.0.255 prefix-length 24 // pool
-Router(config)#ip nat inside source list 1 pool POOL1               // tag to pool
+Router(config)#access-list 1 permit 10.1.1.0 0.0.0.255
+Router(config)#ip nat pool NAT-POOL 209.165.200.230 209.165.200.235 netmask 255.255.255.254
+Router(config)#ip nat inside source list 1 pool NAT-POOL
 
-// PAT
-// R1#sh ip nat trans - empty bc many-to-one instead of one-to-one
-// same as dynamic, config int first, then:
-R1(config)#access-list 1 permit 192.168.0.0 0.0.0.255               // same
-R1(config)#ip nat pool POOL1 100.0.0.0 100.0.0.3 prefix-length 24   // smaller
-R1(config)#ip nat pool POOL1 100.0.0.0 100.0.0.3 netmask {mask}     // works too
- 
-R1(config)#ip nat inside source list 1 pool POOL1 overload
-R1(config)#ip nat inside source list 1 int g0/0 overload
+// config PAT
+// same idea as dynamic, but need specify outside interface
+Router(config)#access-list 1 permit 172.16.1.0 0.0.0.25
+Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overload
+
 ```
 
 ### 4.5 Access Control Lists (ACL)

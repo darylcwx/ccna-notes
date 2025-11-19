@@ -37,11 +37,11 @@ debugInConsole: false
 - Logical segmentation into separate broadcast domains
 - Needs router to communicate across other VLANs
 - Security, performance, management
-- IEEE 802.1Q Tag Format (VLAN tagging protocol)
-	- [Desti MAC, Source MAC, **VLAN Tag**, Type/Length, Payload, FCS]
-	- 4 byte VLAN Tag in Ethernet frame (L2)
+- IEEE 802.1Q Tag Format (VLAN tagging protocol) - 4 bytes
+	- [Preamble, SFD, Desti MAC, Source MAC, **VLAN Tag**, Type/Length, Payload, FCS]
 	- **TPID**: 16 bits, `0x8100`
-	- **Priority Code Point (PCP)**: 3 bits, Class of Service (CoS) priority
+	
+- **Priority Code Point (PCP)**: 3 bits, Class of Service (CoS) priority ^52f974
 	- **Drop Eligible Indicator (DEI)**: 1 bit
 	- **VLAN ID**: 12 bits, VLAN number (1- 4094)
 - VLAN Range
@@ -266,6 +266,8 @@ debugInConsole: false
 | =======================                                                                              | ======      | =====================================                       |
 | Options (if IHL > 5)                                                                                 | 0-320       | extra options for control/debugging                         |
 | Padding                                                                                              | Variable    | aligns header to 32-bit boundary                            |
+
+^2cd22d
 
 ##### Subnet Classes
 
@@ -1304,8 +1306,8 @@ R2(config-if)#ip add dhcp
 	- Bandwidth
 		- Capacity (G/M/Kbps)
 		- Reserve BW for specific traffic
-	- Delay
-		- TT from source to destination = 1-way delay (<=150ms)
+	- Delay (<=150ms)
+		- TT from source to destination = 1-way delay
 		- Return back = 2-way delay
 	- Jitter (<=30ms)
 		- Some packets 10ms, some 100ms = high jitter
@@ -1318,8 +1320,47 @@ R2(config-if)#ip add dhcp
 	- Receive faster than forward, enters FIFO queue
 	- Queue full = packet discarded (Tail drop)
 	- TCP global sync
-		- TCP sliding window
-			- Increase/decrease rate of traffic as needed
+		- Tail drop > Slow down > Under utilisation > Speed up > Congestion > Tail drop
+	- Random Early Detection (RED)
+		- Traffic reach threshold, drop random packets
+		- Those flows will reduce rate
+	- Weighted RED
+		- Drop packets based on class/priority
+- Priority
+	- Classification, via:
+		- ACL
+		- Network Based Application Recognition (NBAR)
+			- Via DPI up to L7
+		- L2/L3 headers
+			- VLAN's dot1q's [PCP](#^52f974)
+				- 0: best effort
+				- 1: background
+				- 2: excellent effort
+				- 3: critical applications
+				- 4: video
+				- 5: voice
+				- 6: internetwork control
+				- 7: network control
+			- IP phones
+				- Init call = PCP3
+				- Actual voice = PCP5
+			- IP header's [DSCP](#^2cd22d)
+				- IP ToS Byte
+				- IP Precedence (old DCSP)
+				- DF: default forward (best effort) - 0
+				- EF: expedited " (low D/J/L) - 46
+				- AF: assured " (12 standard values)
+					- 4 classes
+					- 3 drop precedence per class
+					- total 12
+					- AF{class}{d.p.}
+					- DSCP{binary sum}
+					- `100110`
+						- AF43
+						- DSCP38
+				- CS: class selector (8 standard values, compatible IPP)
+	- Queue Management 
+	- Shaping/Policing
 ### 4.8 SSH
 
 - Console port security
