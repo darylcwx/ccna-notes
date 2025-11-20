@@ -1327,7 +1327,13 @@ R2(config-if)#ip add dhcp
 	- Weighted RED (WRED)
 		- Drop packets based on class/priority
 	- Multiple Queues (one per marking)
-		- 
+		- Ingress > Routing > Classify > Queue > Schedule > Transmit
+		- Scheduling
+			- Round-robin
+			- Weighted
+			- Class-Based Weighted Fair Queueing (CBWFQ)
+			- Low-Latency Queue (strict priority queue)
+				- PQ ok but other queues stuck
 - Priority
 	- Classification, via:
 		- ACL
@@ -1368,7 +1374,12 @@ R2(config-if)#ip add dhcp
 					- Best effort: `DF`
 				- Trust Boundaries
 					- Set at IP phone so markings are trusted
-	- Shaping/Policing
+	- Shaping
+		- Buffers traffic
+	- Policing
+		- Drops traffic
+		- Allows bursts (go over rate), configurable
+		- PC to internet
 
 ### 4.8 SSH
 
@@ -1479,12 +1490,63 @@ R1(config)#ip ftp passowrd {pass}
 
 ## 5.0 Security Fundamentals
 
-### 5.1 Firewall & IDS/IPS
+### 5.1 Key Concepts
 
-- Operate on L3 and L4
-- DPI (Deep Packet Inspection): content-based filtering
+#### CIA
 
-### 5.2 Access Control Lists (ACL) (L3)
+- Confidentiality
+- Integrity
+- Availability
+
+#### Risk
+
+- Vulnerability (potential weakness)
+- Exploit (the vuln.)
+- Threat (of E. the V.)
+- Mitigation
+
+### 5.2 Common Attacks
+
+- DoS (A)
+	- TCP SYN flood
+	- DDoS = botnet to flood
+- Spoofing (A)
+	- DHCP exhaustion (DDoS but DHCP discover)
+- Reflection/Amplification (A)
+	- Attacker (spoof source IP) > Reflector (DNS server) > Target (gets reply)
+	- Amp = reflector sends 2x of what it receives
+- MITM (CI)
+	- ARP poisoning (override ARP reply)
+- Recon
+	- OSINT for info gathering
+- Malware (CIA)
+	- Virus, worms, trojans
+- Social Engineering
+	- Phishing (spear phishing, whaling, vishing/smishing)
+	- Watering hole (victim's frequent sites)
+	- Tailgating
+- Password-related
+	- Dictionary
+	- Brute-force
+
+### 5.3 (MF)Authentication, Authorization, Accounting (AAA)
+
+- Proof identity via something you know/have/are
+- Digital cert (CSR via CA)
+- Authentication = identity
+- Authorization = privileges
+- Accounting = logs
+- AAA servers
+	- RADIUS (UDP 1812, 1813)
+	- TACACS+ (cisco's, TCP 49)
+
+### 5.4 Security Programs
+
+- User awareness (fake phishing emails to test idiots)
+- User training
+- Physical least privilege
+
+### 5.5 Access Control Lists (ACL) (L3)
 
 - [4.5 Access Control Lists (ACL)](Cisco%20Hands%20On.md#4.5%20Access%20Control%20Lists%20(ACL))
 - Types
@@ -1516,49 +1578,62 @@ R1(config)#ip ftp passowrd {pass}
 		- **Standard**: near destination (affects only source IP, place later = ok)
 		- **Extended**: near source (more fields, save BW early)
 
-### 5.3 Network Device Security
+### 5.6 Port Security
 
-#### 5.3.1 Overview
+- [3.5 Port Security](Cisco%20Hands%20On.md#3.5%20Port%20Security)
+- Limits MACs from port
+- Default: err-disabled, 1 MAC allowed (config or dynamic)
+- MAC spoofing = easy, limiting number of MACs more useful
+- Only usable if `switchport mode access/trunk`
+- Aging [absolute/inactivity]
+- Types [static/dynamic/sticky]
+- 3 violation modes (unauthorized frame enters an int)
+	- Shutdown (disabled, count = 1, syslog/SNMP notif)
+	- Restrict (discards, count += 1, syslog/SNMP)
+	- Protect (discards)
+- Re-enabling
+	- Unplug, shut, no shut
+	- dynamic `errdisable recovery`
+- Sticky MAC stores dynamically learned into run-conf
+
+### 5.7 DHCP Snooping
+
+- Filters **only** DHCP messages on untrusted ports
+- Default: all ports untrusted
+	- Usually, uplink: trusted, downlink: untrusted
+- Attacks
+	- DHCP exhaustion
+		- 
+- DHCP poisoning
+	- 
+
+### 5.8 Network Device Security
+
+#### 5.8.1 Overview
 
 - **Threats**: [remote, local access, physical, environmental, electrical, maintenance]
 - **Causes**: [unauthorized, damage, theft, temperatures, humidity, voltage, improper handling, poor cabling]
 
-#### 5.3.2 Passwords
+#### 5.8.2 Passwords
 
 - **Forced entry**: [brute force, guessing, dictionary attacks]
 - **Policy**: [length, symbols; storage, protection, frequent change of password]
 - **Alternatives**: [MFA, digital certs, biometrics]
 
-#### 5.3.3 Authentication & Access Control
+#### 5.8.3 Authentication & Access Control
 
 - **802.1X**: port-based access control
 - **RADIUS**: central auth server for 802.1X
 - **Flow**: device → switch → RADIUS → allow/deny port
 - **Use case**: prevent rogue devices, secure wired/Wi-Fi ports
 
-#### 5.3.4 Port Security
-
-- [3.5 Port Security](Cisco%20Hands%20On.md#3.5%20Port%20Security)]
-- Limit MAC per port
-- Sticky MAC option to learn allowed devices
-- Actions: [shutdown, restrict, protect]
-
-#### 5.3.5 VLAN Hopping
+#### 5.8.4 VLAN Hopping
 
 - **Attacks**: access traffic across VLANs without routing
 - **Methods**: switch spoofing, double-tagging
 - **Prevention** disable DTP, set access ports, native VLAN unused, prune trunks, port security
 
-#### 5.3.6 ARP Spoofing Attack
-
-- Attacker forges an ARP reply to map victim IP to his MAC
-- Becomes MITM and intercepts traffic
-- **Prevention**
-	- DHCP snooping
-	- [3.5 Port Security](Cisco%20Hands%20On.md#3.5%20Port%20Security)
-	- [3.6 Dynamic ARP Inspection (DAI)](Cisco%20Hands%20On.md#3.6%20Dynamic%20ARP%20Inspection%20(DAI))
-
-#### 5.4 IPsec (Remote Access / Site-to-Site VPNs)
+#### 5.9 IPsec (Remote Access / Site-to-Site VPNs)
 
 <hr>
 

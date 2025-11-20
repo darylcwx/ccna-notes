@@ -257,29 +257,36 @@ R1(config)#show lldp [traffic|int|neigh]
 
 ### 3.5 Port Security
 
-- Change the switchport mode from auto to either
-access or trunk
-- Set the max number of secure MACs
-- Specify the allowed MACs.
-- Set the violation mode (optional): [protect, restrict, shutdown (default)]
-- Set aging parameters (optional): [aging time, aging type {absolute (default) | inactivity}]
-- Enable port security
-
 ```
-Switch(config)# interface g0/8
-Switch(config-if)# switchport mode access
-Switch(config-if)# switchport port-security
-Switch(config-if)# switchport port-security maximum 2
-Switch(config-if)# switchport port-security violation shutdown
-Switch(config-if)# switchport port-security mac-address sticky
-Switch(config-if)# switchport port-security aging time 120
+Sw(config)# interface g0/8
+Sw(config-if)# switchport mode access
+Sw(config-if)# switchport port-security
+Sw(config-if)# switchport port-security maximum 2
+Sw(config-if)# switchport port-security violation shutdown
+
+// [secure] MAC aging
+// absolute = expires, inactivity = resets on frame
+Sw(config-if)#switchport port-security aging type {abs/inact}
+Sw(config-if)#switchport port-security aging time 120
+
+// [secure] static (won't age out)
+Sw(config-if)#switchport port-security aging type static
+Sw(config-if)#switchport port-security mac-address {mac}
+
+// [secure] sticky (static)
+// will never age out, stick all dynamic MACs to run-conf
+Sw(config-if)#switchport port-security mac-address sticky
 
 // show
-Switch#show port-security
-Switch#show port-security interface GigabitEthernet0/8
+Sw#show port-security
+Sw#show port-security int g0/1
+Sw#show mac address-table secure
 
-// port-status secure-down == violation
-Switch#no switchport port-security mac-address sticky
+// err-disable auto re-enable
+Sw#show errdisable recovery
+// psecure-violation = disabled (need enable for auto recovery)
+Sw(config)#errdisable recovery cause psecure-violation
+Sw(config)#errdisable recovery interval 180 // default 300
 ```
 
 ### 3.6 Dynamic ARP Inspection (DAI)
