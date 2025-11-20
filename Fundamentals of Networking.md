@@ -1324,15 +1324,17 @@ R2(config-if)#ip add dhcp
 	- Random Early Detection (RED)
 		- Traffic reach threshold, drop random packets
 		- Those flows will reduce rate
-	- Weighted RED
+	- Weighted RED (WRED)
 		- Drop packets based on class/priority
+	- Multiple Queues (one per marking)
+		- 
 - Priority
 	- Classification, via:
 		- ACL
 		- Network Based Application Recognition (NBAR)
 			- Via DPI up to L7
 		- L2/L3 headers
-			- VLAN's dot1q's [PCP](#^52f974)
+			- VLAN's dot1q's [PCP/CoS](#^52f974)
 				- 0: best effort
 				- 1: background
 				- 2: excellent effort
@@ -1350,16 +1352,22 @@ R2(config-if)#ip add dhcp
 				- DF: default forward (best effort) - 0
 				- EF: expedited " (low D/J/L) - 46
 				- AF: assured " (12 standard values)
-					- 4 classes
-					- 3 drop precedence per class
-					- total 12
+					- ![](assets/Fundamentals%20of%20Networking/img-20251119154706165.png)
 					- AF{class}{d.p.}
 					- DSCP{binary sum}
 					- `100110` (6 bits)
-						- AF43
-						- DSCP38
-				- CS: class selector (8 standard values, compatible IPP)
-	- Queue Management
+						- AF43 (AFXY)
+						- DSCP38 (formula = `8X+2Y`)
+				- CS: class selector (8 DSCP values, compatible IPP)
+					- CS1-7, (for DSCP just * 8)
+				- Basically
+					- Voice traffic: `EF`
+					- Interactive video: `AF4X`
+					- Streaming video: `AF3X`
+					- High priority data: `AF2X`
+					- Best effort: `DF`
+				- Trust Boundaries
+					- Set at IP phone so markings are trusted
 	- Shaping/Policing
 
 ### 4.8 SSH
