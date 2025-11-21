@@ -289,13 +289,42 @@ Sw(config)#errdisable recovery cause psecure-violation
 Sw(config)#errdisable recovery interval 180 // default 300
 ```
 
-### 3.6 Dynamic ARP Inspection (DAI)
-
-- Layer 2 security feature to prevent ARP spoofing by validating ARP packets against DHCP snooping table
+### 3.6 DHCP Snooping
 
 ```
-Switch(config)#ip arp inspection <vlan-id>     // enable DAI on VLAN
-Switch(config-if)#ip arp inspection trust      // enable DAI on an interface
+Sw(config)#ip dhcp snooping
+Sw(config)#ip dhcp snooping vlan 1
+Sw(config)#int g0/0
+Sw(config-if)#ip dhcp snooping trust
+Sw(config)#do sh dhcp snooping binding
+
+// rate-limiting
+// disabled by default
+Sw(config)#int range g0/0-1
+Sw(c-int-r)#ip dhcp snooping limit rate {x packets/s}
+
+// rec
+Sw(config)#errdisable recovery cause dhcp-rate-limit
+```
+
+### 3.7 Dynamic ARP Inspection (DAI)
+
+```
+Sw(config)#ip arp inspection {vlan}
+Sw(config)#int range g0/0-1
+Sw(config-if)#ip arp inspection trust
+Sw(config)#do sh ip arp inspection interfaces
+
+// rate limiting
+// default: untrusted ports ? en (15) : dis
+// x packets per y seconds
+Sw(config-if-range)#ip arp inspection limit rate {x} [burst interval {y}]
+
+// rec
+Sw(config)#errdisable recovery cause arp-inspection
+
+// optional checks
+Sw(config)#ip arp inspection validate ?
 ```
 
 ### 3.7 Syslog

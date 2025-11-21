@@ -1598,14 +1598,33 @@ R1(config)#ip ftp passowrd {pass}
 
 ### 5.7 DHCP Snooping
 
+- Rate-Limiting (prevent exhaustion)
 - Filters **only** DHCP messages on untrusted ports
+	- DHCP server ? discard
+	- DHCP client DISCOVER/REQUEST ? source MAC vs DHCP CHADDR match ? forward : discard
+	- DHCP client RELEASE/DECLINE ? source IP vs receiving interface match in Snooping Binding Table ? forward : discard
 - Default: all ports untrusted
 	- Usually, uplink: trusted, downlink: untrusted
 - Attacks
-	- DHCP exhaustion
-		- 
-- DHCP poisoning
-	- 
+	- DHCP starvation (flood discover)
+	- DHCP poisoning (like ARP but DHCP)
+- DHCP Servers: OFFER, ACK, NAK
+- DHCP Clients: DISCOVER, REQUEST, RELEASE, DECLINE
+
+ #### DHCP option 82 (information option)
+ - Add. info like which agent receive, which interface, which VLAN
+- Cisco switches adds by default, even if switch isn't a Relay Agent
+- Cisco switches drop messages with Opt82 if received on untrusted port
+
+### 5.8 Dynamic ARP Inspection (DAI)
+
+- Filter **only** ARP messages on untrusted ports
+	- Sender MAC and IP in DHCP Snoop Table ? forward : discard
+- ARP Poisoning (MITM)
+	- Attack send gARP msg using another IP
+	- Traffic all goes to MITM first
+- ARP ACLs (alternative if no DHCP)
+- Rate-limiting
 
 ### 5.8 Network Device Security
 
