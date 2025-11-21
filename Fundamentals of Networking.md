@@ -84,9 +84,49 @@ debugInConsole: false
 	- Web servers in DMZ, a controlled zone between Internet and internal network
 	- Usually a subnet the hosts public services
 
-### 1.3 Communication over LAN
+### 1.3 Architectures
 
-#### 1.3.1 Physical Media Types
+#### Terminologies
+
+- Star (topology pattern)
+- Full mesh (each connected to all)
+- Partial mesh (some connected but not all)
+
+### 1.3.1 2 & 3 Tier LAN
+
+![|250](assets/Fundamentals%20of%20Networking/img-20251121112447321.png)
+
+- **Access Layer**
+	- Many PoE-enabled ports to hosts
+	- Runs: QoS, Port Security, DAI
+- **Distribution Layerc**
+	- Aggregates access layer via SVIs that hosts use as DGW
+	- Runs: OSPF, STP
+	- Leads to WAN, internet
+
+![|450](assets/Fundamentals%20of%20Networking/img-20251121113640894.png)
+
+- **Core Layer (if Distribution Layers > 3)**
+	- Speed for large networks
+	- Avoid CPU-intensive operations
+	- Layer 3 only
+
+### 1.3.2 Spine-Leaf/Close (DC)
+
+- Traditionally, 3-tier
+- North-South = vertical
+- East-West = lateral
+- Virtual servers = more East-West = bottlenecks
+- Each leaf is full mesh with each spine, and vice versa
+- Path taken = random to load balance traffic
+
+### 1.3.3 SOHO (Small/Home Office)
+
+- One device that does all (routing, switching, firewall, AP, modem)
+
+### 1.4 Communication over LAN
+
+#### 1.4.1 Physical Media Types
 
 - **Twisted Pair (ethernet)**
 	- Twisted because protects against electromagnetic interference
@@ -112,7 +152,7 @@ debugInConsole: false
 - **Coaxial Cable**
 	- Copper core, Legacy use
 
-#### 1.3.2 Ethernet Media Table
+#### 1.4.2 Ethernet Media Table
 
 | IEEE Std | Media Type                 | Max Speed   | Cabling / Fiber   | Max Distance | Pairs Used | Notes                                          |
 | -------- | -------------------------- | ----------- | ----------------- | ------------ | ---------- | ---------------------------------------------- |
@@ -126,7 +166,7 @@ debugInConsole: false
 | 802.3ae  | 10GBASE-LR                 | 10 Gbps     | Single-mode fiber | 10 km        | N/A        | Long-range fiber                               |
 | 802.3ba  | 40GBASE-SR4 / 100GBASE-LR4 | 40/100 Gbps | MMF / SMF         | Varies       | N/A        | Data center / backbone links                   |
 
-#### 1.3.3 Communication Types
+#### 1.4.3 Communication Types
 
 - **Unicast**: one-to-one (flooding)
 - **Broadcast**: one-to-all, FFFF:FFFF:FFFF (ARP)
@@ -146,7 +186,7 @@ debugInConsole: false
 | HSRP, GLBP (multicast) |—| `224.0.0.102`    |
 | VRRP (multicast)       |—| `224.0.0.18`     |
 
-#### 1.3.4 Host-to-Host Packet Transfer Process (same LAN)
+#### 1.4.4 Host-to-Host Packet Transfer Process (same LAN)
 
 1. Host A wants to send data to Host B:
 	- Host A has the IP address of Host B but needs Host B’s MAC address to send an Ethernet frame.
@@ -187,7 +227,7 @@ debugInConsole: false
 	- For TCP, acknowledgments and retransmissions handle reliability.
 	- For UDP, best-effort delivery continues without guaranteed retransmission.
 
-#### 1.3.5 Address Resolution Protocol (ARP) - 0x0806
+#### 1.4.5 Address Resolution Protocol (ARP) - 0x0806
 
 ![](assets/Fundamentals%20of%20Networking/img-20251022165531530.png)
 
@@ -1599,32 +1639,36 @@ R1(config)#ip ftp passowrd {pass}
 ### 5.7 DHCP Snooping
 
 - Rate-Limiting (prevent exhaustion)
+- Default: all ports untrusted
+	- Usually, uplink: trusted, downlink: untrusted
 - Filters **only** DHCP messages on untrusted ports
 	- DHCP server ? discard
 	- DHCP client DISCOVER/REQUEST ? source MAC vs DHCP CHADDR match ? forward : discard
 	- DHCP client RELEASE/DECLINE ? source IP vs receiving interface match in Snooping Binding Table ? forward : discard
-- Default: all ports untrusted
-	- Usually, uplink: trusted, downlink: untrusted
+
 - Attacks
 	- DHCP starvation (flood discover)
 	- DHCP poisoning (like ARP but DHCP)
 - DHCP Servers: OFFER, ACK, NAK
 - DHCP Clients: DISCOVER, REQUEST, RELEASE, DECLINE
 
- #### DHCP option 82 (information option)
+#### DHCP option 82 (information option)
+
  - Add. info like which agent receive, which interface, which VLAN
 - Cisco switches adds by default, even if switch isn't a Relay Agent
 - Cisco switches drop messages with Opt82 if received on untrusted port
 
 ### 5.8 Dynamic ARP Inspection (DAI)
 
+- Rate-limiting
+- Default: all ports untrusted
+	- Usually, uplink: trusted, downlink: untrusted
 - Filter **only** ARP messages on untrusted ports
 	- Sender MAC and IP in DHCP Snoop Table ? forward : discard
 - ARP Poisoning (MITM)
 	- Attack send gARP msg using another IP
 	- Traffic all goes to MITM first
 - ARP ACLs (alternative if no DHCP)
-- Rate-limiting
 
 ### 5.8 Network Device Security
 
@@ -1652,7 +1696,7 @@ R1(config)#ip ftp passowrd {pass}
 - **Methods**: switch spoofing, double-tagging
 - **Prevention** disable DTP, set access ports, native VLAN unused, prune trunks, port security
 
-#### 5.9 IPsec (Remote Access / Site-to-Site VPNs)
+### 5.9 IPsec (Remote Access / Site-to-Site VPNs)
 
 <hr>
 

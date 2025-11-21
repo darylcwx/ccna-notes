@@ -2,8 +2,7 @@
 
 - WLC ip: 192.168.1.11
 	- `admin/P@ssw0rd`
-	- Monitoring >
-	- Wireless > AP Statistics
+	- Monitoring > Wireless > AP Statistics
 - Console in
 	- `Cisco/Cisco`
 - AP IP as long as /24 ok

@@ -292,6 +292,7 @@ Sw(config)#errdisable recovery interval 180 // default 300
 ### 3.6 DHCP Snooping
 
 ```
+// untrust by default
 Sw(config)#ip dhcp snooping
 Sw(config)#ip dhcp snooping vlan 1
 Sw(config)#int g0/0
@@ -310,6 +311,7 @@ Sw(config)#errdisable recovery cause dhcp-rate-limit
 ### 3.7 Dynamic ARP Inspection (DAI)
 
 ```
+// untrust by default
 Sw(config)#ip arp inspection {vlan}
 Sw(config)#int range g0/0-1
 Sw(config-if)#ip arp inspection trust
