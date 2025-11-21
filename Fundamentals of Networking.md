@@ -54,10 +54,10 @@ debugInConsole: false
 
 #### 1.2.3 WAN
 
-- Spans large geographic area
-- Connects multiple LANs
-- Managed by ISP or SIs
-- WAN optimizer
+- Connects multiple LANs, Managed by ISP or SIs
+- Leased line
+	- Hub and Spoke
+		- Central control
 
 #### 1.2.4 WLAN
 
