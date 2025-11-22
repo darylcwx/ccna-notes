@@ -672,6 +672,21 @@ R1(config)#ntp server {ip} key {key no.} // specify which to use
 R1(config)#ntp peer {ip} key {key no.}
 ```
 
+### 4.8 VRF
+
+```
+// create and assign to int
+SPR1(config)#ip vrf CUST1
+SPR1(config-vrf)#ip vrf CUST2
+SPR1(config-if)#ip vrf forwarding {name}
+SPR1(config-if)#ip addr {} {}
+
+// show
+SPR1(config-vrf)#do sh ip vrf
+
+SPR1#ping vrf {name} {ip}
+```
+
 ## 5. Test Configs
 
 ```

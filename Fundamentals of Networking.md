@@ -40,7 +40,6 @@ debugInConsole: false
 - IEEE 802.1Q Tag Format (VLAN tagging protocol) - 4 bytes
 	- [Preamble, SFD, Desti MAC, Source MAC, **VLAN Tag**, Type/Length, Payload, FCS]
 	- **TPID**: 16 bits, `0x8100`
-	
 - **Priority Code Point (PCP)**: 3 bits, Class of Service (CoS) priority ^52f974
 	- **Drop Eligible Indicator (DEI)**: 1 bit
 	- **VLAN ID**: 12 bits, VLAN number (1- 4094)
@@ -55,30 +54,27 @@ debugInConsole: false
 #### 1.2.3 WAN
 
 - Connects multiple LANs, Managed by ISP or SIs
-- Leased lines
+- **Leased lines**
 	- Hub and Spoke
 		- Central control
 	- Uses serial
-- Multi Protocol Label Switching (MPLS)
+- **Multi Protocol Label Switching (MPLS)**
 	- Shared infrastructure, ISP in middle
-	- CE, PE, P
+	- CE (customer), PE (provider) , P
 	- Uses **labels** for make forwarding decisions
 	- Layer 3: Office A will learn Office B's routes via OSPF
 	- Layer 2: A and B will OSPF peer directly
-- Digital Subscriber Line (DSL)
+- **Digital Subscriber Line (DSL)**
 	- Modem (phone lines)
-- Cable Internet (CATV)
+- **Cable Internet (CATV)**
 - Redundant Internet Connections
-	- Single homed
-	- Dual homed
-	- Multihomed
-	- Dual Multihomed
-- Internet VPNs
+	- Single homed (1-to-1), Dual homed (2-to-1), Multihomed (1-to-2), Dual Multihomed (2-to-2)
+	- Internet VPNs
 	- Internet as a WAN = no security
-	- Site-to-Site using IPsec
+	- Site-to-Site using **IPsec**
 		- VPN tunnel (2 endpoints only)
 		- Encrypt, +VPN header, +IP header, Decrypt
-		- Limitations 
+		- Limitations
 			- IPsec no broadcast/multicast (no OSPF)
 				- Generic Routing Encapsulation (GRE) over IPsec
 					- GRE flexibility + IPsec security
@@ -89,7 +85,7 @@ debugInConsole: false
 					- IPsec tunnels to a Hub
 					- Hub spreads routes
 	- Remote Access using TLS
-		- 
+		- End devices to company resources via VPN tunnels
 
 #### 1.2.4 WLAN
 
@@ -105,7 +101,51 @@ debugInConsole: false
 	- SSL & IPsec [L2, L3, L4, L3, L4]
 	- L2-in-ip [L2, L3, L2, L3, L4]
 
-#### 1.2.5 Other
+#### 1.2.6 Virtualization
+
+- Run multiple OS on 1 server
+- Why?
+	- Partitioning (run multiple OS, divide system resources)
+	- Isolation (fault and security isolation at hardware level)
+	- Encapsulation (saves entire state of VM)
+	- Hardware Independence (migratebility)
+- Type 1 hypervisor (VMM)
+	- Manages and allocates CPU/RAM to each VM
+	- Used in DCs, Runs on hardware, also called bare-metal/native hypervisor
+- Type 2 hypervisor (hosted)
+	- Runs on OS
+- vSwitches connect to physical NIC of server
+
+##### Containers
+
+- Contain pre-packaged apps (bins/libs/deps)
+- Run on Container Engine
+- Orchestrator to deploy, manage containers
+	- Kubernetes
+	- Docker Swarm
+- VMs vs Containers
+	- VMs slow to boot, require more disk space, resources but portable and more isolated
+
+#### 1.2.7 Cloud
+
+- Types
+	- On-Premise
+	- Colocation
+		- DCs rent space for client infrastructure
+- **5 essential characteristics (OBRRM)**
+	- [On-demand self-service, Broad network access, Resource pooling, Rapid elasticity, Measured service]
+- **3 service models**
+	- SaaS (M365, gSuite), PaaS (AWS Lambda), IaaS (EC2)
+- **4 deployment models
+	- Private (orgs), Community (group of orgs), Public (open to public), Hybrid (combi of any 3)
+- Cost
+	- Capital expenses (of buying hardware/software) reduced
+	- Global scale (rapid)
+	- Speed/agility (provided on demand within minutes)
+	- Productivity (no more procure, rack, cable, install, update)
+	- Reliability (backups, pull data, disaster recovery)
+
+#### 1.2.8 Other
 
 - **Data Center**
 	- [Availability, Resiliency, Scalability]
@@ -124,7 +164,7 @@ debugInConsole: false
 - Full mesh (each connected to all)
 - Partial mesh (some connected but not all)
 
-### 1.3.1 2 & 3 Tier LAN
+#### 1.3.1 2 & 3 Tier LAN
 
 ![|250](assets/Fundamentals%20of%20Networking/img-20251121112447321.png)
 
@@ -143,7 +183,7 @@ debugInConsole: false
 	- Avoid CPU-intensive operations
 	- Layer 3 only
 
-### 1.3.2 Spine-Leaf/Close (DC)
+#### 1.3.2 Spine-Leaf/Close (DC)
 
 - Traditionally, 3-tier
 - North-South = vertical
@@ -152,7 +192,7 @@ debugInConsole: false
 - Each leaf is full mesh with each spine, and vice versa
 - Path taken = random to load balance traffic
 
-### 1.3.3 SOHO (Small/Home Office)
+#### 1.3.3 SOHO (Small/Home Office)
 
 - One device that does all (routing, switching, firewall, AP, modem)
 
@@ -512,7 +552,7 @@ debugInConsole: false
 | Internet    | + Packet header (IPs)    |
 | Link        | + Frame header (MACs)    |
 
-#### 1.5.3 Layer 4 (TCP vs UDP)
+#### 1.5.3 Layer 4 (TCP Vs UDP)
 
 - Services
 	- Reliable data transfer
@@ -525,7 +565,6 @@ debugInConsole: false
 		- Well known: 0-1023
 		- Registered: 1024-49151
 		- PrivateE 49152-65535
-
 - **TCP/IP**
 	- 3-way: [SYN, SYN/ACK, ACK]
 		- Establish first before traffic flows
@@ -545,6 +584,58 @@ debugInConsole: false
 	- For voice, video
 	- Ports
 		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (162), Syslog (514)]
+
+### 1.6 Wireless (IEEE 802.11)
+
+- Within range ? receives all frames
+	- Privacy
+	- Carrier Sense Multiple Access with Collision **Avoidance** (CSMA/CA) for half-duplex
+- Regulated by various international bodies
+- Consider signal coverage
+	- Range
+	- Absorption, reflection, refraction, diffraction, scattering
+- Interference
+- 802.11, b, a, g, n, ac, ax
+	- Service sets (SS)
+		- Independent
+		- Infrastructure
+		- Mesh
+		- All devices share same SSID
+		- Independent Basic Service Set (IBSS) - "ad hoc network"
+			- >=2 devices connect directly, for file transfer (AirDrop)
+		- Basic Service Set (BSS)
+			- BSSID = MAC of AP's radio, used to identify AP
+			- Usable area = Basic Service Area (BSA)
+		- Extended Service Set (ESS)
+			- Large wireless LANs
+			- Same SSID but unique BSSID, with own channel to avoid interference
+			- 10-15% overlap to not lose connection when roaming
+		- Mesh BSS (MBSS)
+			- 1 radio BSS, 1 radio bridge traffic from AP to AP
+			- At least 1 AP connected to wired network, called Root Access Point (RAP)
+			- The rest called Mesh APs
+	- Distribution System (wired network)
+		- WLAN map to separate VLAN and connected to wired network via trunk
+- AP Operational Mode
+	- Repeater mode
+		- Retransmit what it receives
+		- 1 radio ? must same channel = low throughput
+		- 2 radios ? 1 receive 1 transmit
+	- Workgroup bBidge (WGB)
+		- Acts as a wireless client of another AP, to connect wired devices to WLAN
+		- Universal WGB (UWGB) - allows one device
+		- WGB (cisco) - allows multiple wired clients
+	- Outdoor Bridge
+		- Specialized antennas to connect networks over long distance
+#### 1.6.1 Radio Frequency
+
+- Amplitude (strength), frequency (Hz), period (4Hz = 0.25s)
+- Wi-Fi
+	- 2.4GHz (better in open space, better penetration, more devices = more interference)
+		- Multiple channels, don't use overlapping channels so no interference
+		- Use 1, 6, 11 in honeycomb
+	- 5 GHz
+	- Wi-Fi 6 = 6 GHz
 
 <hr>
 
@@ -566,6 +657,7 @@ debugInConsole: false
 	- Half-duplex
 	- Layer 1 repeaters
 	- Carrier Sense Multiple Access with Collision Detection (CSMA/CD)
+		- Detect and recover from collisions
 
 ### 2.1 VLANs
 
@@ -1119,6 +1211,13 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- XX = group number
 	- YY = AVF number
 
+#### 3.1.5 Virtual Routing and Forwarding (VRF)
+
+- Similar to VLANs
+- Cannot cross VRFs unless VRF Leaking is configured
+- Usually used for MPLS, but without = VRF-lite
+- Router can carry traffic from multiple customers (IPs can overlap)
+
 #### 3.1.5 Infrastructure ACL (iACL)
 
 - **Permits only authorized traffic to infra equipment, as well as permit transit traffic**
@@ -1144,7 +1243,7 @@ Router#show control-plane host open-ports
 	- Private IPv4
 	- NAT
 - Private IPs (cannot be used on internet)
-	- A: `10.0.0.0/8`  (`10.0.0.0 to 10.255.255.255`)
+	- A: `10.0.0.0/8` (`10.0.0.0 to 10.255.255.255`)
 	- B: `172.16.0.0/12` (`172.16.0.0 to 172.31.255.255`)
 	- C: `192.168.0.0/16` (`192.168.0.0 to 192.168.255.255`)
 
@@ -1288,7 +1387,6 @@ R2(config-if)#ip add dhcp
 - mDev can notify NMS of events
 - NMS can ask mDev for sitrep
 - NMS can tell mDev to change configs
-
 - NMS
 	- SNMP Manager (UDP 162)
 		- OS
@@ -1524,7 +1622,6 @@ SW1(config)# // exec timeout, transport input
 		- Data Transfer
 		- Connection Termination
 - IOS File Systems
-	
 	- disk = flash memory
 	- opaque = internal functions
 	- nvram = start conf
@@ -1677,14 +1774,13 @@ R1(config)#ip ftp passowrd {pass}
 	- DHCP server ? discard
 	- DHCP client DISCOVER/REQUEST ? source MAC vs DHCP CHADDR match ? forward : discard
 	- DHCP client RELEASE/DECLINE ? source IP vs receiving interface match in Snooping Binding Table ? forward : discard
-
 - Attacks
 	- DHCP starvation (flood discover)
 	- DHCP poisoning (like ARP but DHCP)
 - DHCP Servers: OFFER, ACK, NAK
 - DHCP Clients: DISCOVER, REQUEST, RELEASE, DECLINE
 
-#### DHCP option 82 (information option)
+#### DHCP Option 82 (information option)
 
  - Add. info like which agent receive, which interface, which VLAN
 - Cisco switches adds by default, even if switch isn't a Relay Agent
