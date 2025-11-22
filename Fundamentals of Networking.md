@@ -55,9 +55,41 @@ debugInConsole: false
 #### 1.2.3 WAN
 
 - Connects multiple LANs, Managed by ISP or SIs
-- Leased line
+- Leased lines
 	- Hub and Spoke
 		- Central control
+	- Uses serial
+- Multi Protocol Label Switching (MPLS)
+	- Shared infrastructure, ISP in middle
+	- CE, PE, P
+	- Uses **labels** for make forwarding decisions
+	- Layer 3: Office A will learn Office B's routes via OSPF
+	- Layer 2: A and B will OSPF peer directly
+- Digital Subscriber Line (DSL)
+	- Modem (phone lines)
+- Cable Internet (CATV)
+- Redundant Internet Connections
+	- Single homed
+	- Dual homed
+	- Multihomed
+	- Dual Multihomed
+- Internet VPNs
+	- Internet as a WAN = no security
+	- Site-to-Site using IPsec
+		- VPN tunnel (2 endpoints only)
+		- Encrypt, +VPN header, +IP header, Decrypt
+		- Limitations 
+			- IPsec no broadcast/multicast (no OSPF)
+				- Generic Routing Encapsulation (GRE) over IPsec
+					- GRE flexibility + IPsec security
+					- Encap(Encrypt(Encap(packet w GRE header and new IP header)) w IPsec VPN header and new IP header)
+					- Sort of like double hashing
+			- Full mesh = hard
+				- Dynamic Multipoint VPN (DMVPN)
+					- IPsec tunnels to a Hub
+					- Hub spreads routes
+	- Remote Access using TLS
+		- 
 
 #### 1.2.4 WLAN
 
