@@ -602,9 +602,7 @@ debugInConsole: false
 		- Mesh
 		- All devices share same SSID
 		- Independent Basic Service Set (IBSS) - "ad hoc network"
-
-			- >=2 devices connect directly, for file transfer (AirDrop)
-
+			- > =2 devices connect directly, for file transfer (AirDrop)
 		- Basic Service Set (BSS)
 			- BSSID = MAC of AP's radio, used to identify AP
 			- Usable area = Basic Service Area (BSA)
@@ -743,13 +741,9 @@ Architectures
 		- TKIP
 			- MIC (incl. sender MAC), Key mixing algo, IV (48b), Seq no.
 		- CCMP
-
-			- >TKIP, new hardware only, AES counter mode, CBC-MAC (MIC)
-
+			- > TKIP, new hardware only, AES counter mode, CBC-MAC (MIC)
 		- GCMP
-
-			- >CCMP, better throughput,  AES counter mode, GMAC (MIC)
-
+			- > CCMP, better throughput,  AES counter mode, GMAC (MIC)
 - WPA Certifications
 	- Supports 2 auth modes
 		- Personal (SOHO)
@@ -768,16 +762,19 @@ Architectures
 
 - WLCs connects to Switch via static LAG (no PAgP/LACP)
 - DHCP option 43 if WLC not reachable by AP
-- WLC ports
+- WLC Ports
 	- Service (management)
 	- Distribution System (data)
 	- Console (RJ45)
 	- Redundancy (for HA)
-
-```
-// 
-AP#
-```
+- WLC Interfaces
+	- Management (telnet, SSH, HTTP/S, RADIUS auth, NTP, Syslog, CAPWAP tunnels, etc.)
+	- Redundancy Mgmt (for HA)
+	- Virtual Int (for DHCP req)
+	- Service Port Int (bound to service port)
+	- Dynamic Int (Map WLAN to VLAN)
+- WLC GUI Config
+	- Plat (voice), Gold (video), Silver (best-effort), Bronze (background)
 
 ## 2.0 Network Access
 
@@ -1970,13 +1967,78 @@ R1(config)#ip ftp passowrd {pass}
 
 ## 6.0 Automation & Programmability
 
-### 6.1 Automation & Networks
+### 6.1 Network Automation
 
-### 6.2 Traditional Networks & Controller-based Networking
+- Benefits
+	- reduced human error, scalable, compliance, efficiency
+	- Methods [SDN, ansible, python]
+- Logical 'planes' of network functions
+	- ![](attachments/Fundamentals%20of%20Networking/IMG-20251123161023.png)
+	- Data/Forwarding plane
+		- Forwarding user data/traffic (router, switch, NAT, forward/discard packet)
+	- Control plane
+		- Controls what Data plane does (e.g., by building router's routing table)
+		- Overhead work (doesn't do the work, but tells **DP** how - OSPF, STP, ARP)
+	- Management plane
+		- Overhead work (protocols used for managing)
+		- SSH/telnet, Syslog, SNMP, NTP
+	- Control/Management traffic processed in CPU, Data traffic uses App-Specific Integrated Circuit (ASIC) is responsible for switching logic, MAC add table stored in Ternary Content-Addressable Memory (TCAM)
 
-### 6.3 Controller-based, SDN
+### 6.2 Software Defined Networking (SDN)
 
-### 6.4 AI & ML
+- Aka Software-Defined Architecture (SDA), Controller-Based Networking
+- Centralize **CP** into an application called a controller
+	- Tells R1, R2 their routes
+	- Southbound Interface (SBI)
+		- Comms between controller and devices
+		- [devices, topology, available interfaces, configs]
+		- OpenFlow, OpFlex, onePK, NETCONF
+	- Northbound APIs
+		- Allows interaction with controller
+- API
+	- Standardized JSON format
+- Automation
+	- Python with REGEX to parse `show` commands
+	- Able without third-party apps/scripts
+	- APIs = powerful
+
+### 6.3 AI & ML
+
+- ML is a subset of AI
+	- Supervised Learning (labelled data)
+		- Accurate, easy to do
+		- Requires labelled data, output limited to labels
+	- Unsupervised Learning (clustering)
+		- Reveals hidden patterns
+		- Less accurate, need to interpret
+	- Reinforcement Learning (rewards/penalties)
+		- Complex ok, adapts well
+		- Resource intensive, learn wrong if reward system bugged
+	- Deep Learning (NN)
+		- Large, unstructured data ok, best performance for image recog, NLP, etc.
+		- Resource intensive, black box model
+- Predictive AI
+	- ML to analyze historical and predict future outcomes
+	- Decision-making through actionable insights, detect problems before it occurs
+	- Requires high-quality historical data, accuracy == generalization
+	- Apply: traffic forecasting, IDS, predictive maintenance
+- Generative AI
+	- ML to learn patterns to create new content
+	- Automate creative tasks/content creation
+	- Risk of misuse, generated content as good as training material, hallucinations
+	- Apply: gen. docs for configs/policies, gen. configs based on docs, suggest optimized configs
+- AI in Catalyst Center
+	- AI Network Analytics
+		- Finds network baseline, provides insights and recs, predicts and detects anomalies)
+	- Machine Reasoning Engine (MRE)
+		- Root cause analysis, suggest resolutions, takes automated corrective action, reduces downtime by identifying and resolving issues faster
+	- AI Endpoint Analytics
+		- Visibility on devices on network, classifies them
+		- Detects unauthorized or unusual behavior
+		- Simplifies onboarding by auto-profiling etc.
+	- AI-enhanced Radio Resource Management (RRM)
+		- Optimize network by adjusting radio settings
+		- AI to balance load, reduce interference, and improve coverage across APs
 
 ### 6.5 REST APIs
 
