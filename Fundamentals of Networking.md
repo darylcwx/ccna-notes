@@ -602,7 +602,9 @@ debugInConsole: false
 		- Mesh
 		- All devices share same SSID
 		- Independent Basic Service Set (IBSS) - "ad hoc network"
+
 			- >=2 devices connect directly, for file transfer (AirDrop)
+
 		- Basic Service Set (BSS)
 			- BSSID = MAC of AP's radio, used to identify AP
 			- Usable area = Basic Service Area (BSA)
@@ -627,6 +629,40 @@ debugInConsole: false
 		- WGB (cisco) - allows multiple wired clients
 	- Outdoor Bridge
 		- Specialized antennas to connect networks over long distance
+- AP Deployment
+	- Autonomous (no need WLC)
+		- Config individually
+		- Viable in small networks only
+		- Trunk links
+	- Lightweight
+		- 'Real-time' operations like tx/rx traffic, encrypt/decrypt, beacon/probe
+		- Other functions by WLC = split MAC architecture
+		- 2 tunnels between each AP an WLC
+			- Control (UDP 5246) - enc
+			- Data (UDP 5247) - all traffic goes to WLC first (can enc via DTLS)
+		- Easier to scale
+		- Dynamic channel assignment, Self-healing, Seamless roaming, Load balancing, Security/QoS
+		- Modes
+			- Local: standard
+			- FlexConnect: same by can switch to wired if WLC down
+			- Sniffer: just sniff 802.11 frames and send them
+			- Monitor: just receives 802.11 frames, to detect rogue devices and send de-auth
+			- Rogue detector: gets list of suspects from WLC. uses list, listens to ARP, detect rogue devices
+			- Spectrum Expert Connect (SE-C): RF analysis on all channels
+			- Bridge/Mesh: Outdoor bridge
+			- Flex+Bridge: Adds FlexConnect to Bridge/Mesh mode
+	- Cloud-based
+		- Autonomous APs managed by cloud
+		- Meraki
+			- Config, monitor, generate reports, etc.
+			- Data traffic not sent to cloud but directly to wired network
+			- Only management/control sent to cloud
+- WLC Deployment (split-MAC)
+	- Unified (Separate but central)
+	- Cloud-based (WLC is a VM)
+	- Embedded (Integrated in a switch)
+	- Mobility Express (Integrated in AP)
+
 #### 1.6.1 Radio Frequency
 
 - Amplitude (strength), frequency (Hz), period (4Hz = 0.25s)
@@ -638,6 +674,110 @@ debugInConsole: false
 	- Wi-Fi 6 = 6 GHz
 
 <hr>
+
+#### 1.6.2 Wireless
+
+Architectures
+
+- 802.11 frame
+	- 2b: Frame control
+	- 2b: Duration/ID
+	- 6b: Desti
+	- 6b: Source
+	- 6b: Receiver
+	- 2b: Sequence control
+	- 6b: Transmitter
+	- 2b: QoS
+	- 4b: HT Control
+	- Variable size: Packet
+	- 4b: FCS
+- 802.11 Association Process
+	- States
+		- Not auth, not assoc
+		- Auth, not assoc
+		- Auth and assoc
+	- 2 methods
+		- Active scanning (probe)
+		- Passive scanning (beacon messages from AP)
+	- Message Types
+		- Management
+			- Probe req > Probe res
+			- Auth req > Auth res
+			- Assoc req > Assoc res
+		- Control
+			- Req to send (RTS)
+			- Clear to sen (CTS)
+			- ACK
+		- Data
+
+#### 1.6.3 Wireless Security
+
+- Authentication
+	- Open (starbucks wifi)
+	- WEP (RC4 algo)
+		- Shared key
+		- 40b or 104b (add IV 24b) = 64b or 128b
+		- Easily cracked
+		- Challenge > Reply > Ack
+	- Extensible Authentication Protocol (EAP)
+		- 802.1X: limit access til auth
+		- Supplicant: device
+		- Authenticator: AP/WLC
+		- Auth Server: RADIUS
+		- Open > EAP auth
+	- LEAP
+		- Mutual auth via user/pass
+		- Not secure
+	- EAP-FAST (Flex Auth, Secure Tunnel)
+		- PAC gen, Tunnel, Auth
+	- PEAP
+		- DigSig, Tunnel, Auth
+		- MS-CHAP
+	- EAP-TLS
+		- Both DigSig, Tunnel, Auth
+- Encryption/Integrity
+	- 2 keys, 1 for unicast, 1 group key for receiving broadcasts
+	- Message Integrity Check (MIC) (like hashing)
+	- Methods
+		- WEP
+		- TKIP
+			- MIC (incl. sender MAC), Key mixing algo, IV (48b), Seq no.
+		- CCMP
+
+			- >TKIP, new hardware only, AES counter mode, CBC-MAC (MIC)
+
+		- GCMP
+
+			- >CCMP, better throughput,  AES counter mode, GMAC (MIC)
+
+- WPA Certifications
+	- Supports 2 auth modes
+		- Personal (SOHO)
+			- PSK
+		- Enterprise (802.1X)
+			- Uses RADIUS
+			- All EAP supported
+	- WPA: TKIP, 802.1X, PSK
+	- WPA2: CCMP, 802.1X, PSK
+	- WPA3: GCMP, 802.1X, PSK,
+		- PMF (protects 802.11 from eavesdropping)
+		- SAE (protects 4 way shake)
+		- Forward secrecy (can't decrypt after transmitted)
+
+#### 1.6.4 Wireless Config
+
+- WLCs connects to Switch via static LAG (no PAgP/LACP)
+- DHCP option 43 if WLC not reachable by AP
+- WLC ports
+	- Service (management)
+	- Distribution System (data)
+	- Console (RJ45)
+	- Redundancy (for HA)
+
+```
+// 
+AP#
+```
 
 ## 2.0 Network Access
 

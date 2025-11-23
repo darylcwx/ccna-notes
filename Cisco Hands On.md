@@ -196,6 +196,10 @@ Switch(config)#do sh etherchannel summary
 Switch(config)#do sh etherchannel load-balance
 Switch(config)#port-channel load-balance [?] src-dst-mac
 
+// config int first then 
+Sw(config-if-range)#int range f0/1-2
+Sw(config-if-range)#channel-group 1 mode ? // on/auto/desirable (see DTP)
+
 // config port-channel
 Switch(config)#int port-channel 1
 Switch(config-if)#switchport trunk encapsulation dot1q
@@ -205,8 +209,9 @@ Switch(config-if)#switchport trunk allowed vlan 1,2,20
 // config 
 Switch(config)#int range g0/0 - 3
 Switch(config-if-range)#no switchport          // for L3 EtherChannel
-Switch(config-if-range)#channel-group 1 mode ? // auto/desirable (see DTP)
 ```
+
+##### SSH
 
 ```
 // generate RSA key
