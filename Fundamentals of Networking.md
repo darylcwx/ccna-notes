@@ -1979,7 +1979,7 @@ R1(config)#ip ftp passowrd {pass}
 	- reduced human error, scalable, compliance, efficiency
 	- Methods [SDN, ansible, python]
 - Logical 'planes' of network functions
-	- ![](attachments/Fundamentals%20of%20Networking/IMG-20251123161023.png)
+	- ![](assets/Fundamentals%20of%20Networking/img-20251124091816402.png)
 	- Data/Forwarding plane
 		- Forwarding user data/traffic (router, switch, NAT, forward/discard packet)
 	- Control plane
