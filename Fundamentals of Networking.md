@@ -1980,27 +1980,67 @@ R1(config)#ip ftp passowrd {pass}
 	- Methods [SDN, ansible, python]
 - Logical 'planes' of network functions
 	- ![](assets/Fundamentals%20of%20Networking/img-20251124091816402.png)
-	- Data/Forwarding plane
-		- Forwarding user data/traffic (router, switch, NAT, forward/discard packet)
-	- Control plane
+	- **Data/Forwarding plane ("do")**
+		- Forwarding actual user data/traffic (router, switch, NAT, forward/discard packet)
+	- **Control plane ("decide")**
 		- Controls what Data plane does (e.g., by building router's routing table)
-		- Overhead work (doesn't do the work, but tells **DP** how - OSPF, STP, ARP)
-	- Management plane
-		- Overhead work (protocols used for managing)
+		- Overhead work (decides rules, but tells **DP** how - OSPF, STP, ARP)
+	- **Management plane ("oversee")**
+		- Configure, monitor, manage (protocols used for managing)
 		- SSH/telnet, Syslog, SNMP, NTP
 	- Control/Management traffic processed in CPU, Data traffic uses App-Specific Integrated Circuit (ASIC) is responsible for switching logic, MAC add table stored in Ternary Content-Addressable Memory (TCAM)
 
 ### 6.2 Software Defined Networking (SDN)
 
+![](assets/Fundamentals%20of%20Networking/img-20251124095008106.png)
+
 - Aka Software-Defined Architecture (SDA), Controller-Based Networking
-- Centralize **CP** into an application called a controller
-	- Tells R1, R2 their routes
-	- Southbound Interface (SBI)
-		- Comms between controller and devices
+- **Application Layer**
+- **Control Layer**
+	- Controller
+		- Tells R1, R2 their routes
+	- **Southbound Interface (SBI)**
+		- Interact with network devices using APIs
 		- [devices, topology, available interfaces, configs]
 		- OpenFlow, OpFlex, onePK, NETCONF
-	- Northbound APIs
-		- Allows interaction with controller
+	- **Northbound APIs**
+		- Interact with controller with scripts/ap
+- **Infrastructure Layer**
+- **Cisco SD-Access**
+	- Application-Centric Infrastructure (ACI) for DC
+	- SD-WAN for WANs
+	- Cisco Digital Network Architecture (DNA) Center is the Controller
+	- **Fabric**
+		- **Underlay (provides IP connectivity)**
+			- L3 switches and their connections
+			- Brownfield ? no underlay config : yes
+			- **No STP/HSRP, L3 switches, IS-IS**
+		- **Overlay (virtual network from underlay)**
+			- SD-Access uses VXLAN (Extensible) to build tunnels for Data plane
+			- Location ID Separation Protocol (LISP) - Control Plane
+				- Maps (Endpoint Identifiers (EI) to Routing locators (RLOCs))
+				- EID finds end hosts connected to Edge nodes, RLOCs identify the edge switch to reach end host
+			- Cisco TrustSec (CTS) for policy control (QoS, Sec)
+	- 3 roles of switches
+		- Edge nodes (DGW of end hosts)
+		- Border nodes (devices outside of SD-Access domain)
+		- Control nodes (uses Location ID Separation Protocol (LISP) to perform Control Plane functions)
+- DNAC vs Traditional
+	- Traditional
+		- Manually one-by-one via SSH/console
+		- Config/policies managed per-device
+		- New network deployments = long
+		- Manual effort = errors/failures
+	- DNAC
+		- SDN Controller in SD-Access
+		- Network manager in traditional network
+		- DNAC GUI or REST to interact
+		- Configs/policies/versions all centrally managed
+		- SBI supports NETCONF, RESTCONF, telnet, SSH, SNMP
+		- Intent-Based Networking (IBN)
+			- "this group can't comms with that group"
+			- "this group can access this server but not that"
+			- DNA Center handles the rest
 - Automation
 	- Python with REGEX to parse `show` commands
 	- Able without third-party apps/scripts
@@ -2064,27 +2104,29 @@ R1(config)#ip ftp passowrd {pass}
 	- 4XX: client error (403: unauth)
 	- 5XX: server error (500: internal SE)
 - Authentication
-	- Via methods or schemes
-	- Basic Auth
-		- User/pass in every req, encoded in Base64
+	- **Basic Auth**
+		- User/pass in every req, encoded in **Base64** via **HTTPS**
 		- Simple to implement
 		- Credentials easily stolen, not secure
-	- Bearer Auth
-		- Token in HTTP header
-		- Tokens expire after some time, more secure than Basic
+	- **Bearer Auth**
+		- Token in HTTP header, given by Auth server
+		- Tokens **expire** after some time, more secure than Basic
 		- Haven't expire attacker still can access, tokens need to be refreshed
-	- API key Auth
-		- Unique key in HTTP header
+	- **API key Auth**
+		- Unique **static key** in HTTP header
 		- Easy, no need refresh, good for tracking customer API usage
 		- Stolen = full access until revoked
-	- OAuth2.0
+	- **OAuth2.0**
 		- Access tokens
 			- Similar to Bearer
-			- Refreshes tokens
-		- Client req auth from me to access Resource
-		- I grant auth by logging into Google
-		- Client exchanges auth grant for an access token from Auth server
-		- Client includes access token to resource server
+			- **Refreshes tokens**
+			- **Limited access**
+		1. Client > Auth req > RO (me)
+		2. RO > Auth grant > Client
+		3. Client > Auth grant > Auth server
+		4. Auth server > Access token > Client
+		5. Client > Access token > Resource server
+		6. Resource server > Resource > Client
 		- Parties
 			- Resource Owner (me)
 			- Client
@@ -2097,9 +2139,90 @@ R1(config)#ip ftp passowrd {pass}
 - Open standard file format and data interchange format
 - XML: `<key>value</key>`
 
-### 6.5 Ansible, Terraform
+### 6.6 Infrastructure as Code (IaC)
 
-### 6.7 Components of JSON-encoded Data
+#### Config Management
+
+- For existing systems ([Ansible](#Ansible), [Puppet](#Puppet), [Chef](#Chef))
+- **Mutable**, changes == update
+- "Config Drift" - over time configs deviate from standards
+	- E.g., same syslog, SNMP, NTP
+- Small changes/fixes that aren't documented lead to issues
+- Version control yet unsure which is correct/match standards
+- Templates/variables
+	- Generate, edit, check, compare configs on large scale
+
+```
+// template
+hostname {{hostname}}
+!
+interface g0/0
+ip address {{address}} {{mask}}
+ip ospf {{process}} area {{area}}
+
+// variables for R1
+hostname: R1
+address: 192.168.1.1
+mask: 255.255.255.0
+process: 1
+area: 0
+```
+
+#### Infrastructure Provisioning
+
+- For initial setup, from scratch ([Terraform](#Terraform))
+- Creates, modifies, and deletes infrastructure resources
+- **Immutable**, changes == new VM == no config drift
+
+#### Procedural vs Declarative
+
+- Procedural
+	- Explicit steps to follow for outcome
+	- Greater control
+- Declarative
+	- Defines end state
+	- Terraform figures it out
+	- Consistent
+
+#### Ansible
+
+- RedHat, in Python, agentless (no need software), **procedural**
+- Push model via SSH with YAML
+- Model
+	- <u>Playbook</u> (blueprints, logic, actions)
+	- Inventory
+	- Templates
+	- Variables
+
+#### Puppet
+
+- Ruby, agent-based, **declarative**
+- Pull model with own language
+	- Clients use TCP 8140 to pull from Puppet master
+- Model
+	- <u>Manifest</u> (desired state)
+	- Templates
+
+#### Chef
+
+- Ruby, agent-based, **procedural**
+- Pull model with Domain-Specific Language (DSL) on Ruby
+	- Server use TCP 10002 to send to clients
+- Model
+	- Resources (configs)
+	- Recipes (Logic and actions)
+	- Cookbooks (x recipes)
+	- <u>Run-list</u> (ordered list of recipes for desired state)
+
+#### Terraform
+
+- Go, Agentless, **declarative**, push model provisioning
+- Integrations with AWS, Azure, K8s, Catalyst Center, ACI, IOS XE
+- Config files > Terraform Core > Calls cloud providers' APIs > State file
+- 3 steps
+	- **Write**: define desired state in HashiCorp Config Lang (HCL (also a DSL))
+	- **Plan**: verify changes
+	- **Apply**: execute
 
 ## 7. Good To Know
 

@@ -1,0 +1,23 @@
+- MSFT is partner, VMWare, RedHat is competitor
+- Was hardware now software
+- Orchestrating software for clients
+	- Enabling clients to become their own AWS
+- Nutanix 3 nodes to start a cluster
+	- @ resiliency factor 2
+- Hyperconverged Single Tier
+	- Hardware agnostic
+		- Cisco, HPE, Lenovo, Dell, Nutanix
+		- Same hardware must be used for same cluster
+	- Hypervisor agnostic
+		- AHV, ESXi, MS Hyper-V
+		- Cross HyperV DR
+		- 
+- Controller VM 
+	- Bypasses everything and writes immediately to media
+- Nutanix Self-healing
+	- Full distributed
+
+- Storage Containers Parameters
+	- Deduplication
+	- Erasure coding
+		- Degradation so not for DB
