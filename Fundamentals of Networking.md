@@ -2080,16 +2080,17 @@ R1(config)#ip ftp passowrd {pass}
 	- OAuth2.0
 		- Access tokens
 			- Similar to Bearer
-			- Refreshes tokens 
+			- Refreshes tokens
 		- Client req auth from me to access Resource
 		- I grant auth by logging into Google
 		- Client exchanges auth grant for an access token from Auth server
-		- Client includes access token to resource server 
+		- Client includes access token to resource server
 		- Parties
 			- Resource Owner (me)
-			- Client 
-			- Auth server 
-			- Resource server 
+			- Client
+			- Auth server
+			- Resource server
+
 ### 6.5 JSON, XML, YAML
 
 - Standardising data for communication between applications
