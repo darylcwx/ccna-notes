@@ -602,7 +602,9 @@ debugInConsole: false
 		- Mesh
 		- All devices share same SSID
 		- Independent Basic Service Set (IBSS) - "ad hoc network"
+
 			- > =2 devices connect directly, for file transfer (AirDrop)
+
 		- Basic Service Set (BSS)
 			- BSSID = MAC of AP's radio, used to identify AP
 			- Usable area = Basic Service Area (BSA)
@@ -741,9 +743,13 @@ Architectures
 		- TKIP
 			- MIC (incl. sender MAC), Key mixing algo, IV (48b), Seq no.
 		- CCMP
+
 			- > TKIP, new hardware only, AES counter mode, CBC-MAC (MIC)
+
 		- GCMP
+
 			- > CCMP, better throughput,  AES counter mode, GMAC (MIC)
+
 - WPA Certifications
 	- Supports 2 auth modes
 		- Personal (SOHO)
@@ -1995,8 +2001,6 @@ R1(config)#ip ftp passowrd {pass}
 		- OpenFlow, OpFlex, onePK, NETCONF
 	- Northbound APIs
 		- Allows interaction with controller
-- API
-	- Standardized JSON format
 - Automation
 	- Python with REGEX to parse `show` commands
 	- Able without third-party apps/scripts
@@ -2040,9 +2044,59 @@ R1(config)#ip ftp passowrd {pass}
 		- Optimize network by adjusting radio settings
 		- AI to balance load, reduce interference, and improve coverage across APs
 
-### 6.5 REST APIs
+### 6.4 APIs
 
-### 6.6 Ansible, Terraform
+- CRUD
+- POST, GET, PUT, DELETE
+- Client-server architecture
+- Stateless
+- Cacheable must be supported
+- Cisco DevNet
+	- Integrate APIs with Cisco ecosystem
+- URI
+	- Scheme: protocol
+	- Authority: domain
+	- Path: file path
+- HTTP Response
+	- 1XX: info (102: processing)
+	- 2XX: success (200: ok, 201: created)
+	- 3XX: redirection (301: moved)
+	- 4XX: client error (403: unauth)
+	- 5XX: server error (500: internal SE)
+- Authentication
+	- Via methods or schemes
+	- Basic Auth
+		- User/pass in every req, encoded in Base64
+		- Simple to implement
+		- Credentials easily stolen, not secure
+	- Bearer Auth
+		- Token in HTTP header
+		- Tokens expire after some time, more secure than Basic
+		- Haven't expire attacker still can access, tokens need to be refreshed
+	- API key Auth
+		- Unique key in HTTP header
+		- Easy, no need refresh, good for tracking customer API usage
+		- Stolen = full access until revoked
+	- OAuth2.0
+		- Access tokens
+			- Similar to Bearer
+			- Refreshes tokens 
+		- Client req auth from me to access Resource
+		- I grant auth by logging into Google
+		- Client exchanges auth grant for an access token from Auth server
+		- Client includes access token to resource server 
+		- Parties
+			- Resource Owner (me)
+			- Client 
+			- Auth server 
+			- Resource server 
+### 6.5 JSON, XML, YAML
+
+- Standardising data for communication between applications
+- Open standard file format and data interchange format
+- XML: `<key>value</key>`
+
+### 6.5 Ansible, Terraform
 
 ### 6.7 Components of JSON-encoded Data
 
