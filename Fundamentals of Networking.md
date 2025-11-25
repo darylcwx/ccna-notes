@@ -641,7 +641,6 @@ debugInConsole: false
 			- Control (UDP 5246) - enc
 			- Data (UDP 5247) - all traffic goes to WLC first (can enc via DTLS)
 		- Easier to scale
-		- Dynamic channel assignment, Self-healing, Seamless roaming, Load balancing, Security/QoS
 		- Modes
 			- Local: standard
 			- FlexConnect: same by can switch to wired if WLC down
@@ -979,7 +978,7 @@ Sw(config)#spanning-tree portfast default
 - **BPDU Guard**
 	- If enabled, receiving a BPDU from another switch errdisables the port
 		- ErrDisable Recovery
-			 - Default: disabledbl
+			 - Default: disabled
 				- `shut; no shut`
 				- 5 mins
 				- `Sw(config)#errdisable recovery interval <seconds>`
@@ -1060,7 +1059,9 @@ Sw(config-if)#spanning-tree guard none
 - 3 methods
 	- Port Aggregation Protocol (PAgP)
 		- Cisco only
+		- On/auto/desirable (PAgP)
 	- Link Aggregation Control Protocol (LACP)
+		- On/active/passive
 	- Static EtherChannel
 		- Avoid
 - Up to 8 interfaces can form a single EtherChannel
@@ -1666,8 +1667,6 @@ R2(config-if)#ip add dhcp
 				- Init call = PCP3
 				- Actual voice = PCP5
 			- IP header's [DSCP](#^2cd22d)
-				- IP ToS Byte
-				- IP Precedence (old DCSP)
 				- DF: default forward (best effort) - 0
 				- EF: expedited " (low D/J/L) - 46
 				- AF: assured " (12 standard values)

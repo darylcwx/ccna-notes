@@ -117,7 +117,7 @@ Switch#erase startup-config
 
 ```
 // show
-Switch#show vlan brief
+Sw#show vlan brief
 Switch#show interfaces trunk
 
 Router#show vlans (trunking's subinterfaces)
@@ -126,35 +126,36 @@ Router#show ip route [search]
 Router#ip route 0.0.0.0 0.0.0.0 8.8.8.8
 
 // config
-Switch#conf t
-Switch(config)#vlan <number> 
-Switch(config-vlan)#name <name>
+Sw#conf t
+Sw(config)#vlan <number> 
+Sw(config-vlan)#name <name>
 ```
 
 ```
 // access
 // belongs to 1 VLAN, used for end devices
-Switch(config-if)#switchport mode access
+Sw(config-if)#switchport mode access
 
-Switch(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
+Sw(config-if)#switchport access vlan <number> (data traffic: PCs, printers)
 // OR
-Switch(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
+Sw(config-if)#switchport voice vlan <number> (voice traffic: IP phone)
 ```
 
 ```
 // trunk
 // carries traffic for multiple VLANs
 
-Switch#show interfaces trunk
-Switch(config-if)#switchport mode trunk
-Switch(config-if)#switchport nonegotiate // disable DTP
-Switch(config-if)#switchport trunk encapsulation dot1q 
+Sw#show interfaces trunk
+Sw(config-if)#Swport mode trunk
+Sw(config-if)#switchport nonegotiate // disable DTP
+Sw(config-if)#switchport trunk encapsulation dot1q 
+
 
 // tag VLANs
-Switch(config-if)#switchport trunk allowed vlan 10,20,30,99
+Sw(config-if)#switchport trunk allowed vlan 10,20,30,99
 
 // diff switch but same native VLAN 
-Switch(config-if)#switchport trunk native vlan 99
+Sw(config-if)#switchport trunk native vlan 99
 ```
 
 ```
@@ -211,7 +212,7 @@ Switch(config)#int range g0/0 - 3
 Switch(config-if-range)#no switchport          // for L3 EtherChannel
 ```
 
-##### SSH
+#### SSH
 
 ```
 // generate RSA key

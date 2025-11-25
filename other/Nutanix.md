@@ -21,3 +21,4 @@
 	- Deduplication
 	- Erasure coding
 		- Degradation so not for DB
+- 
