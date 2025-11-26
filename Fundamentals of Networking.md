@@ -602,9 +602,7 @@ debugInConsole: false
 		- Mesh
 		- All devices share same SSID
 		- Independent Basic Service Set (IBSS) - "ad hoc network"
-
 			- > =2 devices connect directly, for file transfer (AirDrop)
-
 		- Basic Service Set (BSS)
 			- BSSID = MAC of AP's radio, used to identify AP
 			- Usable area = Basic Service Area (BSA)
@@ -743,13 +741,9 @@ Architectures
 		- TKIP
 			- MIC (incl. sender MAC), Key mixing algo, IV (48b), Seq no.
 		- CCMP
-
 			- > TKIP, new hardware only, AES counter mode, CBC-MAC (MIC)
-
 		- GCMP
-
 			- > CCMP, better throughput,  AES counter mode, GMAC (MIC)
-
 - WPA Certifications
 	- Supports 2 auth modes
 		- Personal (SOHO)
@@ -1418,8 +1412,6 @@ Router#show control-plane host open-ports
 
 #### 4.1.4 Port Address Translation (PAT)
 
-![](assets/Fundamentals%20of%20Networking/img-20251118151631048.png)
-
 - NAT overload
 - IP still translated
 - Uses random port, and port already in use ? translate to another port
@@ -1979,7 +1971,7 @@ R1(config)#ip ftp passowrd {pass}
 	- reduced human error, scalable, compliance, efficiency
 	- Methods [SDN, ansible, python]
 - Logical 'planes' of network functions
-	- ![](assets/Fundamentals%20of%20Networking/img-20251124091816402.png)
+	- ![](assets/Fundamentals%20of%20Networking/img-20251126133857.png)
 	- **Data/Forwarding plane ("do")**
 		- Forwarding actual user data/traffic (router, switch, NAT, forward/discard packet)
 	- **Control plane ("decide")**
@@ -2174,7 +2166,7 @@ area: 0
 - Creates, modifies, and deletes infrastructure resources
 - **Immutable**, changes == new VM == no config drift
 
-#### Procedural vs Declarative
+#### Procedural Vs Declarative
 
 - Procedural
 	- Explicit steps to follow for outcome

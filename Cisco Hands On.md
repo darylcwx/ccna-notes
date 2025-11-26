@@ -435,7 +435,7 @@ R1(config-router)#eigrp router-id ?  // manual, highest loopback, highest phys
 
 ##### OSPF
 
-- Basic OSPF configuration (pic?$)
+- Basic OSPF configuration
 
 ```
 // show
