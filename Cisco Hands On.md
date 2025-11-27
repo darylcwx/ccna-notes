@@ -436,7 +436,7 @@ R1(config-router)#eigrp router-id ?  // manual, highest loopback, highest phys
 
 ##### OSPF
 
-- Basic OSPF configuration (pic?$)
+- Basic OSPF configuration
 
 ```
 // show
@@ -577,8 +577,8 @@ Router(config)#access-list 1 permit 172.16.0.0 0.0.255.255
 
 // by name
 Router(config)# ip access-list standard acl1
-Router(config-std-nacl)# deny host 172.16.3.3
-Router(config-std-nacl)# permit 172.16.0.0 0.0.255.255
+Router(config-std-nacl)#deny host 172.16.3.3
+Router(config-std-nacl)#permit 172.16.0.0 0.0.255.255
 ```
 
 ```
@@ -600,10 +600,10 @@ Router(config)#no ip access-list <standard/extended> <access-list-name>
 
 ```
 // apply
-Router(config-if)#ip access-group access-list-number ??????
+Router(config-if)#ip access-group 5
 Router#show access-lists
 Router(config)#interface GigabitEthernet 0/1
-Router(config-if)#ip access-group 15 out
+Router(config-if)#ip access-group 5 out
 ```
 
 ### 4.6 Security (SSH, local)
