@@ -412,6 +412,7 @@ debugInConsole: false
 | Broadcast address | `192.168.24.255`   | `10.255.255.255` | largest, host all `1`  |
 | Host addresses    | `192.168.24.19`    | `10.0.1.15`      | same                   |
 | Default gateway   | `192.168.24.1`     | `10.0.0.1`       | first usable           |
+|                   |                    |                  |                        |
 
 ##### Subnetting (Variable Length Subnet Masking - VLSM)
 
@@ -436,6 +437,19 @@ debugInConsole: false
 | 2            | `192.168.10.64`  | .65-126  | .127      |
 | 3            | `192.168.10.128` | .129-190 | .191      |
 | 4            | `192.168.10.192` | .193-254 | .255      |
+
+- Examples
+	- 172.28.228.144/18
+		- 172.28.192.1–172.28.255.254
+		- 3 Oct, 6b, 7th = blocks of 64
+		- 64 LCM to hit 144 = 192
+	- 172.28.228.144/21
+		- 172.28.224.1–172.28.231.254
+	- 172.28.228.144/23
+		- 172.28.228.1–172.28.229.254
+	- 172.28.228.144/25
+		- 172.28.228.129–172.28.228.254
+		- 172.28.228.144/29172.28.228.145–172.28.228.150
 
 #### 1.4.3 IPv6 Addressing - 128 Bits, 0x86DD (L3)
 
@@ -552,7 +566,7 @@ debugInConsole: false
 | Internet    | + Packet header (IPs)    |
 | Link        | + Frame header (MACs)    |
 
-#### 1.5.3 Layer 4 (TCP Vs UDP)
+#### 1.5.3 Layer 4 (TCP Vs UDP) #ports
 
 - Services
 	- Reliable data transfer
@@ -1258,6 +1272,8 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 	- Areas should be contiguous
 	- Areas must have >=1 ABR connected to backbone
 	- Interfaces in same subnet must be same area
+	- Unique Process ID, IP address
+	- Same netmask, area ID, timers
 - OSPF Metric: Cost
 	- Reference BW (default 100) / interface BW = cost (min value = 1)
 	- Should change Ref BW
