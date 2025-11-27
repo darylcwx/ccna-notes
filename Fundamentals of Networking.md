@@ -576,14 +576,12 @@ debugInConsole: false
 		- Forward acknowledgement
 	- Flow control (window size)
 	- For downloads
-	- Ports
-		- [FTP data (20), FTP control (21), SSH (22), Telnet (23), SMTP (25) DNS(53), HTTP (80), POP3 (110), HTTPS (443)]
+	- [FTP data (20), FTP control (21), SSH (22), Telnet (23), SMTP (25) DNS(53), HTTP (80), POP3 (110), HTTPS (443)]
 - **UDP**
 	- No guaranteed delivery
 	- Fast but no error-checking
 	- For voice, video
-	- Ports
-		- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (162), Syslog (514)]
+	- [DNS(53), DHCP server (67), DHCP client (68), TFTP (69), SNMP agent (161), SNMP manager (162), Syslog (514)]
 
 ### 1.6 Wireless (IEEE 802.11)
 
@@ -602,7 +600,9 @@ debugInConsole: false
 		- Mesh
 		- All devices share same SSID
 		- Independent Basic Service Set (IBSS) - "ad hoc network"
+
 			- > =2 devices connect directly, for file transfer (AirDrop)
+
 		- Basic Service Set (BSS)
 			- BSSID = MAC of AP's radio, used to identify AP
 			- Usable area = Basic Service Area (BSA)
@@ -740,9 +740,13 @@ Architectures
 		- TKIP
 			- MIC (incl. sender MAC), Key mixing algo, IV (48b), Seq no.
 		- CCMP
+
 			- > TKIP, new hardware only, AES counter mode, CBC-MAC (MIC)
+
 		- GCMP
+
 			- > CCMP, better throughput,  AES counter mode, GMAC (MIC)
+
 - WPA Certifications
 	- Supports 2 auth modes
 		- Personal (SOHO)
