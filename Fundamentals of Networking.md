@@ -11,6 +11,17 @@ hideWhenEmpty: false
 debugInConsole: false 
 ```
 
+## Final Notes
+
+- nw addr: 128 64 32 16 8 4 2 1
+- subnet: 128 192 224 240 248 252 254 255
+- wildcard: 127 63 31 15 7 3 1 0
+- Labs
+	- OSPF
+	- VLAN, trunking, LACP (etherChannel)
+	- CDP/LLDP
+	- IPv4, IPv6 addressing
+
 ## 1.0 Network Fundamentals
 
 ### 1.1 Components
@@ -1656,7 +1667,9 @@ R2(config-if)#ip add dhcp
 		- Ingress > Routing > Classify > Queue > Schedule > Transmit
 		- Scheduling
 			- Round-robin
-			- Weighted
+			- Priority Queueing (PQ)
+			- Custom Queueing (CQ)
+			- Weighted Fair Queueing (WFQ)
 			- Class-Based Weighted Fair Queueing (CBWFQ)
 			- Low-Latency Queue (strict priority queue)
 				- PQ ok but other queues stuck
