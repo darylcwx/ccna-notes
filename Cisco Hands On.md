@@ -295,7 +295,33 @@ Sw(config)#errdisable recovery cause psecure-violation
 Sw(config)#errdisable recovery interval 180 // default 300
 ```
 
-### 3.6 DHCP Snooping
+### 3.6 DHCP & Snooping
+
+- Router as DHCP server
+
+```
+R1(config)#ip dhcp exclude {lower bound IP} {upper bound IP}
+R1(config)#ip dhcp pool {name}
+R1(dhcp-config)#network 192.168.1.0 /24 // subnet to give clients
+R1(dhcp-config)#dns-server 8.8.8.8
+R1(dhcp-config)#domain-name {domain}
+R1(dhcp-config)#default-router {DGW}
+R1(dhcp-config)#lease {D H mins}
+R1#show ip dhcp binding
+
+```
+
+- Router as DHCP relay agent
+
+```
+R1(config-if)#ip helper-address {dhcp IP}
+```
+
+- Router as DHCP client
+
+```
+R2(config-if)#ip add dhcp
+```
 
 ```
 // untrust by default
@@ -558,13 +584,13 @@ Router(config)#ip nat inside source static tcp 192.168.10.254 80 209.165.200.226
 // config dynamic
 // acl required to specify which IPs to be translated
 Router(config)#access-list 1 permit 10.1.1.0 0.0.0.255
-Router(config)#ip nat pool NAT-POOL 209.165.200.230 209.165.200.235 netmask 255.255.255.254
-Router(config)#ip nat inside source list 1 pool NAT-POOL
+Router(config)#ip nat pool {pool} {start} {end} netmask 255.255.255.254
+Router(config)#ip nat inside source list {ACL} pool {pool}
 
 // config PAT
 // same idea as dynamic, but need specify outside interface
 Router(config)#access-list 1 permit 172.16.1.0 0.0.0.25
-Router(config)#ip nat inside source list 1 interface GigabitEthernet 0/1 overload
+Router(config)#ip nat inside source list {ACL} interface GigabitEthernet 0/1 overload
 
 ```
 

@@ -1522,33 +1522,6 @@ ipconfig /renew
 3. DHCP Request
 4. DHCP Ack (uni)
 
-#### 4.4.1 Configs
-
-- Router as DHCP server
-
-```
-R1(config)#ip dhcp exclude {lower bound IP} {upper bound IP}
-R1(config)#ip dhcp pool {name}
-R1(dhcp-config)#network 192.168.1.0 /24 // subnet to give clients
-R1(dhcp-config)#dns-server 8.8.8.8
-R1(dhcp-config)#domain-name {domain}
-R1(dhcp-config)#default-router DGW
-R1(dhcp-config)#lease {D H mins}
-R1#show ip dhcp binding
-```
-
-- Router as DHCP relay agent
-
-```
-R1(config-if)#ip helper-address {dhcp IP}
-```
-
-- Router as DHCP client
-
-```
-R2(config-if)#ip add dhcp
-```
-
 ### 4.5 Simple Network Management Protocol (SNMP)
 
 - mDev can notify NMS of events
