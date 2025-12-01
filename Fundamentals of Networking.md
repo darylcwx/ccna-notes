@@ -22,6 +22,15 @@ debugInConsole: false
 	- CDP/LLDP
 	- IPv4, IPv6 addressing
 
+### Weak Links
+
+- IPv6
+	- 1 octet = 16 bits = 4 bits of 0000 = 4 hexadec
+- Topics
+	- IP Connectivity
+- Redo labs
+	- ip-services-sim-version-2
+
 ## 1.0 Network Fundamentals
 
 ### 1.1 Components

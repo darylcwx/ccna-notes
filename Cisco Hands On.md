@@ -31,6 +31,7 @@ debugInConsole: false
 ### 2.1 SSH
 
 ```
+// privilege 1 for User Exec, 15 for Priv. Exec
 Switch#conf t
 Switch(config)#ip domain-name <ip>
 Switch(config)#crypto key generate rsa
