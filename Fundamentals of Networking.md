@@ -21,15 +21,18 @@ debugInConsole: false
 	- VLAN, trunking, LACP (etherChannel)
 	- CDP/LLDP
 	- IPv4, IPv6 addressing
+- Write
+	-  128 64 32 16 8 4 2 1
+	- [DITEELF](#^0d91a1)
+	- [EACEWNID](#^1986e3)
+	- [802.11, b, a, g, n, ac, ax](#^22040e)
+	- [#ports](#1.5.3%20Layer%204%20(TCP%20Vs%20UDP)%20ports)
 
 ### Weak Links
 
 - IPv6
 	- 1 octet = 16 bits = 4 bits of 0000 = 4 hexadec
-- Topics
-	- IP Connectivity
-- Redo labs
-	- ip-services-sim-version-2
+- [STP Toolkit](#2.3.5%20STP%20Toolkit)
 
 ## 1.0 Network Fundamentals
 
@@ -627,7 +630,7 @@ debugInConsole: false
 	- Range
 	- Absorption, reflection, refraction, diffraction, scattering
 - Interference
-- 802.11, b, a, g, n, ac, ax
+- 802.11, b, a, g, n, ac, ax ^22040e
 	- Service sets (SS)
 		- Independent
 		- Infrastructure
@@ -1296,7 +1299,7 @@ R1(config)#ip route 10.0.0.0 255.0.0.0 10.0.13.2 100
 - Becoming OSPF neighbors
 	- OSPF hello for potential OSPF neighbors (10 seconds) via `224.0.0.5` (multicast)
 		- IP header with Protocol field `89`
-	- Neighbor States (Demons In Texas Eat Eels Like Fries)
+	- Neighbor States (Demons In Texas Eat Eels Like Fries) ^0d91a1
 		- Down
 		- Init [hello received, own self not recognized]
 		- Two-Way [own self recognized, friendship established]
@@ -1561,7 +1564,7 @@ ipconfig /renew
 - [3.7 Syslog](Cisco%20Hands%20On.md#3.7%20Syslog)
 - Event logging, for analysis, troubleshooting
 - Messages from devices to server (SNMP opposite), can't pull info from devices or modify variables
-- Format
+- Format ^1986e3
 	- `seq:time: %facility-severity-mnemonic: description`
 	- Priority (8b)
 	- Facility (5b)
