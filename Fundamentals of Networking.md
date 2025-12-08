@@ -21,6 +21,15 @@ debugInConsole: false
 	- VLAN, trunking, LACP (etherChannel)
 	- CDP/LLDP
 	- IPv4, IPv6 addressing
+- applying ACL: ip access-group `ACL` out
+	- in (to router)
+	- out (to router)
+- interface issues
+	- runts = bad NIC
+	- CRC /FCS = layer 1
+	- collisions = duplex
+	- tx/rx = throughput
+- `R3(config)# do sh run | section vty`
 
 ### Weak Links
 
@@ -28,8 +37,22 @@ debugInConsole: false
 	- 1 octet = 16 bits = 4 bits of 0000 = 4 hexadec
 - Topics
 	- IP Connectivity
+	- Scheduling (CBWFQ)
+- Scheduling
+	- Round-robin
+	- Priority Queueing (PQ) - lower queues starve
+	- Custom Queueing (CQ) - fixed BW per queue
+	- Weighted Fair Queueing (WFQ) - shares BW, by priority
+	- Class-Based Weighted Fair Queueing (CBWFQ) - BW guarantees
+	- Low-Latency Queue (strict PQ) - starve others
+- Policing - rate limit by dropping or remarking
+- Shaping - rate limit by buffering
+- [STP guard this guard that](#2.3.5%20STP%20Toolkit)
+- [Radius vs TACACS+](#5.3%20(MF)Authentication,%20Authorization,%20Accounting%20(AAA))
 - Redo labs
-	- ip-services-sim-version-2
+	- https://www.9tut.com/ip-services-sim-version-2
+	- https://www.9tut.com/named-access-list-dhcp-snooping-sim
+	- https://www.9tut.com/named-access-list-dhcp-snooping-sim-2
 
 ## 1.0 Network Fundamentals
 
@@ -238,8 +261,8 @@ debugInConsole: false
 	- [core, cladding, buffer]
 	- [9, 125, 250] µm
 	- Types
-		- Multi-mode: [LED, slow BW, 2km, $]
-		- Single-mode: [laser, high BW, 40+km, $$$]
+		- Multimode: [LED, slow BW, 2km, $]
+		- Singlemode: [laser, high BW, 40+km, $$$]
 	- Connected to Small Form-Factor Pluggables (SFP)
 - **Coaxial Cable**
 	- Copper core, Legacy use
@@ -499,6 +522,7 @@ debugInConsole: false
 | Source Address      | 128         | sender IPv6 address            |
 | =============       | ======      | ====================           |
 | Destination Address | 128         | receiver IPv6 address          |
+|                     |             |                                |
 
 ##### Address Assignment
 
@@ -676,7 +700,7 @@ debugInConsole: false
 		- Modes
 			- Local: standard
 			- FlexConnect: same by can switch to wired if WLC down
-			- Sniffer: just sniff 802.11 frames and send them
+			- Sniffe: just sniff 802.11 frames and send them
 			- Monitor: just receives 802.11 frames, to detect rogue devices and send de-auth
 			- Rogue detector: gets list of suspects from WLC. uses list, listens to ARP, detect rogue devices
 			- Spectrum Expert Connect (SE-C): RF analysis on all channels
@@ -1571,7 +1595,7 @@ ipconfig /renew
 	- `seq:time: %facility-severity-mnemonic: description`
 	- Priority (8b)
 	- Facility (5b)
-	- Severity (3b)
+	- Severity/Level (3b)
 		- 0: Emergency
 		- 1: Alert
 		- 2: Critical
@@ -1855,8 +1879,8 @@ R1(config)#ip ftp passowrd {pass}
 - Authorization = privileges
 - Accounting = logs
 - AAA servers
-	- RADIUS (UDP 1812, 1813)
-	- TACACS+ (cisco's, TCP 49)
+	- RADIUS (UDP 1812, 1813) - merged, enc. only pass, network access
+	- TACACS+ (cisco's, TCP 49) - AAA separate, enc. entire packet, device admin
 
 ### 5.4 Security Programs
 

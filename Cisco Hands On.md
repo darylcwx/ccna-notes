@@ -324,13 +324,18 @@ R1(config-if)#ip helper-address {dhcp IP}
 R2(config-if)#ip add dhcp
 ```
 
+- Snooping
+
 ```
 // untrust by default
-Sw(config)#ip dhcp snooping
+Sw(config)#ip dhcp snooping // en
 Sw(config)#ip dhcp snooping vlan 1
 Sw(config)#int g0/0
 Sw(config-if)#ip dhcp snooping trust
 Sw(config)#do sh dhcp snooping binding
+
+// disable Option-82
+Sw(config)#no ip dhcp snooping info option
 
 // rate-limiting
 // disabled by default
@@ -610,7 +615,7 @@ Router(config-std-nacl)#permit 172.16.0.0 0.0.255.255
 
 ```
 // extended IPv4
-Router(config)#ip-access-list extended 101
+Router(config)#ip access-list extended 101
 Router(config-ext-nacl)#permit tcp host 172.16.3.3 range 56000 60000 host 203.0.113.30 eq 80
 ```
 
@@ -629,8 +634,8 @@ Router(config)#no ip access-list <standard/extended> <access-list-name>
 // apply
 Router(config-if)#ip access-group 5
 Router#show access-lists
-Router(config)#interface GigabitEthernet 0/1
-Router(config-if)#ip access-group 5 out
+Router(config)#int g0/1
+Router(config-if)#ip access-group 5 {in/out}
 ```
 
 ### 4.6 Security (SSH, local)
