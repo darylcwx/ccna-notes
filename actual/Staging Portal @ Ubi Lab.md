@@ -52,10 +52,22 @@ debugInConsole: false # Print debug info in Obsidian console
 ### Hardening (MVP @ 15 Jan)
 
 - Precheck first then hardening
-- Tenable
-	- Read
-	- Check if present
-	- `CONFIG_CHECK`
+- Manually perform compliance checks first
+	- Learn what Tenable is checking
+	- See how compliance is verified
+- Usually
+	- `show run`
+	- `show version`
+	- `show ip ssh`
+- Automation logic
+	- Extract xml
+		- Condition
+		- Compliant ()
+		- Remediate (`host(config)#aaa new-model`)
+	- Commands as array
+	- Send commands
+	- Check show run
+	- Remediate
 
 ---
 
