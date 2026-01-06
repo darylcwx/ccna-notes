@@ -64,13 +64,28 @@ debugInConsole: false # Print debug info in Obsidian console
 		- Condition
 		- Compliant ()
 		- Remediate (`host(config)#aaa new-model`)
-	- Commands as array
-	- Send commands
-	- Check show run
+	- Read `run conf`
+	- Compare to extracted XML
 	- Remediate
+- Process
+	- XML
+	- Generate hardened run-conf
+	- Manual push config in
+	- Validate
+	- Generate report
+	- Next steps:
+		- Upload to tftp
+		- Push from there
+		- brands\cisco_ios\baseline_config.py
+		- brands\cisco_ios\main_function.py\configure_device()
 
 ---
+## How To
 
+1. MSLAB-KBT wifi
+2. 
+
+---
 ## References
 
 ### TSG Staging Portal OneNote
